@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zebra.xconfig.server.dao.mapper.XKvMapper">
+    <sql id="kvCols">
+        id,
+        project,
+        profile,
+        xKey,
+        xValue,
+        security,
+        description,
+        createTime,
+        updateTime
+    </sql>
+
+    <select id="queryAll" resultType="com.zebra.xconfig.server.po.KvPo">
+        SELECT
+          <include refid="kvCols"></include>
+        FROM x_kv
+    </select>
+
+</mapper>

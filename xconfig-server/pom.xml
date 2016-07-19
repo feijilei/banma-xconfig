@@ -295,6 +295,12 @@
             <artifactId>joda-time</artifactId>
             <version>2.2</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.zebra.carcloud</groupId>
+            <artifactId>xconfig-common</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 </project>

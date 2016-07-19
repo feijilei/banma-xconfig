@@ -7,8 +7,8 @@
     <packaging>pom</packaging>
     <version>0.0.1-SNAPSHOT</version>
     <modules>
-        <module>xconfig-client</module>
         <module>xconfig-common</module>
+        <module>xconfig-client</module>
         <module>xconfig-server</module>
     </modules>
 

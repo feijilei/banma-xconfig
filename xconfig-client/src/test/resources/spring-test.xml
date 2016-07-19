@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+    <bean id="xConfig" class="com.zebra.xconfig.client.XConfig" init-method="init">
+        <property name="project" value="test"></property>
+        <property name="profile" value="dev"></property>
+        <property name="zkConnStr" value="localhost:2181"></property>
+    </bean>
+
+    <bean class="com.zebra.xconfig.client.XConfigPropertyPlaceholderConfigurer">
+        <property name="XConfig" ref="xConfig"/>
+    </bean>
+
+    <bean id="mysqlConf" class="com.zebra.xconfig.client.MysqlConf">
+        <property name="password" value="${mysql.dev.jdbc.password}"></property>
+    </bean>
+</beans>

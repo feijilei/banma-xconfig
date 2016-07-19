@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-3.1.xsd
+		http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd"
+
+	default-autowire="byName">
+
+	<context:component-scan base-package="com.zebra.xconfig.server.web" />
+
+	<!-- 配置资源文件 -->
+<!-- 	<context:property-placeholder location="classpath:constants.properties" ignore-unresolvable="true" /> -->
+
+	<!-- spring mvc 配置 -->
+	<mvc:resources mapping="/resources/javascripts/**" location="/resources/javascripts/" />
+    <mvc:resources mapping="/resources/plugin/**" location="/resources/plugin/" />
+	<mvc:resources mapping="/resources/css/**" location="/resources/css/" />
+	<mvc:resources mapping="/resources/bootstrap3.3.5/**" location="/resources/bootstrap3.3.5/" />
+    <mvc:resources mapping="/resources/img/**" location="/resources/img/" />
+
+    <!--freemarker静态方法-->
+	<!--<bean id="freemarkerStaticModelsConf" class="org.springframework.beans.factory.config.PropertiesFactoryBean">-->
+        <!--<property name="location" value="classpath:properties/freemarkerStatic.properties"></property>-->
+    <!--</bean>-->
+
+    <!--<bean id="freemarkerStaticModels" class="com.dingmei.common.FreemarkerStaticModels" factory-method="getInstance">-->
+        <!--<property name="staticModels" ref="freemarkerStaticModelsConf"/>-->
+    <!--</bean>-->
+
+	<bean id="freemarkerResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+<!-- 		<property name="suffix" value=".html" /> -->
+		<property name="exposeSpringMacroHelpers" value="true" />
+		<property name="exposeRequestAttributes" value="true" />
+		<property name="exposeSessionAttributes" value="true" />
+		<property name="allowRequestOverride" value="true" />
+		<property name="contentType" value="text/html;charset=utf-8" />
+		<property name="requestContextAttribute" value="req" />
+		<property name="allowSessionOverride" value="true" />
+        <!--<property name="attributesMap" ref="freemarkerStaticModels" />-->
+	</bean>
+
+	<bean id="freemarkerConfiguration" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="location" value="classpath:properties/freemarker.properties" />
+	</bean>
+
+	<bean id="freemarkerConfig"
+		class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+		<property name="defaultEncoding" value="UTF-8" />
+		<property name="templateLoaderPath" value="/WEB-INF/" />
+		<property name="freemarkerSettings" ref="freemarkerConfiguration" />
+		<!-- 全局变量部分 -->
+ 		<property name="freemarkerVariables">
+ 			<map>
+ 				<entry key="xml_escape" value-ref="xmlEscape" />
+                <entry key="dataRight">
+                    <bean class="com.zebra.xconfig.server.util.freemarker.FreemarkerDataRightTag"></bean>
+                </entry>
+ 			</map>
+ 		</property>
+	</bean>
+
+    <bean id="xmlEscape" class="freemarker.template.utility.XmlEscape" />
+
+	<mvc:annotation-driven>
+		
+		<mvc:message-converters register-defaults="true">
+			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+				<constructor-arg value="UTF-8" />
+			</bean>
+			<bean id="mappingJacksonHttpMessageConverter"
+				class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter" />
+		</mvc:message-converters>
+		
+<!-- 		<mvc:argument-resolvers> -->
+<!-- 			<bean -->
+<!-- 				class="com.zzc.framework.web.method.annotation.RequestArrayResolver" /> -->
+<!-- 			<bean -->
+<!-- 				class="com.zzc.framework.web.method.annotation.RequestMapResolver" /> -->
+<!-- 		</mvc:argument-resolvers> -->
+		
+	</mvc:annotation-driven>
+
+    <bean id="exceptionResolver" class="com.zebra.xconfig.server.web.ExceptionHandler"/>
+
+</beans>
