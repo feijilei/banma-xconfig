@@ -17,6 +17,11 @@
 		http://www.springframework.org/schema/task
 		http://www.springframework.org/schema/task/spring-task-3.1.xsd">
 
+    <bean id="client" class="com.zebra.xconfig.server.util.zk.XConfigCuratorFactory" factory-method="init">
+        <constructor-arg index="0" value="localhost:2181"></constructor-arg>
+    </bean>
 
+    <bean id="xConfigServer" class="com.zebra.xconfig.server.util.zk.XConfigServer" init-method="init">
+    </bean>
 
 </beans>

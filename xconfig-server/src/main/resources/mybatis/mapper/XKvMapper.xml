@@ -21,4 +21,61 @@
         FROM x_kv
     </select>
 
+    <select id="queryByProjectAndProfile" resultType="com.zebra.xconfig.server.po.KvPo" parameterType="map">
+        SELECT
+          <include refid="kvCols"></include>
+        FROM x_kv
+        WHERE project = #{project}
+        AND profile = #{profile}
+        ORDER BY id
+    </select>
+
+    <select id="queryByProjectsAndProfilePagging" parameterType="map" resultType="com.zebra.xconfig.server.po.KvPo">
+        SELECT
+          <include refid="kvCols"></include>
+        FROM x_kv
+        WHERE project = #{project}
+        AND profile =  #{profile}
+        ORDER BY project,id
+    </select>
+
+    <insert id="addOne" parameterType="com.zebra.xconfig.server.po.KvPo">
+        INSERT INTO x_kv
+        (
+            project,
+            profile,
+            xKey,
+            xValue,
+            security,
+            description,
+            createTime,
+            updateTime
+        )VALUE (
+            #{kvPo.project},
+            #{kvPo.profile},
+            #{kvPo.xKey},
+            #{kvPo.xValue},
+            #{kvPo.security},
+            #{kvPo.description},
+            NOW(),
+            NOW()
+        )
+    </insert>
+
+    <update id="updateOne" parameterType="map">
+        UPDATE x_kv
+        SET xValue = #{kvPo.value},#{kvPo.security},#{kvPo.description}
+        WHERE project = #{kvPo.project}
+        AND profile = #{kvPo.profile}
+        AND xKey = #{kvPo.key}
+    </update>
+
+    <select id="load" parameterType="map" resultType="com.zebra.xconfig.server.po.KvPo">
+        SELECT
+        <include refid="kvCols"></include>
+        FROM x_kv
+        WHERE project = #{project}
+        AND profile = #{profile}
+        AND xKey = #{key}
+    </select>
 </mapper>

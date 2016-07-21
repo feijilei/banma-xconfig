@@ -22,7 +22,7 @@ public class XConfigContextTest {
     private MysqlConf mysqlConf;
     @Test
     public void test(){
-        logger.debug("====>{}",XConfig.getValue("mysql.dev.jdbc.password"));
+        logger.debug("====>{}",XConfig.getValue("mysql.daily.jdbc.password"));
         logger.debug("====>{}", JSON.toJSONString(mysqlConf));
         try {
             Thread.sleep(1000*60*30);

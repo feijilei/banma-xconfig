@@ -7,7 +7,7 @@
 	localCssFiles从当前项目引入的css文件,
 	headTag是否在宏内添加<head标签>默认为false不添加
 -->
-<#macro headHtml localJsFiles=[] remoteJsFiles=[] localCssFiles=[] headTag = false>
+<#macro headHtml localJsFiles=[] remoteJsFiles=[] localCssFiles=[] headTag = false >
 	<#if headTag>
 		<head>
 	</#if>
@@ -17,17 +17,17 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	
 	<#-- 最新 Bootstrap 核心 CSS 文件 -->
-	<#--<link rel="stylesheet" href="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css">-->
+	<#--<link rel="stylesheet" href="http://cdn.bootcss.com/twitter-bootstrap/3.3.6/css/bootstrap.min.css">-->
     <link rel="stylesheet" href="${basepath}/resources/bootstrap3.3.5/css/bootstrap.min.css">
 	<#-- 可选的Bootstrap主题文件（一般不用引入） -->
-	<#--<link rel="stylesheet" href="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap-theme.min.css">-->
+	<#--<link rel="stylesheet" href="http://cdn.bootcss.com/twitter-bootstrap/3.3.6/css/bootstrap-theme.min.css">-->
     <link rel="stylesheet" href="${basepath}/resources/bootstrap3.3.5/css/bootstrap-theme.min.css">
 	<#-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
-	<#--<script src="http://cdn.bootcss.com/jquery/2.0.3/jquery.min.js" type="text/javascript"></script>-->
+	<#--<script src="http://cdn.bootcss.com/jquery/1.12.3/jquery.min.js" type="text/javascript"></script>-->
     <script src="${basepath}/resources/plugin/jquery/jquery2.0.3.min.js" type="text/javascript"></script>
 
 	<#-- 最新的 Bootstrap 核心 JavaScript 文件 -->
-	<#--<script src="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js" type="text/javascript"></script>-->
+	<#--<script src="http://cdn.bootcss.com/twitter-bootstrap/3.3.6/js/bootstrap.min.js" type="text/javascript"></script>-->
     <script src="${basepath}/resources/bootstrap3.3.5/js/bootstrap.min.js" type="text/javascript"></script>
 
     <!--[if lte IE 8]>
@@ -47,7 +47,7 @@
     <#--自定义的jquery方法-->
     <script src="${basepath}/resources/plugin/myJqueryPlugin.js" type="text/javascript"></script>
 	<#list localCssFiles as localCss>
-		<link rel="stylesheet" href="${basepath}/resources/css/${localCss}"/>
+		<link rel="stylesheet" href="${basepath}/resources/${localCss}"/>
 	</#list>
 
 	<#list localJsFiles as localJs>

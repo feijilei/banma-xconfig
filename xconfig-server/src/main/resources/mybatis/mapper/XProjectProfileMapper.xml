@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zebra.xconfig.server.dao.mapper.XProjectProfileMapper">
+    <select id="queryAllProjects" resultType="string">
+        SELECT
+          project
+        FROM x_project
+    </select>
+
+    <select id="queryProjectDependencies" resultType="string" parameterType="map">
+        SELECT
+          depProject
+        FROM x_project_dependency
+        WHERE project = #{project}
+        ORDER BY id
+    </select>
+
+    <select id="queryProjectProfiles" resultType="string" parameterType="map">
+        SELECT
+          profile
+        FROM x_profile
+        WHERE project = #{project}
+        ORDER BY id
+    </select>
+</mapper>

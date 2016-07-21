@@ -1,13 +1,13 @@
 <#--定义html文件中head标签里的内容-->
 <#include "headHtml.ftl"/>
-<#macro baseHtml title="宏观经济" localJsFiles=[] remoteJsFiles=[] localCssFiles=[] curMenu="" >
+<#macro baseHtml title="xConfig" localJsFiles=[] remoteJsFiles=[] localCssFiles=[] curMenu="" >
     <#escape x as x?html>
     <!DOCTYPE html>
     <html lang="zh-CN">
     <head>
         <meta http-equiv="pragma" content="no-cache">
-        <meta name="description" content="宏观经济">
-        <meta name="keywords" content="宏观经济">
+        <meta name="description" content="xConfig">
+        <meta name="keywords" content="xConfig">
         <meta http-equiv="cache-control" content="no-cache">
         <meta http-equiv="expires" content="0">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -18,16 +18,6 @@
 
         <#-- 	本地全局css -->
             <link rel="stylesheet" href="${basepath}/resources/css/global.css"/>
-        <#--<link rel="stylesheet" type="text/css" href="${basepath}/resources/plugin/datagrid/minified/jquery.bs_grid.min.css">-->
-        <#--<script type="text/javascript" src="${basepath}/resources/plugin/datagrid/minified/jquery.bs_grid.min.js"></script>-->
-        <#--<script type="text/javascript" src="${basepath}/resources/plugin/datagrid/minified/localization/en.min.js"></script>-->
-            <script type="text/javascript"
-                    src="${basepath}/resources/plugin/treeview/bootstrap-treeview.min.js"></script>
-        <#--<script type="text/javascript" src="http://code.highcharts.com/highcharts.js"></script>-->
-            <script type="text/javascript" src="${basepath}/resources/plugin/highcharts/highcharts.js"></script>
-
-            <script type="text/javascript" src="${basepath}/resources/javascripts/leftMenu.js"></script>
-
             <script type="text/javascript">
                 var basepath = '${basepath}';
             </script>
@@ -37,7 +27,7 @@
     <body>
 
     <header role="banner" class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
+        <div class="container-fluid">
         <#-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse"
@@ -47,13 +37,15 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">鼎美</a>
+                <a class="navbar-brand" href="#">xConfig</a>
             </div>
 
         <#-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="#">宏观经济</a></li>
+                    <li class="active"><a href="${basepath}/main/index">index</a></li>
+                    <li><a href="#">config</a></li>
+                    <li><a href="#">resource</a></li>
                 <#--
                 <li><a href="#">最新段子</a></li>
                 <li class="dropdown">
@@ -80,7 +72,7 @@
             </form> -->
 
                 <ul class="nav navbar-nav navbar-right">
-                    <p class="navbar-text">欢迎:${WebUtil.getSessionInfo().realName}</p>
+                    <p class="navbar-text">欢迎:</p>
                     <li><a href="/j_spring_security_logout">注销</a></li>
                 <#--<li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
@@ -98,13 +90,9 @@
         </div>
     </header>
 
-    <div class="container">
+    <div class="container-fluid">
         <div class="row">
-            <div class="col-md-3">
-                <div id="leftMenu">
-                </div>
-            </div>
-            <div class="col-md-9">
+            <div class="col-md-12">
                 <#nested/>
             </div>
 
@@ -112,7 +100,7 @@
     </div>
 
 
-    <div id="copyright" class="container">
+    <div id="copyright" class="container-fluid">
         <hr/>
         <div class="text-center">
             <small>Copyright©2013 zhengzhichao. All Rights Reserved.</small>

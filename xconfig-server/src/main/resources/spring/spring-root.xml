@@ -10,17 +10,7 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
     http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
-    <bean id="xConfig" class="com.zebra.xconfig.client.XConfig" init-method="init">
-        <property name="project" value="odps-service"></property>
-        <property name="profile" value="daily"></property>
-        <property name="zkConnStr" value="localhost:2181"></property>
-    </bean>
 
-    <bean class="com.zebra.xconfig.client.XConfigPropertyPlaceholderConfigurer">
-        <property name="XConfig" ref="xConfig"/>
-    </bean>
-
-    <bean id="mysqlConf" class="com.zebra.xconfig.client.MysqlConf">
-        <property name="password" value="${mysql.daily.jdbc.password}"></property>
-    </bean>
+    <import resource="spring-common.xml"/>
+    <import resource="spring-local-service.xml"/>
 </beans>

@@ -23,14 +23,14 @@
         </layout>
     </appender>
 
-    <logger name="com.zebra" additivity="false">
-        <level value="DEBUG"/>
-        <appender-ref ref="console"/>
-        <appender-ref ref="file"/>
-    </logger>
+    <!--<logger name="com.zebra" additivity="false">-->
+        <!--<level value="DEBUG"/>-->
+        <!--<appender-ref ref="console"/>-->
+        <!--<appender-ref ref="file"/>-->
+    <!--</logger>-->
 
     <root>
-        <priority value="INFO" />
+        <priority value="DEBUG" />
         <appender-ref ref="console" />
         <appender-ref ref="file" />
     </root>
