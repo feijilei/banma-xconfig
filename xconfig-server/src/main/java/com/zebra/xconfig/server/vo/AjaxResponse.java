@@ -4,28 +4,23 @@ package com.zebra.xconfig.server.vo;
  * Created by ying on 16/7/21.
  */
 public class AjaxResponse {
-    public boolean isOk;
+    /**
+     * 0表示成功
+     * 其他表示失败，默认-1
+     */
     public int code;
     public String msg;
     public Object data;
 
     public AjaxResponse(){
-        isOk = true;
+        code = 0;
     }
 
     public void setThrowable(Throwable t){
-        isOk = false;
+        code = -1 ;
         msg = t.getMessage();
     }
 
-
-    public boolean isOk() {
-        return isOk;
-    }
-
-    public void setOk(boolean isOk) {
-        this.isOk = isOk;
-    }
 
     public int getCode() {
         return code;

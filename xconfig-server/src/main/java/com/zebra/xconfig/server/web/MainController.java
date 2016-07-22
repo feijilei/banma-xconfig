@@ -6,7 +6,6 @@ import com.zebra.xconfig.server.po.KvPo;
 import com.zebra.xconfig.server.service.XKvService;
 import com.zebra.xconfig.server.service.XProjectProfileService;
 import com.zebra.xconfig.server.vo.AjaxResponse;
-import com.zebra.xconfig.server.vo.BootGridVo;
 import com.zebra.xconfig.server.vo.KvVo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.util.HtmlUtils;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
@@ -52,8 +52,9 @@ public class MainController {
     public ModelAndView project(WebRequest webRequest){
         ModelAndView mv = new ModelAndView();
 
-        String project = webRequest.getParameter("project");
-        String profile = webRequest.getParameter("profile");
+        String project = HtmlUtils.htmlEscape(webRequest.getParameter("project"));
+        String profile = HtmlUtils.htmlEscape(webRequest.getParameter("profile"));
+
 
         List<String> profiles = xProjectProfileService.queryProjectProfiles(project);
 
@@ -92,18 +93,19 @@ public class MainController {
         return mv;
     }
 
-    @RequestMapping("/addKv")
+    @RequestMapping("/addKvs")
     @ResponseBody
-    public AjaxResponse addKv(WebRequest webRequest){
+    public AjaxResponse addKvs(WebRequest webRequest){
         AjaxResponse ajaxResponse = new AjaxResponse();
 
         try {
-            String project = webRequest.getParameter("project");
-            String profile = webRequest.getParameter("profile");
-            String key = webRequest.getParameter("key");
-            String value = webRequest.getParameter("value");
-            String security = webRequest.getParameter("security");
-            String description = webRequest.getParameter("description");
+            String project = HtmlUtils.htmlEscape(webRequest.getParameter("project"));
+            String[] profiles = webRequest.getParameterValues("profiles");
+            String profile = HtmlUtils.htmlEscape(webRequest.getParameter("profile"));
+            String key = HtmlUtils.htmlEscape(webRequest.getParameter("xkey"));
+            String value = HtmlUtils.htmlEscape(webRequest.getParameter("xvalue"));
+            String security = HtmlUtils.htmlEscape(webRequest.getParameter("security"));
+            String description = HtmlUtils.htmlEscape(webRequest.getParameter("description"));
 
             KvPo kvPo = new KvPo();
             kvPo.setProject(project);
@@ -113,7 +115,22 @@ public class MainController {
             kvPo.setSecurity(security);
             kvPo.setDescription(description);
 
-            this.xKvService.addKv(kvPo);
+            List<KvPo> kvPos = new ArrayList<>();
+            kvPos.add(kvPo);
+
+            for(String pf : profiles){
+                KvPo temp = new KvPo();
+                temp.setProject(project);
+                temp.setProfile(pf);
+                temp.setxKey(key);
+                temp.setxValue(value);
+                temp.setSecurity(security);
+                temp.setDescription(description);
+
+                kvPos.add(temp);
+            }
+
+            this.xKvService.addKvs(kvPos);
 
             ajaxResponse.setMsg("增加成功");
         }catch (Exception e){
@@ -124,4 +141,48 @@ public class MainController {
         return ajaxResponse;
     }
 
+    @RequestMapping("editKv")
+    @ResponseBody
+    public AjaxResponse editKv(WebRequest webRequest){
+        AjaxResponse ajaxResponse = new AjaxResponse();
+        try{
+            String project = webRequest.getParameter("project");
+            String profile = webRequest.getParameter("profile");
+            String mkey = webRequest.getParameter("xkey");
+            String value = HtmlUtils.htmlEscape(webRequest.getParameter("xvalue"));
+            String description = HtmlUtils.htmlEscape(webRequest.getParameter("description"));
+
+            String key = CommonUtil.genKeyByMkey(mkey);
+
+            KvPo kvPo = new KvPo();
+            kvPo.setProject(project);
+            kvPo.setProfile(profile);
+            kvPo.setxKey(key);
+            kvPo.setxValue(value);
+            kvPo.setDescription(description);
+
+            this.xKvService.updateKv(kvPo);
+        }catch (Exception e){
+            logger.error(e.getMessage(),e);
+            ajaxResponse.setThrowable(e);
+        }
+
+        return ajaxResponse;
+    }
+
+    @RequestMapping("removeKv")
+    @ResponseBody
+    public AjaxResponse removeKv(WebRequest webRequest){
+        AjaxResponse ajaxResponse = new AjaxResponse();
+
+        try{
+            String mkey = webRequest.getParameter("xkey");
+            this.xKvService.removeKvByMkey(mkey);
+        }catch (Exception e){
+            logger.error(e.getMessage(),e);
+            ajaxResponse.setThrowable(e);
+        }
+
+        return ajaxResponse;
+    }
 }

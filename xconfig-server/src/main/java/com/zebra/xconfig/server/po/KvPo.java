@@ -25,35 +25,35 @@ public class KvPo {
     }
 
     public String getProject() {
-        return project;
+        return project.trim();
     }
 
     public void setProject(String project) {
-        this.project = project;
+        this.project = project.trim();
     }
 
     public String getProfile() {
-        return profile;
+        return profile.trim();
     }
 
     public void setProfile(String profile) {
-        this.profile = profile;
+        this.profile = profile.trim();
     }
 
     public String getxKey() {
-        return xKey;
+        return xKey.trim();
     }
 
     public void setxKey(String xKey) {
-        this.xKey = xKey;
+        this.xKey = xKey.trim();
     }
 
     public String getxValue() {
-        return xValue;
+        return xValue.trim();
     }
 
     public void setxValue(String xValue) {
-        this.xValue = xValue;
+        this.xValue = xValue.trim();
     }
 
     public String getSecurity() {

@@ -15,5 +15,9 @@ public interface XKvService {
 
     public void addKv(KvPo kvVo) throws Exception;
 
+    public void addKvs(List<KvPo> kvPos) throws Exception;
+
     public void updateKv(KvPo kvPo) throws Exception;
+
+    public void removeKvByMkey(String mkey) throws Exception;
 }

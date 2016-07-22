@@ -54,18 +54,61 @@ jQuery(document).ready(function ($) {
     });
 
     //新增
-    //$('#addModal').on('show.bs.modal', function (event) {
-    //    var button = $(event.relatedTarget) // Button that triggered the modal
-    //    var key = button.parents("tr").first().attr("data-key");
-    //    var modal = $(this);
-    //
-    //    var data = kvs[key];
-    //    var template = doT.template($("#addModalTemplate").text());
-    //    modal.html(template(data));
-    //})
-
-    //新增按钮注册事件
+    $('#addModal').on('show.bs.modal', function (event) {
+        $("#addModal .errMsgDiv").addClass("hidden");
+        //$("#addButton").prop("disabled",false);
+    });
+    var addForm = $("#addForm").ajaxForm({
+        url:basepath+"/main/addKvs",
+        type:"POST",
+        success:function(data){
+            if(data.code == 0){
+                window.location = basepath+"/main/project?project="+project+"&profile="+profile;
+            }else{
+                //console.log(data.msg);
+                $("#addModal .errMsgDiv").removeClass("hidden");
+                $("#addModal .errMsg").text(data.msg);
+            }
+            $("#editButton").prop("disabled",false);
+        }
+    });
     $("#addButton").on("click",function(){
-        $("#addForm").submit();
-    })
+        $(this).prop("disabled",true);
+        addForm.submit();
+    });
+
+    //编辑
+    $('#editModal').on('show.bs.modal', function (event) {
+        $("#editModal .errMsgDiv").addClass("hidden");
+        //$("#editButton").prop("disabled",false);
+        var button = $(event.relatedTarget) // Button that triggered the modal
+        var key = button.parents("tr").first().attr("data-key");
+        var modal = $(this);
+
+        var data = kvs[key];
+        var template = doT.template($("#editModalTemplate").text());
+        modal.html(template(data));
+    });
+    $("body").delegate("#editButton","click",function(){
+        $(this).prop("disabled",true);
+
+        $("#editForm").ajaxForm({
+            url: basepath + "/main/editKv",
+            type: "POST",
+            success: function (data) {
+                if (data.code == 0) {
+                    window.location = basepath + "/main/project?project=" + project + "&profile=" + profile;
+                } else {
+                    //console.log(data.msg);
+                    $("#editModal .errMsgDiv").removeClass("hidden");
+                    $("#editModal .errMsg").text(data.msg);
+                }
+
+                $("#editButton").prop("disabled",false);
+            }
+        }).submit();
+    });
+
+    //删除
+
 })

@@ -51,29 +51,36 @@
             createTime,
             updateTime
         )VALUE (
-            #{kvPo.project},
-            #{kvPo.profile},
-            #{kvPo.xKey},
-            #{kvPo.xValue},
-            #{kvPo.security},
-            #{kvPo.description},
+            #{project},
+            #{profile},
+            #{xKey},
+            #{xValue},
+            #{security},
+            #{description},
             NOW(),
             NOW()
         )
     </insert>
 
-    <update id="updateOne" parameterType="map">
+    <update id="updateOne" parameterType="com.zebra.xconfig.server.po.KvPo">
         UPDATE x_kv
-        SET xValue = #{kvPo.value},#{kvPo.security},#{kvPo.description}
-        WHERE project = #{kvPo.project}
-        AND profile = #{kvPo.profile}
-        AND xKey = #{kvPo.key}
+        SET xValue = #{xValue},security = #{security},description = #{description}
+        WHERE project = #{project}
+        AND profile = #{profile}
+        AND xKey = #{xKey}
     </update>
 
     <select id="load" parameterType="map" resultType="com.zebra.xconfig.server.po.KvPo">
         SELECT
         <include refid="kvCols"></include>
         FROM x_kv
+        WHERE project = #{project}
+        AND profile = #{profile}
+        AND xKey = #{key}
+    </select>
+
+    <select id="delOne" parameterType="map">
+        DELETE FROM x_kv
         WHERE project = #{project}
         AND profile = #{profile}
         AND xKey = #{key}

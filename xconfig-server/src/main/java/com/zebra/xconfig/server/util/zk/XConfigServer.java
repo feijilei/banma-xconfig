@@ -5,8 +5,11 @@ import com.zebra.xconfig.common.Constants;
 import com.zebra.xconfig.server.dao.mapper.XKvMapper;
 import com.zebra.xconfig.server.dao.mapper.XProjectProfileMapper;
 import com.zebra.xconfig.server.po.KvPo;
+import com.zebra.xconfig.server.po.ZkNode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.api.transaction.CuratorTransaction;
+import org.apache.curator.framework.api.transaction.CuratorTransactionFinal;
 import org.apache.curator.framework.recipes.leader.LeaderLatch;
 import org.apache.curator.framework.recipes.leader.LeaderLatchListener;
 import org.apache.zookeeper.data.Stat;
@@ -15,10 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by ying on 16/7/18.
@@ -90,7 +90,7 @@ public class XConfigServer {
         logger.debug("开始kv数据");
         List<KvPo> kvPos = this.xKvMapper.queryAll();
         for(KvPo kvPo : kvPos){
-            String keyPath = CommonUtil.genKeyPath(kvPo.getProject(), kvPo.getProfile(), kvPo.getxKey());
+            String keyPath = CommonUtil.genMKeyPath(kvPo.getProject(), kvPo.getProfile(), kvPo.getxKey());
 
             try {
                 Stat stat = client.checkExists().forPath(keyPath);
@@ -137,5 +137,36 @@ public class XConfigServer {
 
     public boolean isLeader() {
         return isLeader;
+    }
+
+    public void createUpdateKvNode(String nodePath,String value) throws Exception{
+        Stat stat = client.checkExists().forPath(nodePath);
+        if(stat == null){
+            client.create().forPath(nodePath,value.getBytes());
+        }else{
+            client.setData().forPath(nodePath,value.getBytes());
+        }
+    }
+
+    public void createKvNodesWithTransactioin(List<ZkNode> zkNodes) throws Exception{
+        if(zkNodes == null || zkNodes.size() == 0){
+            return;
+        }
+        CuratorTransaction curatorTransaction = client.inTransaction();
+        CuratorTransactionFinal curatorTransactionFinal = null;
+        for(ZkNode zkNode : zkNodes){
+            curatorTransactionFinal = curatorTransaction.create().forPath(zkNode.getPath(),zkNode.getValue().getBytes()).and();
+        }
+
+        if(curatorTransaction != null){
+            curatorTransactionFinal.commit();
+        }
+    }
+
+    public void removeNode(String nodePath) throws  Exception{
+        Stat stat = client.checkExists().forPath(nodePath);
+        if(stat != null){
+            client.delete().forPath(nodePath);
+        }
     }
 }

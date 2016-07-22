@@ -28,4 +28,10 @@ public interface XKvMapper {
             @Param("project")String project,
             @Param("profile")String profile,
             @Param("key")String key);
+
+    public void delOne(
+            @Param("project")String project,
+            @Param("profile")String profile,
+            @Param("key")String key
+    );
 }
