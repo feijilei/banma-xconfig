@@ -30,6 +30,18 @@
         ORDER BY id
     </select>
 
+    <select id="queryByProjectsAndProfile" resultType="com.zebra.xconfig.server.po.KvPo" parameterType="map">
+        SELECT
+        <include refid="kvCols"></include>
+        FROM x_kv
+        WHERE project in
+        <foreach item="project" index="index" collection="projects" open="(" separator="," close=")">
+            #{project}
+        </foreach>
+        AND profile = #{profile}
+        ORDER BY id
+    </select>
+
     <select id="queryByProjectsAndProfilePagging" parameterType="map" resultType="com.zebra.xconfig.server.po.KvPo">
         SELECT
           <include refid="kvCols"></include>

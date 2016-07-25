@@ -15,50 +15,89 @@
         var kvs = ${kvmap};
     </script>
 
-    <div class="page-header">
-        <h1>${project?html}<small>Subtext for header</small></h1>
-    </div>
+    <#--<div class="page-header">-->
+        <#--<h1>${project?html}<small>Subtext for header</small></h1>-->
+    <#--</div>-->
+    <h1 style="margin-top: 0px">${project?html}
+        <span style="font-size: x-small">
+            依赖项目：
+            <#if dependencies?size gt 0>
+                <#list dependencies as dep>
+                    <#if dep_index%3 = 0>
+                        <span class="label label-primary">${dep?html}</span>
+                    <#elseif dep_index%3 = 1>
+                        <span class="label label-success">${dep?html}</span>
+                    <#elseif dep_index%3 = 2>
+                        <span class="label label-info">${dep?html}</span>
+                    </#if>
+                </#list>
+                &nbsp;
+                <label>
+                    <input type="checkbox" id="allDep" <#if allDep?? && allDep == "true">checked</#if>> 加载所有依赖
+                </label>
+            </#if>
 
-    <ol class="breadcrumb">
+        </span>
+    </h1>
+    <hr/>
+    <ul class="nav nav-tabs">
         <#list profiles as pf>
             <#if pf == profile>
-                <li class="active" >${pf?html}</li>
+                <li role="presentation" class="active"><a href="#">${pf?html}</a></li>
             <#else>
-                <li><a href="${basepath}/main/project?project=${project?html}&profile=${pf?html}" >${pf?html}</a></li>
+                <li role="presentation"><a href="${basepath}/main/project?project=${project?html}&profile=${pf?html}">${pf?html}</a></li>
             </#if>
         </#list>
-    </ol>
+        <li role="presentation" class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                操作 <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                <li><a href="#">Action</a></li>
+                <li><a href="#">Another action</a></li>
+                <li><a href="#">Something else here</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="#">Separated link</a></li>
+            </ul>
+        </li>
+    </ul>
+    <div style="margin-top: 10px">
+        <table id="kvTable" class="display" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>键</th>
+                    <th>值</th>
+                    <th>描述</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
 
-    <table id="kvTable" class="display" cellspacing="0" width="100%">
-        <thead>
-            <tr>
-                <th>键</th>
-                <th>值</th>
-                <th>描述</th>
-                <th>操作</th>
-            </tr>
-        </thead>
+            <tbody>
+                <#list kvVos as kvVo>
+                <tr data-key=${kvVo.key} >
+                    <td>${kvVo.key}</td>
+                    <td>${kvVo.value}</td>
+                    <td>
+                        <a style="display: block;text-decoration:none;width: 20em;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;" data-toggle="tooltip" title="${kvVo.description}">
+                            ${kvVo.description}
+                        </a>
+                    </td>
 
-        <tbody>
-            <#list kvVos as kvVo>
-            <tr data-key=${kvVo.key} >
-                <td>${kvVo.key}</td>
-                <td>${kvVo.value}</td>
-                <td>
-                    <a style="display: block;text-decoration:none;width: 20em;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;" data-toggle="tooltip" title="${kvVo.description}">
-                        ${kvVo.description}
-                    </a>
-                </td>
-
-                <td>
-                    <a href="#"><span class="glyphicon glyphicon-search" aria-hidden="true" data-toggle="modal" data-target="#detailModal"></span></a>
-                    <a href="#"><span class="glyphicon glyphicon-edit" aria-hidden="true" data-toggle="modal" data-target="#editModal"></span></a>
-                    <a href="#"><span class="glyphicon glyphicon-remove" aria-hidden="true" data-toggle="modal" data-target="#removeModal"></span></a>
-                </td>
-            </tr>
-            </#list>
-        </tbody>
-    </table>
+                    <td>
+                        <a href="javascript:void(0)"><span class="glyphicon glyphicon-search" aria-hidden="true" data-toggle="modal" data-target="#detailModal"></span></a>
+                        <#if project == kvVo.project>
+                            <a href="javascript:void(0)"><span class="glyphicon glyphicon-edit" aria-hidden="true" data-toggle="modal" data-target="#editModal"></span></a>
+                            <a href="javascript:void(0)"><span class="glyphicon glyphicon-remove" aria-hidden="true" data-toggle="modal" data-target="#removeModal"></span></a>
+                        <#else>
+                            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                        </#if>
+                    </td>
+                </tr>
+                </#list>
+            </tbody>
+        </table>
+    </div>
 
 <#--modal and template-->
     <div id="detailModal" class="modal fade">
@@ -104,10 +143,6 @@
                             </div>
                         </div>
                     </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -249,7 +284,12 @@
                     <h4 class="modal-title"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> 删除</h4>
                 </div>
                 <div class="modal-body">
-                    <p class="text-danger"><span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span> 警告：删除配置可能会导致严重错误，请确认！</p>
+                    <div>
+                        <p class="text-danger"><span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span> 警告：删除配置可能会导致严重错误，请确认！</p>
+                    </div>
+                    <div class="alert alert-danger alert-dismissible hidden errMsgDiv" role="alert">
+                        <strong>Error! </strong><span class="errMsg"></span>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>

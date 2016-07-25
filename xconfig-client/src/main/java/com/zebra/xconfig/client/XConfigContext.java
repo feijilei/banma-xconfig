@@ -41,9 +41,12 @@ public class XConfigContext {
 
     private CuratorFramework client;//zk客户端
     private CountDownLatch countDownLatch;//zk初始化闭锁
-    private boolean initOk = false;
+    private boolean initOk = false;//是否初始化成功
 
-    XConfigContext(XConfig xConfig){
+    private XKeyObservable xKeyObservable;
+
+    XConfigContext(XConfig xConfig,XKeyObservable xKeyObservable){
+        this.xKeyObservable = xKeyObservable;
         this.xConfig = xConfig;
 
         this.localDir = System.getProperty("user.home")
@@ -175,6 +178,11 @@ public class XConfigContext {
             fileOutputStream = new FileOutputStream(this.localDir + File.separator + fileName);
             properties.setProperty("createTime",new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
             properties.store(fileOutputStream,"generate by xConfig");
+
+            if(logger.isDebugEnabled()){
+                properties.list(System.out);
+            }
+
         }catch (IOException e){
             logger.error(e.getMessage(),e);
         }finally {
@@ -218,14 +226,20 @@ public class XConfigContext {
                     String path = event.getData().getPath();
                     String data = new String(event.getData().getData());
                     logger.debug("===>keyListener {},data:{}", path, data);
-                    cacheKv.put(CommonUtil.genMKey(path), new String(data));
+                    String mKey = CommonUtil.genMKey(path);
+                    String value = new String(data);
+                    cacheKv.put(mKey, value);
+                    xKeyObservable.change(mKey,value);
                     break;
                 }
 
                 case CHILD_REMOVED: {
                     String path = event.getData().getPath();
                     logger.debug("===>keyListener {}", path);
-                    cacheKv.remove(CommonUtil.genMKey(event.getData().getPath()));
+                    String mKey = CommonUtil.genMKey(path);
+                    String value = "";
+                    cacheKv.remove(mKey);
+                    xKeyObservable.change(mKey,value);
                     break;
                 }
             }

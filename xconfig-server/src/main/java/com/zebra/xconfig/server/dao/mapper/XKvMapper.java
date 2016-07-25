@@ -13,6 +13,8 @@ public interface XKvMapper {
 
     public List<KvPo> queryByProjectAndProfile(@Param("project")String project,@Param("profile")String profile);
 
+    public List<KvPo> queryByProjectsAndProfile(@Param("projects")List<String> projects,@Param("profile")String profile);
+
     public List<KvPo> queryByProjectsAndProfilePagging(
             @Param("project")String project,
             @Param("profile")String profile,

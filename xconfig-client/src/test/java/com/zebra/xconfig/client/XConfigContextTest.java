@@ -24,6 +24,18 @@ public class XConfigContextTest {
     public void test(){
         logger.debug("====>{}",XConfig.getValue("mysql.daily.jdbc.password"));
         logger.debug("====>{}", JSON.toJSONString(mysqlConf));
+
+        XConfig.addObserver(new XKeyObserver() {
+            @Override
+            public String getKey() {
+                return "mysql.daily.jdbc.password";
+            }
+
+            @Override
+            public void change(String value) {
+                logger.debug("===change===>{}:{}",getKey(),value);
+            }
+        });
         try {
             Thread.sleep(1000*60*30);
         } catch (InterruptedException e) {

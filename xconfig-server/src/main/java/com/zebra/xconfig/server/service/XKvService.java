@@ -11,6 +11,7 @@ import java.util.List;
  */
 public interface XKvService {
     public List<KvPo> queryByProjectAndProfile(String project,String profile);
+
     public Pagging<KvPo> queryByProjectAndProfilePagging(String project,String profile,int pageNum,int pageSize);
 
     public void addKv(KvPo kvVo) throws Exception;
@@ -20,4 +21,6 @@ public interface XKvService {
     public void updateKv(KvPo kvPo) throws Exception;
 
     public void removeKvByMkey(String mkey) throws Exception;
+
+    public List<KvPo> queryByProjectAndProfileWithDeps(String project,String profile);
 }

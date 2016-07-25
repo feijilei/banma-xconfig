@@ -1,6 +1,7 @@
 package com.zebra.xconfig.server.vo;
 
 import com.alibaba.fastjson.JSON;
+import org.springframework.web.util.HtmlUtils;
 
 /**
  * Created by ying on 16/7/19.
@@ -10,6 +11,7 @@ public class KvVo {
     private String value;
     private String description;
     private String security;
+    private String project;
     private String createTime;
     private String updateTime;
 
@@ -26,7 +28,7 @@ public class KvVo {
     }
 
     public void setValue(String value) {
-        this.value = value;
+        this.value = HtmlUtils.htmlEscape(value);
     }
 
     public String getDescription() {
@@ -59,6 +61,14 @@ public class KvVo {
 
     public void setUpdateTime(String updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String getProject() {
+        return project;
+    }
+
+    public void setProject(String project) {
+        this.project = project;
     }
 
     @Override

@@ -54,6 +54,7 @@ public class MainController {
 
         String project = HtmlUtils.htmlEscape(webRequest.getParameter("project"));
         String profile = HtmlUtils.htmlEscape(webRequest.getParameter("profile"));
+        String allDep = webRequest.getParameter("allDep");
 
 
         List<String> profiles = xProjectProfileService.queryProjectProfiles(project);
@@ -64,23 +65,31 @@ public class MainController {
             }
         }
 
-        List<KvPo> kvPos = xKvService.queryByProjectAndProfile(project,profile);
+        List<KvPo> kvPos;
+        if(StringUtils.isNotBlank(allDep) && "true".equals(allDep)){
+            kvPos = xKvService.queryByProjectAndProfileWithDeps(project,profile);
+        }else{
+            kvPos = xKvService.queryByProjectAndProfile(project,profile);
+        }
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<KvVo> kvVos = new ArrayList<>();
         Map<String,KvVo> kvsMap = new HashMap<>();
         for(KvPo kvPo : kvPos){
             KvVo kvVo = new KvVo();
-            kvVo.setKey(CommonUtil.genMKey(project,profile,kvPo.getxKey()));
-            kvVo.setValue(kvPo.getxValue());
+            kvVo.setKey(CommonUtil.genMKey(kvPo.getProject(),kvPo.getProfile(),kvPo.getxKey()));
+            kvVo.setValue("Y".equals(kvPo.getSecurity()) ? "*********" : kvPo.getxValue());
             kvVo.setDescription(kvPo.getDescription());
             kvVo.setSecurity(kvPo.getSecurity());
             kvVo.setCreateTime(simpleDateFormat.format(kvPo.getCreateTime()));
             kvVo.setUpdateTime(simpleDateFormat.format(kvPo.getUpdateTime()));
+            kvVo.setProject(kvPo.getProject());
 
             kvVos.add(kvVo);
             kvsMap.put(kvVo.getKey(),kvVo);
         }
+
+        List<String> dependencies = this.xProjectProfileService.queryProjectDependencies(project);
 
 
         mv.getModel().put("project",project);
@@ -88,6 +97,8 @@ public class MainController {
         mv.getModel().put("profiles",profiles);
         mv.getModel().put("kvVos",kvVos);
         mv.getModel().put("kvmap", JSON.toJSONString(kvsMap));
+        mv.getModel().put("allDep",allDep);
+        mv.getModel().put("dependencies",dependencies);
         mv.setViewName("page/projectKv.ftl");
 
         return mv;
@@ -103,7 +114,7 @@ public class MainController {
             String[] profiles = webRequest.getParameterValues("profiles");
             String profile = HtmlUtils.htmlEscape(webRequest.getParameter("profile"));
             String key = HtmlUtils.htmlEscape(webRequest.getParameter("xkey"));
-            String value = HtmlUtils.htmlEscape(webRequest.getParameter("xvalue"));
+            String value = webRequest.getParameter("xvalue");
             String security = HtmlUtils.htmlEscape(webRequest.getParameter("security"));
             String description = HtmlUtils.htmlEscape(webRequest.getParameter("description"));
 
@@ -149,7 +160,7 @@ public class MainController {
             String project = webRequest.getParameter("project");
             String profile = webRequest.getParameter("profile");
             String mkey = webRequest.getParameter("xkey");
-            String value = HtmlUtils.htmlEscape(webRequest.getParameter("xvalue"));
+            String value = webRequest.getParameter("xvalue");
             String description = HtmlUtils.htmlEscape(webRequest.getParameter("description"));
 
             String key = CommonUtil.genKeyByMkey(mkey);
@@ -176,7 +187,7 @@ public class MainController {
         AjaxResponse ajaxResponse = new AjaxResponse();
 
         try{
-            String mkey = webRequest.getParameter("xkey");
+            String mkey = webRequest.getParameter("mkey");
             this.xKvService.removeKvByMkey(mkey);
         }catch (Exception e){
             logger.error(e.getMessage(),e);

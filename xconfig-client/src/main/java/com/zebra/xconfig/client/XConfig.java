@@ -7,19 +7,30 @@ import java.util.Properties;
  */
 public class XConfig {
     private static XConfigContext xConfigContext;
+    private static XKeyObservable xKeyObservable;
 
     private String project;
     private String profile;
     private String zkConnStr;
 
     public void init(){
-        xConfigContext = new XConfigContext(this);
+        xKeyObservable = new XKeyObservable();
+        xConfigContext = new XConfigContext(this,xKeyObservable);
+    }
+
+    public static void addObserver(XKeyObserver observer){
+        xKeyObservable.addObserver(observer);
+    }
+
+    public static void removeObserver(XKeyObserver observer){
+        xKeyObservable.removeObserver(observer);
     }
 
     public static String getValue(String key){
         return xConfigContext.getValue(key);
     }
 
+    //setter getter
     public Properties getProperties(){
         return xConfigContext.getProperties();
     }

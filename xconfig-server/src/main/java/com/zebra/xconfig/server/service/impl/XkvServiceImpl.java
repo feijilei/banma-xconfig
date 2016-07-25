@@ -136,6 +136,20 @@ public class XkvServiceImpl implements XKvService {
         String key = CommonUtil.genKeyByMkey(mkey);
 
         this.xKvMapper.delOne(project,profile,key);
-        xConfigServer.removeNode(CommonUtil.genMKey(project,profile,key));
+
+        xConfigServer.removeNode(CommonUtil.genMKeyPath(project, profile, key));
+    }
+
+    @Override
+    public List<KvPo> queryByProjectAndProfileWithDeps(String project, String profile) {
+        List<String> deps = this.xProjectProfileMapper.queryProjectDependencies(project);
+        if(deps == null){
+            deps = new ArrayList<>();
+        }
+
+        deps.add(project);
+
+
+        return this.xKvMapper.queryByProjectsAndProfile(deps,profile);
     }
 }

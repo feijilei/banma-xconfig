@@ -110,5 +110,28 @@ jQuery(document).ready(function ($) {
     });
 
     //删除
+    $('#removeModal').on('show.bs.modal', function (event) {
+        $("#removeModal .errMsgDiv").addClass("hidden");
+        //$("#editButton").prop("disabled",false);
+        var button = $(event.relatedTarget) // Button that triggered the modal
+        var key = button.parents("tr").first().attr("data-key");
 
+        $("#removeButton").unbind();
+        $("#removeButton").bind("click",function(){
+            $.post(basepath+"/main/removeKv",{"mkey":key},function(data){
+                if(data.code == 0){
+                    window.location = basepath + "/main/project?project=" + project + "&profile=" + profile;
+                }else{
+                    //console.log(data.msg);
+                    $("#removeModal .errMsgDiv").removeClass("hidden");
+                    $("#removeModal .errMsg").text(data.msg);
+                }
+            })
+        });
+    });
+
+    //查看所有依赖
+    $("#allDep").bind("change",function(){
+        window.location = basepath+"/main/project?project=" + project + "&profile=" + profile + "&allDep=" +$(this).prop("checked");
+    });
 })
