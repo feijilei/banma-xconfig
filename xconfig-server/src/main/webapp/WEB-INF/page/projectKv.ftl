@@ -36,7 +36,11 @@
                     <input type="checkbox" id="allDep" <#if allDep?? && allDep == "true">checked</#if>> 加载所有依赖
                 </label>
             </#if>
-
+            &nbsp;&nbsp;
+            <div class="btn-group btn-group-xs" role="group" aria-label="...">
+                <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 依赖</button>
+                <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 依赖</button>
+            </div>
         </span>
     </h1>
     <hr/>
@@ -50,7 +54,7 @@
         </#list>
         <li role="presentation" class="dropdown">
             <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                操作 <span class="caret"></span>
+                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
                 <li><a href="#">Action</a></li>
