@@ -24,4 +24,32 @@
         WHERE project = #{project}
         ORDER BY id
     </select>
+
+    <select id="queryProjectsByPrefix" resultType="string" parameterType="map">
+        SELECT
+          project
+        FROM x_project
+        WHERE project LIKE CONCAT(#{prefix},'%')
+    </select>
+
+    <insert id="batchInsertDependencies" parameterType="list">
+        INSERT INTO x_project_dependency
+            (project,depProject)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator="," >
+            (#{item.project},#{item.depProject})
+        </foreach>
+    </insert>
+
+    <delete id="delDependencies" parameterType="map">
+        DELETE FROM x_project_dependency
+        WHERE project = #{project}
+    </delete>
+
+    <select id="loadProject" parameterType="map" resultType="string">
+        SELECT
+          project
+        FROM x_project
+        WHERE project = #{project}
+    </select>
 </mapper>

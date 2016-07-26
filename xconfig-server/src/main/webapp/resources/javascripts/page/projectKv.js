@@ -134,4 +134,44 @@ jQuery(document).ready(function ($) {
     $("#allDep").bind("change",function(){
         window.location = basepath+"/main/project?project=" + project + "&profile=" + profile + "&allDep=" +$(this).prop("checked");
     });
+
+    //edit deps
+    var engine = new Bloodhound({
+        remote: basepath+"/main/projectList?q=%QUERY",
+        //local:[{value:"red"},{value:"blue"}],
+        datumTokenizer: function(d) {
+            return Bloodhound.tokenizers.whitespace(d.value);
+        },
+        queryTokenizer: Bloodhound.tokenizers.whitespace
+    });
+
+    engine.initialize();
+
+    $('#deps').tokenfield({
+        //tokens:"red",
+        typeahead: [null, {
+            source: engine.ttAdapter()
+        }]
+    });
+
+    $('#editDepModal').on('show.bs.modal', function (event) {
+        $("#editDepModal .errMsgDiv").addClass("hidden");
+    });
+    var editDepForm = $("#editDepForm").ajaxForm({
+        url:basepath+"/main/updateProjectDeps",
+        type:"POST",
+        success:function(data){
+            if(data.code == 0){
+                window.location = basepath+"/main/project?project="+project+"&profile="+profile;
+            }else{
+                $("#editDepModal .errMsgDiv").removeClass("hidden");
+                $("#editDepModal .errMsg").text(data.msg);
+            }
+            $("#editDepButton").prop("disabled",false);
+        }
+    });
+    $("#editDepButton").on("click",function(){
+        $(this).prop("disabled",true);
+        editDepForm.submit();
+    });
 })

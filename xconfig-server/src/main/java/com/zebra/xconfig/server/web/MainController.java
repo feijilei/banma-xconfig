@@ -19,10 +19,7 @@ import org.springframework.web.util.HtmlUtils;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by ying on 16/7/19.
@@ -189,6 +186,54 @@ public class MainController {
         try{
             String mkey = webRequest.getParameter("mkey");
             this.xKvService.removeKvByMkey(mkey);
+        }catch (Exception e){
+            logger.error(e.getMessage(),e);
+            ajaxResponse.setThrowable(e);
+        }
+
+        return ajaxResponse;
+    }
+
+    @RequestMapping("projectList")
+    @ResponseBody
+    public List<Map<String,Object>> projectList(WebRequest webRequest){
+
+        String queryStr = webRequest.getParameter("q");
+
+        if(StringUtils.isBlank(queryStr)){
+            return null;
+        }
+
+        List<Map<String,Object>> ret = new ArrayList<>();
+
+        List<String> projects = this.xProjectProfileService.queryProjectsByPrefix(queryStr);
+
+        for(String project : projects){
+            Map<String,Object> map = new HashMap<>();
+            map.put("value",project);
+
+            ret.add(map);
+        }
+
+        return ret;
+    }
+
+    @RequestMapping("updateProjectDeps")
+    @ResponseBody
+    public AjaxResponse updateProjectDeps(WebRequest webRequest){
+        AjaxResponse ajaxResponse = new AjaxResponse();
+
+        try {
+            String project = HtmlUtils.htmlEscape(webRequest.getParameter("project"));
+            String deps = HtmlUtils.htmlEscape(webRequest.getParameter("deps"));
+
+            Set<String> pDeps = new HashSet<>();
+            String[] depArray = deps.split(",");
+            for(int i = 0 ; i < depArray.length ; i++){
+                pDeps.add(depArray[i].trim());
+            }
+
+            this.xProjectProfileService.insertDepenedencies(project, pDeps);
         }catch (Exception e){
             logger.error(e.getMessage(),e);
             ajaxResponse.setThrowable(e);

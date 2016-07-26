@@ -1,5 +1,15 @@
 <#include "/common/baseHtml.ftl" />
-<@baseHtml localJsFiles=["plugin/datatables/js/jquery.dataTables.min.js","plugin/doT1.0.3.min.js","javascripts/page/projectKv.js"] remoteJsFiles=[] localCssFiles=["plugin/datatables/css/jquery.dataTables.min.css"]>
+<@baseHtml localJsFiles=[
+        "plugin/tokenfield/bootstrap-tokenfield.min.js",
+        "plugin/tokenfield/typeahead0.10.1.js",
+        "plugin/datatables/js/jquery.dataTables.min.js",
+        "plugin/doT1.0.3.min.js",
+        "javascripts/page/projectKv.js"
+    ] remoteJsFiles=[] localCssFiles=[
+        "plugin/datatables/css/jquery.dataTables.min.css",
+        "plugin/tokenfield/css/tokenfield-typeahead.min.css",
+        "plugin/tokenfield/css/bootstrap-tokenfield.min.css"
+    ]>
     <style type="text/css">
         .gridToolbar{
             float: right;
@@ -18,32 +28,43 @@
     <#--<div class="page-header">-->
         <#--<h1>${project?html}<small>Subtext for header</small></h1>-->
     <#--</div>-->
-    <h1 style="margin-top: 0px">${project?html}
-        <span style="font-size: x-small">
-            依赖项目：
-            <#if dependencies?size gt 0>
-                <#list dependencies as dep>
-                    <#if dep_index%3 = 0>
-                        <span class="label label-primary">${dep?html}</span>
-                    <#elseif dep_index%3 = 1>
-                        <span class="label label-success">${dep?html}</span>
-                    <#elseif dep_index%3 = 2>
-                        <span class="label label-info">${dep?html}</span>
+
+    <div class="row">
+        <div class="col-sm-6">
+            <h1 style="margin-top: 0px">${project?html}
+                <span style="font-size: x-small">依赖项目：
+                    <#if dependencies?size gt 0>
+                        <span>
+                            <#list dependencies as dep>
+                                <#if dep_index%3 = 0>
+                                    <span class="label label-primary">${dep?html}</span>
+                                <#elseif dep_index%3 = 1>
+                                    <span class="label label-success">${dep?html}</span>
+                                <#elseif dep_index%3 = 2>
+                                    <span class="label label-info">${dep?html}</span>
+                                </#if>
+                            </#list>
+                            <a href="javascript:void(0)"><span class="glyphicon glyphicon-cog" aria-hidden="true" data-toggle="modal" data-target="#editDepModal"></span></a>
+                        </span>
+                        &nbsp;
+                        <label>
+                            <input type="checkbox" id="allDep" <#if allDep?? && allDep == "true">checked</#if>> 加载所有依赖
+                        </label>
                     </#if>
-                </#list>
-                &nbsp;
-                <label>
-                    <input type="checkbox" id="allDep" <#if allDep?? && allDep == "true">checked</#if>> 加载所有依赖
-                </label>
-            </#if>
-            &nbsp;&nbsp;
-            <div class="btn-group btn-group-xs" role="group" aria-label="...">
-                <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 依赖</button>
-                <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 依赖</button>
-            </div>
-        </span>
-    </h1>
-    <hr/>
+                </span>
+            </h1>
+        </div>
+        <#--<div class="col-sm-6">-->
+
+            <#--<form class="form-inline pull-right">-->
+                <#--<div class="form-group form-group-sm">-->
+                    <#--<label for="deps">Email address</label>-->
+                    <#--<input type="text" class="form-control" id="deps" name="deps" value="red,green,blue" />-->
+                <#--</div>-->
+                <#--<button type="submit" class="btn btn-default btn-sm">Sign in</button>-->
+            <#--</form>-->
+        <#--</div>-->
+    </div>
     <ul class="nav nav-tabs">
         <#list profiles as pf>
             <#if pf == profile>
@@ -57,11 +78,8 @@
                 <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
-                <li><a href="#">Action</a></li>
-                <li><a href="#">Another action</a></li>
-                <li><a href="#">Something else here</a></li>
-                <li role="separator" class="divider"></li>
-                <li><a href="#">Separated link</a></li>
+                <li data-toggle="modal" data-target="#addProfileModal"><a href="javascript:void(0)"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> profile</a></li>
+                <li data-toggle="modal" data-target="#removeProfileModal"><a href="javascript:void(0)"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span> profile</a></li>
             </ul>
         </li>
     </ul>
@@ -207,7 +225,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">新增配置</h4>
+                    <h4 class="modal-title"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增配置</h4>
                 </div>
                 <div class="modal-body">
                     <form id="addForm" class="form-horizontal">
@@ -302,4 +320,119 @@
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
+
+    <div id="editDepModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> 编辑依赖</h4>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <p class="text-danger"><span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span> 警告：修改依赖可能会导致项目配置发生变化，请慎重！</p>
+                    </div>
+                    <form id="editDepForm">
+                        <input type="text" class="hide" name="project" value="${project?html}">
+                        <input type="text" class="form-control" id="deps" name="deps" value="<#list dependencies as pj>${pj?html}<#if pj_has_next>,</#if></#list>" />
+                    </form>
+                    <div class="alert alert-danger alert-dismissible hidden errMsgDiv" role="alert">
+                        <strong>Error! </strong><span class="errMsg"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" id="editDepButton" class="btn btn-primary">更新</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div id="addProfileModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增环境</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="addProfileForm" class="form-horizontal">
+                        <input type="text" class="hide" name="project" value="${project?html}">
+
+                        <div class="form-group">
+                            <label for="addProfileName" class="col-sm-2 control-label">环境名称</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="addProfileName" name="addProfileName" placeholder="dev">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">复制源</label>
+                            <div class="col-sm-10">
+                                <div class="checkbox">
+                                    <label>
+                                        <input name="cpSource" type="radio" value="none" checked > none
+                                    </label>
+                                    <#list profiles as pf>
+                                        <label>
+                                            <input name="cpSource" type="radio" value="${pf?html}"> ${pf?html}
+                                        </label>
+                                    </#list>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="alert alert-danger alert-dismissible hidden col-sm-offset-2 col-sm-10 errMsgDiv" role="alert">
+                                <strong>Error! </strong><span class="errMsg"></span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="addProfileButton" class="btn btn-primary">新增</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+<div id="removeProfileModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除环境</h4>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <p class="text-danger"><span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span> 警告：删除环境将不可恢复，请慎重！</p>
+                </div>
+                <form id="removeProfileForm" class="form-horizontal">
+                    <input type="text" class="hide" name="project" value="${project?html}">
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">环境名</label>
+                        <div class="col-sm-10">
+                            <div class="checkbox">
+                                <#list profiles as pf>
+                                    <label>
+                                        <input name="removeProfile" type="radio" value="${pf?html}"> ${pf?html}
+                                    </label>
+                                </#list>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="alert alert-danger alert-dismissible hidden col-sm-offset-2 col-sm-10 errMsgDiv" role="alert">
+                            <strong>Error! </strong><span class="errMsg"></span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" id="removeProfileButton" class="btn btn-primary">删除</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 </@baseHtml>

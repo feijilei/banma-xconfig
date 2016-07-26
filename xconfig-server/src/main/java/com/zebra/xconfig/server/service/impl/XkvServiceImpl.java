@@ -1,6 +1,7 @@
 package com.zebra.xconfig.server.service.impl;
 
 import com.zebra.xconfig.common.CommonUtil;
+import com.zebra.xconfig.common.exception.IllegalNameException;
 import com.zebra.xconfig.server.dao.mapper.XKvMapper;
 import com.zebra.xconfig.server.dao.mapper.XProjectProfileMapper;
 import com.zebra.xconfig.server.po.KvPo;
@@ -72,7 +73,7 @@ public class XkvServiceImpl implements XKvService {
                 || !CommonUtil.checkName(kvPo.getProfile())
                 || !CommonUtil.checkName(kvPo.getxKey())
                 ){
-            throw new IllegalArgumentException("project，profile，key只能以字母开头，只允许包含字母，数字，点，中划线，下划线");
+            throw new IllegalNameException();
         }
 
         KvPo kv = this.xKvMapper.load(kvPo.getProject(),kvPo.getProfile(),kvPo.getxKey());
@@ -105,7 +106,7 @@ public class XkvServiceImpl implements XKvService {
                     || !CommonUtil.checkName(kvPo.getProfile())
                     || !CommonUtil.checkName(kvPo.getxKey())
                     ){
-                throw new IllegalArgumentException("project，profile，key只能以字母开头，只允许包含字母，数字，点，中划线，下划线");
+                throw new IllegalNameException();
             }
 
             KvPo one = this.xKvMapper.load(kvPo.getProject(),kvPo.getProfile(),kvPo.getxKey());
