@@ -3,6 +3,7 @@ package com.zebra.xconfig.server.web;
 import com.alibaba.fastjson.JSON;
 import com.zebra.xconfig.common.CommonUtil;
 import com.zebra.xconfig.server.po.KvPo;
+import com.zebra.xconfig.server.po.ProfilePo;
 import com.zebra.xconfig.server.service.XKvService;
 import com.zebra.xconfig.server.service.XProjectProfileService;
 import com.zebra.xconfig.server.vo.AjaxResponse;
@@ -233,12 +234,52 @@ public class MainController {
                 pDeps.add(depArray[i].trim());
             }
 
-            this.xProjectProfileService.insertDepenedencies(project, pDeps);
+            this.xProjectProfileService.addDepenedencies(project, pDeps);
         }catch (Exception e){
             logger.error(e.getMessage(),e);
             ajaxResponse.setThrowable(e);
         }
 
+        return ajaxResponse;
+    }
+
+    @RequestMapping("addProfile")
+    @ResponseBody
+    public AjaxResponse addProfile(WebRequest webRequest){
+        AjaxResponse ajaxResponse = new AjaxResponse();
+        try {
+            String project = HtmlUtils.htmlEscape(webRequest.getParameter("project"));
+            String profile = HtmlUtils.htmlEscape(webRequest.getParameter("addProfileName"));
+            String profileKey = HtmlUtils.htmlEscape(webRequest.getParameter("profileKey"));
+            String source = HtmlUtils.htmlEscape(webRequest.getParameter("cpSource"));
+
+            ProfilePo profilePo = new ProfilePo();
+            profilePo.setProject(project);
+            profilePo.setProfile(profile);
+            profilePo.setProfileKey(profileKey);
+
+            this.xProjectProfileService.addProfile(profilePo,source);
+        }catch (Exception e){
+            logger.error(e.getMessage(),e);
+            ajaxResponse.setThrowable(e);
+        }
+        return ajaxResponse;
+    }
+
+
+    @RequestMapping("removeProfile")
+    @ResponseBody
+    public AjaxResponse removeProfile(WebRequest webRequest){
+        AjaxResponse ajaxResponse = new AjaxResponse();
+        try {
+            String project = HtmlUtils.htmlEscape(webRequest.getParameter("project"));
+            String profile = HtmlUtils.htmlEscape(webRequest.getParameter("removeProfile"));
+
+            this.xProjectProfileService.removeProfile(project, profile);
+        }catch (Exception e){
+            logger.error(e.getMessage(),e);
+            ajaxResponse.setThrowable(e);
+        }
         return ajaxResponse;
     }
 }

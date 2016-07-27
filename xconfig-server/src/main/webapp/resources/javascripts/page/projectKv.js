@@ -135,7 +135,7 @@ jQuery(document).ready(function ($) {
         window.location = basepath+"/main/project?project=" + project + "&profile=" + profile + "&allDep=" +$(this).prop("checked");
     });
 
-    //edit deps
+    //编辑依赖
     var engine = new Bloodhound({
         remote: basepath+"/main/projectList?q=%QUERY",
         //local:[{value:"red"},{value:"blue"}],
@@ -173,5 +173,49 @@ jQuery(document).ready(function ($) {
     $("#editDepButton").on("click",function(){
         $(this).prop("disabled",true);
         editDepForm.submit();
+    });
+
+    //增加profile
+    $('#addProfileModal').on('show.bs.modal', function (event) {
+        $("#addProfileModal .errMsgDiv").addClass("hidden");
+    });
+    var addProfileForm = $("#addProfileForm").ajaxForm({
+        url:basepath+"/main/addProfile",
+        type:"POST",
+        success:function(data){
+            if(data.code == 0){
+                window.location = basepath+"/main/project?project="+project+"&profile="+profile;
+            }else{
+                $("#addProfileModal .errMsgDiv").removeClass("hidden");
+                $("#addProfileModal .errMsg").text(data.msg);
+            }
+            $("#addProfileButton").prop("disabled",false);
+        }
+    });
+    $("#addProfileButton").on("click",function(){
+        $(this).prop("disabled",true);
+        addProfileForm.submit();
+    });
+
+    //删除profile
+    $('#removeProfileModal').on('show.bs.modal', function (event) {
+        $("#removeProfileModal .errMsgDiv").addClass("hidden");
+    });
+    var removeProfileForm = $("#removeProfileForm").ajaxForm({
+        url:basepath+"/main/removeProfile",
+        type:"POST",
+        success:function(data){
+            if(data.code == 0){
+                window.location = basepath+"/main/project?project="+project+"&profile="+profile;
+            }else{
+                $("#removeProfileModal .errMsgDiv").removeClass("hidden");
+                $("#removeProfileModal .errMsg").text(data.msg);
+            }
+            $("#removeProfileButton").prop("disabled",false);
+        }
+    });
+    $("#removeProfileButton").on("click",function(){
+        $(this).prop("disabled",true);
+        removeProfileForm.submit();
     });
 })

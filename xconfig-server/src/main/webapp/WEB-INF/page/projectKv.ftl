@@ -30,27 +30,30 @@
     <#--</div>-->
 
     <div class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-12">
             <h1 style="margin-top: 0px">${project?html}
                 <span style="font-size: x-small">依赖项目：
-                    <#if dependencies?size gt 0>
-                        <span>
+                    <span>
+                        <#if dependencies?size gt 0>
                             <#list dependencies as dep>
                                 <#if dep_index%3 = 0>
-                                    <span class="label label-primary">${dep?html}</span>
+                                    <a class="label label-primary" href="${basepath}/main/project?project=${dep?html}&profile=${profile?html}">${dep?html}</a>
                                 <#elseif dep_index%3 = 1>
-                                    <span class="label label-success">${dep?html}</span>
+                                    <a class="label label-success" href="${basepath}/main/project?project=${dep?html}&profile=${profile?html}">${dep?html}</a>
                                 <#elseif dep_index%3 = 2>
-                                    <span class="label label-info">${dep?html}</span>
+                                    <a class="label label-info" href="${basepath}/main/project?project=${dep?html}&profile=${profile?html}">${dep?html}</a>
                                 </#if>
                             </#list>
                             <a href="javascript:void(0)"><span class="glyphicon glyphicon-cog" aria-hidden="true" data-toggle="modal" data-target="#editDepModal"></span></a>
-                        </span>
-                        &nbsp;
-                        <label>
-                            <input type="checkbox" id="allDep" <#if allDep?? && allDep == "true">checked</#if>> 加载所有依赖
-                        </label>
-                    </#if>
+                            &nbsp;
+                            <label>
+                                <input type="checkbox" id="allDep" <#if allDep?? && allDep == "true">checked</#if>> 加载所有依赖
+                            </label>
+                        <#else>
+                            空&nbsp;<a href="javascript:void(0)"><span class="glyphicon glyphicon-cog" aria-hidden="true" data-toggle="modal" data-target="#editDepModal"></span></a>
+                        </#if>
+                    </span>
+
                 </span>
             </h1>
         </div>

@@ -36,4 +36,11 @@ public interface XKvMapper {
             @Param("profile")String profile,
             @Param("key")String key
     );
+
+    public void bathInsertKvsByProfile(@Param("project")String project, @Param("profile")String profile,@Param("from")String from);
+
+    public void delByProjectAndProfile(
+            @Param("project")String project,
+            @Param("profile")String profile
+    );
 }

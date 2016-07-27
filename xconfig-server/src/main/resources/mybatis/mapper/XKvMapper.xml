@@ -97,4 +97,35 @@
         AND profile = #{profile}
         AND xKey = #{key}
     </select>
+
+    <insert id="bathInsertKvsByProfile" parameterType="map">
+        INSERT INTO x_kv
+        (
+            project,
+            profile,
+            xKey,
+            xValue,
+            security,
+            description,
+            createTime,
+            updateTime
+        ) SELECT
+            project,
+            #{profile},
+            xKey,
+            xValue,
+            security,
+            description,
+            NOW(),
+            NOW()
+        FROM x_kv
+        WHERE project = #{project}
+        AND profile = #{from}
+    </insert>
+
+    <delete id="delByProjectAndProfile" parameterType="map">
+        DELETE FROM x_kv
+        WHERE project = #{project}
+        AND profile = #{profile}
+    </delete>
 </mapper>

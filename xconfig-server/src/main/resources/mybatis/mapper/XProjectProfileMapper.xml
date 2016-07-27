@@ -52,4 +52,25 @@
         FROM x_project
         WHERE project = #{project}
     </select>
+
+    <select id="loadProfile" parameterType="map" resultType="string">
+        SELECT
+          profile
+        FROM x_profile
+        WHERE project = #{project}
+        AND profile = #{profile}
+    </select>
+
+    <insert id="insertProfile" parameterType="com.zebra.xconfig.server.po.ProfilePo">
+        INSERT INTO x_profile
+          (project,profile,md5,profileKey)
+        VALUE
+          (#{project},#{profile},#{md5},#{profileKey})
+    </insert>
+
+    <delete id="delProfile" parameterType="map">
+        DELETE FROM x_profile
+        WHERE project = #{project}
+        AND profile = #{profile}
+    </delete>
 </mapper>

@@ -122,7 +122,7 @@ public class XkvServiceImpl implements XKvService {
 
             zkNodes.add(zkNode);
         }
-        xConfigServer.createKvNodesWithTransactioin(zkNodes);
+        xConfigServer.createKvNodesWithTransaction(zkNodes);
     }
 
     @Override
@@ -138,7 +138,7 @@ public class XkvServiceImpl implements XKvService {
 
         this.xKvMapper.delOne(project,profile,key);
 
-        xConfigServer.removeNode(CommonUtil.genMKeyPath(project, profile, key));
+        xConfigServer.deleteNode(CommonUtil.genMKeyPath(project, profile, key));
     }
 
     @Override

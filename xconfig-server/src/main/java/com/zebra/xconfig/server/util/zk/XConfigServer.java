@@ -148,25 +148,57 @@ public class XConfigServer {
         }
     }
 
-    public void createKvNodesWithTransactioin(List<ZkNode> zkNodes) throws Exception{
+    public void createKvNodesWithTransaction(List<ZkNode> zkNodes) throws Exception{
         if(zkNodes == null || zkNodes.size() == 0){
             return;
         }
         CuratorTransaction curatorTransaction = client.inTransaction();
         CuratorTransactionFinal curatorTransactionFinal = null;
         for(ZkNode zkNode : zkNodes){
-            curatorTransactionFinal = curatorTransaction.create().forPath(zkNode.getPath(),zkNode.getValue().getBytes()).and();
+            curatorTransactionFinal = this.addCreateToTransaction(curatorTransactionFinal == null ? curatorTransaction : curatorTransactionFinal,zkNode);
         }
 
-        if(curatorTransaction != null){
+        if(curatorTransactionFinal != null){
             curatorTransactionFinal.commit();
         }
     }
 
-    public void removeNode(String nodePath) throws  Exception{
+    /**
+     * 此方法将删除节点和所有子节点
+     * @param nodePath
+     * @throws Exception
+     */
+    public void deleteNode(String nodePath) throws  Exception{
         Stat stat = client.checkExists().forPath(nodePath);
         if(stat != null){
-            client.delete().forPath(nodePath);
+            client.delete().deletingChildrenIfNeeded().forPath(nodePath);
         }
+    }
+
+    public void deleteKvNodesWithTransaction(List<ZkNode> zkNodes) throws Exception{
+        if(zkNodes == null || zkNodes.size() == 0){
+            return;
+        }
+
+        CuratorTransaction curatorTransaction = client.inTransaction();
+        CuratorTransactionFinal curatorTransactionFinal = null;
+        for(ZkNode zkNode : zkNodes){
+            curatorTransactionFinal = this.addDeleteToTransaction(curatorTransactionFinal == null ? curatorTransaction : curatorTransactionFinal,zkNode.getPath());
+        }
+
+        if(curatorTransactionFinal != null){
+            curatorTransactionFinal.commit();
+        }
+    }
+
+    private CuratorTransactionFinal addCreateToTransaction(CuratorTransaction curatorTransaction,ZkNode zkNode) throws Exception{
+        return curatorTransaction.create().forPath(zkNode.getPath(),zkNode.getValue().getBytes()).and();
+    }
+
+    private CuratorTransactionFinal addDeleteToTransaction(CuratorTransaction curatorTransaction,String path) throws  Exception{
+        return curatorTransaction.delete().forPath(path).and();
+    }
+    private CuratorTransactionFinal addSetDataToTransaction(CuratorTransaction curatorTransaction,ZkNode zkNode) throws  Exception{
+        return curatorTransaction.setData().forPath(zkNode.getPath(), zkNode.getValue().getBytes()).and();
     }
 }

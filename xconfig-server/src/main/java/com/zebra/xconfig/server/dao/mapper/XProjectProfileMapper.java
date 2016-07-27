@@ -1,5 +1,6 @@
 package com.zebra.xconfig.server.dao.mapper;
 
+import com.zebra.xconfig.server.po.ProfilePo;
 import com.zebra.xconfig.server.po.ProjectDependency;
 import org.apache.ibatis.annotations.Param;
 
@@ -16,4 +17,7 @@ public interface XProjectProfileMapper {
     public void batchInsertDependencies(List<ProjectDependency> projectDependencies);
     public void delDependencies(@Param("project")String project);
     public String loadProject(@Param("project")String project);
+    public String loadProfile(@Param("project")String project,@Param("profile")String profile);
+    public void insertProfile(ProfilePo profilePo);
+    public void delProfile(@Param("project")String project,@Param("profile")String profile);
 }
