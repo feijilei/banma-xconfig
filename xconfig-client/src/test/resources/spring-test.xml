@@ -21,6 +21,6 @@
     </bean>
 
     <bean id="mysqlConf" class="com.zebra.xconfig.client.MysqlConf">
-        <property name="password" value="${mysql.daily.jdbc.password}"></property>
+        <property name="password" value="${mysql.jdbc.password}"></property>
     </bean>
 </beans>

@@ -7,6 +7,11 @@ import java.util.regex.Pattern;
 
 /**
  * Created by ying on 16/7/15.
+ *
+ * mKey project.profile.key xConfig内部使用 例如 mysql.dev.username
+ * xKey key 数据库中存储的xkey字段
+ * key  project.key 生成的properties文件中真正的key 例如 mysql.username
+ * path /project/profile/key xCofnig向zk注册的路径 例如 /mysql/dev/username
  */
 public class CommonUtil {
 
@@ -26,12 +31,19 @@ public class CommonUtil {
         return sb.toString();
     }
 
-    public static String genMKey(String project,String profile,String key){
+    public static String genMKey(String project,String profile,String xkey){
         StringBuilder sb = new StringBuilder(project)
                 .append(".")
                 .append(profile)
                 .append(".")
-                .append(key);
+                .append(xkey);
+        return sb.toString();
+    }
+
+    public static String genKey(String project,String xkey){
+        StringBuilder sb = new StringBuilder(project)
+                .append(".")
+                .append(xkey);
         return sb.toString();
     }
 
@@ -46,13 +58,28 @@ public class CommonUtil {
                 .replaceFirst("/", ".");
     }
 
-    public static String genMKeyPath(String project, String profile, String key){
+    /**
+     *
+     * @param path /mysql/dev/username
+     * @return mysql.username
+     */
+    public static String genKey(String path){
+        String[] paths = path.split("/");
+        StringBuilder sb = new StringBuilder();
+        sb.append(paths[1])
+                .append(".")
+                .append(paths[3]);
+
+        return sb.toString();
+    }
+
+    public static String genMKeyPath(String project, String profile, String xkey){
         return new StringBuilder("/")
                 .append(project)
                 .append("/")
                 .append(profile)
                 .append("/")
-                .append(key)
+                .append(xkey)
                 .toString();
     }
 
@@ -61,16 +88,23 @@ public class CommonUtil {
     }
 
     /**
-     * 根据mkey获取key
+     * 根据key获取xkey
+     * @param key
+     * @return
+     */
+    public static String genXKeyByKey(String key){
+        String[] keys = key.split("\\.");
+        return StringUtils.join(keys,".",1,keys.length);
+    }
+
+    /**
+     * 根据mkey获取xkey
      * @param mkey
      * @return
      */
-    public static String genKeyByMkey(String mkey){
-        String key = mkey;
-
-        key = key.substring(key.indexOf(".")+1,key.length());
-        key = key.substring(key.indexOf(".")+1,key.length());
-        return key;
+    public static String genXKeyByMKey(String mkey){
+        String[] keys = mkey.split("\\.");
+        return StringUtils.join(keys,".",2,keys.length);
     }
 
     public static String genProjectByMkey(String mkey){
@@ -78,12 +112,14 @@ public class CommonUtil {
         return mkey.substring(0,mkey.indexOf("."));
     }
 
-    public static String genProfileByMkey(String mkey){
-        String key = mkey;
+    public static String genProjectByKey(String key){
+        return key.substring(0,key.indexOf("."));
+    }
 
-        key = key.substring(key.indexOf(".")+1,key.length());
-        key = key.substring(0,key.indexOf("."));
-        return key;
+    public static String genProfileByMkey(String mkey){
+        String[] strs = mkey.split("\\.");
+
+        return strs[1];
     }
 
     public static boolean checkName(String name) {

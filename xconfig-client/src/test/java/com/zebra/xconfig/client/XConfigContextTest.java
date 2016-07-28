@@ -22,13 +22,13 @@ public class XConfigContextTest {
     private MysqlConf mysqlConf;
     @Test
     public void test(){
-        logger.debug("====>{}",XConfig.getValue("mysql.daily.jdbc.password"));
+        logger.debug("====>{}",XConfig.getValue("mysql.jdbc.password"));
         logger.debug("====>{}", JSON.toJSONString(mysqlConf));
 
         XConfig.addObserver(new XKeyObserver() {
             @Override
             public String getKey() {
-                return "mysql.daily.jdbc.password";
+                return "mysql.jdbc.password";
             }
 
             @Override

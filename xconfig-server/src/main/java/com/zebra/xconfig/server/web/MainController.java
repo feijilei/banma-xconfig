@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.zebra.xconfig.common.CommonUtil;
 import com.zebra.xconfig.server.po.KvPo;
 import com.zebra.xconfig.server.po.ProfilePo;
+import com.zebra.xconfig.server.service.WisdomService;
 import com.zebra.xconfig.server.service.XKvService;
 import com.zebra.xconfig.server.service.XProjectProfileService;
 import com.zebra.xconfig.server.vo.AjaxResponse;
@@ -34,6 +35,8 @@ public class MainController {
     private XProjectProfileService xProjectProfileService;
     @Resource
     private XKvService xKvService;
+    @Resource
+    private WisdomService wisdomService;
 
     @RequestMapping("index")
     public ModelAndView index(){
@@ -42,6 +45,7 @@ public class MainController {
         List<String> projects = xProjectProfileService.queryAllProjects();
 
         mv.getModel().put("projects",JSON.toJSONString(projects));
+        mv.getModel().put("wisdom",wisdomService.getOne());
         mv.setViewName("page/index.ftl");
         return mv;
     }
@@ -75,7 +79,8 @@ public class MainController {
         Map<String,KvVo> kvsMap = new HashMap<>();
         for(KvPo kvPo : kvPos){
             KvVo kvVo = new KvVo();
-            kvVo.setKey(CommonUtil.genMKey(kvPo.getProject(),kvPo.getProfile(),kvPo.getxKey()));
+//            kvVo.setMkey(CommonUtil.genMKey(kvPo.getProject(), kvPo.getProfile(), kvPo.getxKey()));
+            kvVo.setKey(CommonUtil.genKey(kvPo.getProject(),kvPo.getxKey()));
             kvVo.setValue("Y".equals(kvPo.getSecurity()) ? "*********" : kvPo.getxValue());
             kvVo.setDescription(kvPo.getDescription());
             kvVo.setSecurity(kvPo.getSecurity());
@@ -127,16 +132,18 @@ public class MainController {
             List<KvPo> kvPos = new ArrayList<>();
             kvPos.add(kvPo);
 
-            for(String pf : profiles){
-                KvPo temp = new KvPo();
-                temp.setProject(project);
-                temp.setProfile(pf);
-                temp.setxKey(key);
-                temp.setxValue(value);
-                temp.setSecurity(security);
-                temp.setDescription(description);
+            if(profiles != null) {
+                for (String pf : profiles) {
+                    KvPo temp = new KvPo();
+                    temp.setProject(project);
+                    temp.setProfile(pf);
+                    temp.setxKey(key);
+                    temp.setxValue(value);
+                    temp.setSecurity(security);
+                    temp.setDescription(description);
 
-                kvPos.add(temp);
+                    kvPos.add(temp);
+                }
             }
 
             this.xKvService.addKvs(kvPos);
@@ -157,16 +164,16 @@ public class MainController {
         try{
             String project = webRequest.getParameter("project");
             String profile = webRequest.getParameter("profile");
-            String mkey = webRequest.getParameter("xkey");
+            String key = webRequest.getParameter("key");
             String value = webRequest.getParameter("xvalue");
             String description = HtmlUtils.htmlEscape(webRequest.getParameter("description"));
 
-            String key = CommonUtil.genKeyByMkey(mkey);
+            String xkey = CommonUtil.genXKeyByKey(key);
 
             KvPo kvPo = new KvPo();
             kvPo.setProject(project);
             kvPo.setProfile(profile);
-            kvPo.setxKey(key);
+            kvPo.setxKey(xkey);
             kvPo.setxValue(value);
             kvPo.setDescription(description);
 
@@ -185,8 +192,9 @@ public class MainController {
         AjaxResponse ajaxResponse = new AjaxResponse();
 
         try{
-            String mkey = webRequest.getParameter("mkey");
-            this.xKvService.removeKvByMkey(mkey);
+            String profile = webRequest.getParameter("profile");
+            String key = webRequest.getParameter("key");
+            this.xKvService.removeKvBykey(profile,key);
         }catch (Exception e){
             logger.error(e.getMessage(),e);
             ajaxResponse.setThrowable(e);

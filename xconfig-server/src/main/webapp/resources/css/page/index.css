@@ -1,0 +1,58 @@
+.my_header{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+    background-size: cover;
+    min-height: 520px;
+    height: 520px;
+    padding-top: 0;
+    padding-bottom: 0;
+    color: #ffffff;
+    margin: 0 auto;
+    width: 100%;
+    text-align: center;
+    background-image: 8121991;
+    background-image: -webkit-radial-gradient(center 800px, 70vw 40vw, #e0e4f3, rgba(255, 255, 255, 0));
+    background-image: radial-gradient(center 800px, 70vw 40vw, #e0e4f3, rgba(255, 255, 255, 0));
+    background-repeat: no-repeat;
+    background-color: #f2f4fa;
+}
+.my_header_img{
+    /*background-image: url(https://reactioncommerce.com/images/home/hero4.jpg);*/
+    background-image: url(/resources/img/idea_white.png);
+
+}
+
+.my_header .overlay{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    padding: 20px 30px;
+    background-color: rgba(5, 24, 33, 0.6);
+
+}

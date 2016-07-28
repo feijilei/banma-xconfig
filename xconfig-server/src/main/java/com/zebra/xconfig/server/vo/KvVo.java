@@ -8,12 +8,23 @@ import org.springframework.web.util.HtmlUtils;
  */
 public class KvVo {
     private String key;
+//    private String mkey;
     private String value;
     private String description;
     private String security;
     private String project;
     private String createTime;
     private String updateTime;
+
+
+//    public String getMkey() {
+//        return mkey;
+//    }
+//
+//    public void setMkey(String mkey) {
+//        this.mkey = mkey;
+//    }
+
 
     public String getKey() {
         return key;

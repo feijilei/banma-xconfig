@@ -40,7 +40,7 @@ jQuery(document).ready(function ($) {
         }
     });
 
-    $("div.gridToolbar").html('<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addModal"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> key </button>');
+    $("div.gridToolbar").html('<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addKvModal"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> key </button>');
 
     //查看
     $('#detailModal').on('show.bs.modal', function (event) {
@@ -54,11 +54,11 @@ jQuery(document).ready(function ($) {
     });
 
     //新增
-    $('#addModal').on('show.bs.modal', function (event) {
-        $("#addModal .errMsgDiv").addClass("hidden");
+    $('#addKvModal').on('show.bs.modal', function (event) {
+        $("#addKvModal .errMsgDiv").addClass("hidden");
         //$("#addButton").prop("disabled",false);
     });
-    var addForm = $("#addForm").ajaxForm({
+    var addKvForm = $("#addKvForm").ajaxForm({
         url:basepath+"/main/addKvs",
         type:"POST",
         success:function(data){
@@ -66,15 +66,15 @@ jQuery(document).ready(function ($) {
                 window.location = basepath+"/main/project?project="+project+"&profile="+profile;
             }else{
                 //console.log(data.msg);
-                $("#addModal .errMsgDiv").removeClass("hidden");
-                $("#addModal .errMsg").text(data.msg);
+                $("#addKvModal .errMsgDiv").removeClass("hidden");
+                $("#addKvModal .errMsg").text(data.msg);
             }
-            $("#editButton").prop("disabled",false);
+            $("#addKvButton").prop("disabled",false);
         }
     });
-    $("#addButton").on("click",function(){
+    $("#addKvButton").on("click",function(){
         $(this).prop("disabled",true);
-        addForm.submit();
+        addKvForm.submit();
     });
 
     //编辑
@@ -118,7 +118,7 @@ jQuery(document).ready(function ($) {
 
         $("#removeButton").unbind();
         $("#removeButton").bind("click",function(){
-            $.post(basepath+"/main/removeKv",{"mkey":key},function(data){
+            $.post(basepath+"/main/removeKv",{"key":key,"profile":profile},function(data){
                 if(data.code == 0){
                     window.location = basepath + "/main/project?project=" + project + "&profile=" + profile;
                 }else{

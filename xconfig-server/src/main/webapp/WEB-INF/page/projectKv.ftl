@@ -182,9 +182,9 @@
                         <input type="text" class="hide" name="profile" value="${profile?html}">
 
                         <div class="form-group">
-                            <label for="xkey" class="col-sm-2 control-label">key</label>
+                            <label for="key" class="col-sm-2 control-label">key</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="xkey" name="xkey"  placeholder="key" readonly value="{{=it.key}}">
+                                <input type="text" class="form-control" id="key" name="key"  placeholder="key" readonly value="{{=it.key}}">
                             </div>
                         </div>
                         <div class="form-group">
@@ -216,7 +216,7 @@
         </div><!-- /.modal-dialog -->
     </script>
 
-    <div id="addModal" class="modal fade">
+    <div id="addKvModal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -224,7 +224,7 @@
                     <h4 class="modal-title"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增配置</h4>
                 </div>
                 <div class="modal-body">
-                    <form id="addForm" class="form-horizontal">
+                    <form id="addKvForm" class="form-horizontal">
                         <input type="text" class="hide" name="project" value="${project?html}">
                         <input type="text" class="hide" name="profile" value="${profile?html}">
 
@@ -243,7 +243,7 @@
                             <label for="xkey" class="col-sm-2 control-label">key</label>
                             <div class="col-sm-10">
                                 <div class="input-group">
-                                    <span class="input-group-addon">${project?html}.${profile?html}.</span>
+                                    <span class="input-group-addon">${project?html}.</span>
                                     <input type="text" class="form-control" id="xkey" name="xkey" placeholder="jdbc.drive">
                                 </div>
                             </div>
@@ -288,7 +288,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                    <button type="button" id="addButton" class="btn btn-primary">新增</button>
+                    <button type="button" id="addKvButton" class="btn btn-primary">新增</button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->

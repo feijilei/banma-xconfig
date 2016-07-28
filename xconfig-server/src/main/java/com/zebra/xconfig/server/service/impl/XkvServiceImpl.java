@@ -127,18 +127,17 @@ public class XkvServiceImpl implements XKvService {
 
     @Override
     @Transactional(rollbackFor = Throwable.class)
-    public void removeKvByMkey(String mkey) throws Exception {
-        if(StringUtils.isBlank(mkey)){
-            throw new IllegalArgumentException("mkey不能为空");
+    public void removeKvBykey(String profile,String key) throws Exception {
+        if(StringUtils.isBlank(key) || StringUtils.isBlank(profile)){
+            throw new IllegalArgumentException("key,profile不能为空");
         }
 
-        String project = CommonUtil.genProjectByMkey(mkey);
-        String profile = CommonUtil.genProfileByMkey(mkey);
-        String key = CommonUtil.genKeyByMkey(mkey);
+        String project = CommonUtil.genProjectByKey(key);
+        String xkey = CommonUtil.genXKeyByKey(key);
 
-        this.xKvMapper.delOne(project,profile,key);
+        this.xKvMapper.delOne(project,profile,xkey);
 
-        xConfigServer.deleteNode(CommonUtil.genMKeyPath(project, profile, key));
+        xConfigServer.deleteNode(CommonUtil.genMKeyPath(project, profile, xkey));
     }
 
     @Override
