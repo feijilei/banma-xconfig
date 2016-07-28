@@ -41,7 +41,7 @@ public class MainController {
 
         List<String> projects = xProjectProfileService.queryAllProjects();
 
-        mv.getModel().put("projects",projects);
+        mv.getModel().put("projects",JSON.toJSONString(projects));
         mv.setViewName("page/index.ftl");
         return mv;
     }

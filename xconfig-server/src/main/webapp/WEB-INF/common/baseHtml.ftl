@@ -1,6 +1,6 @@
 <#--定义html文件中head标签里的内容-->
 <#include "headHtml.ftl"/>
-<#macro baseHtml title="xConfig" localJsFiles=[] remoteJsFiles=[] localCssFiles=[] curMenu="" >
+<#macro baseHtml title="xConfig" localJsFiles=[] remoteJsFiles=[] localCssFiles=[] curMenu="" bodyContainer=true >
     <#escape x as x?html>
     <!DOCTYPE html>
     <html lang="zh-CN">
@@ -26,8 +26,8 @@
 
     <body>
 
-    <header role="banner" class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container-fluid">
+    <header role="banner" class="navbar navbar-inverse navbar-fixed-top" style="margin-bottom: 0px">
+        <div class="container">
         <#-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse"
@@ -90,17 +90,22 @@
         </div>
     </header>
 
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-12">
-                <#nested/>
+    <#if bodyContainer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <#nested/>
+                </div>
+
             </div>
-
         </div>
-    </div>
+    <#else>
+        <#nested/>
+    </#if>
 
 
-    <div id="copyright" class="container-fluid">
+
+    <div id="copyright" >
         <hr/>
         <div class="text-center">
             <small>Copyright©2013 zhengzhichao. All Rights Reserved.</small>

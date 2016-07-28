@@ -29,45 +29,38 @@
         <#--<h1>${project?html}<small>Subtext for header</small></h1>-->
     <#--</div>-->
 
-    <div class="row">
-        <div class="col-sm-12">
-            <h1 style="margin-top: 0px">${project?html}
-                <span style="font-size: x-small">依赖项目：
-                    <span>
-                        <#if dependencies?size gt 0>
-                            <#list dependencies as dep>
-                                <#if dep_index%3 = 0>
-                                    <a class="label label-primary" href="${basepath}/main/project?project=${dep?html}&profile=${profile?html}">${dep?html}</a>
-                                <#elseif dep_index%3 = 1>
-                                    <a class="label label-success" href="${basepath}/main/project?project=${dep?html}&profile=${profile?html}">${dep?html}</a>
-                                <#elseif dep_index%3 = 2>
-                                    <a class="label label-info" href="${basepath}/main/project?project=${dep?html}&profile=${profile?html}">${dep?html}</a>
-                                </#if>
-                            </#list>
-                            <a href="javascript:void(0)"><span class="glyphicon glyphicon-cog" aria-hidden="true" data-toggle="modal" data-target="#editDepModal"></span></a>
-                            &nbsp;
-                            <label>
-                                <input type="checkbox" id="allDep" <#if allDep?? && allDep == "true">checked</#if>> 加载所有依赖
-                            </label>
-                        <#else>
-                            空&nbsp;<a href="javascript:void(0)"><span class="glyphicon glyphicon-cog" aria-hidden="true" data-toggle="modal" data-target="#editDepModal"></span></a>
-                        </#if>
-                    </span>
-
+    <h1 class="row">
+        <div class="col-sm-11">
+            ${project?html}
+            <span style="font-size: x-small">依赖项目：
+                <span>
+                    <#if dependencies?size gt 0>
+                        <#list dependencies as dep>
+                            <#if dep_index%3 = 0>
+                                <a class="label label-primary" href="${basepath}/main/project?project=${dep?html}&profile=${profile?html}">${dep?html}</a>
+                            <#elseif dep_index%3 = 1>
+                                <a class="label label-success" href="${basepath}/main/project?project=${dep?html}&profile=${profile?html}">${dep?html}</a>
+                            <#elseif dep_index%3 = 2>
+                                <a class="label label-info" href="${basepath}/main/project?project=${dep?html}&profile=${profile?html}">${dep?html}</a>
+                            </#if>
+                        </#list>
+                        <a href="javascript:void(0)"><span class="glyphicon glyphicon-cog" aria-hidden="true" data-toggle="modal" data-target="#editDepModal"></span></a>
+                        &nbsp;
+                        <label>
+                            <input type="checkbox" id="allDep" <#if allDep?? && allDep == "true">checked</#if>> 加载所有依赖
+                        </label>
+                    <#else>
+                        空&nbsp;<a href="javascript:void(0)"><span class="glyphicon glyphicon-cog" aria-hidden="true" data-toggle="modal" data-target="#editDepModal"></span></a>
+                    </#if>
                 </span>
-            </h1>
+            </span>
         </div>
-        <#--<div class="col-sm-6">-->
-
-            <#--<form class="form-inline pull-right">-->
-                <#--<div class="form-group form-group-sm">-->
-                    <#--<label for="deps">Email address</label>-->
-                    <#--<input type="text" class="form-control" id="deps" name="deps" value="red,green,blue" />-->
-                <#--</div>-->
-                <#--<button type="submit" class="btn btn-default btn-sm">Sign in</button>-->
-            <#--</form>-->
-        <#--</div>-->
-    </div>
+        <div class="col-sm-1">
+            <div class="pull-right">
+                <a href="javascript:void(0)"><span class="glyphicon glyphicon-cog" aria-hidden="true" data-toggle="modal" data-target="#"></span></a>
+            </div>
+        </div>
+    </h1>
     <ul class="nav nav-tabs">
         <#list profiles as pf>
             <#if pf == profile>
