@@ -135,6 +135,8 @@ public class XConfigContext {
 
                 initOk = countDownLatch.await(60, TimeUnit.SECONDS);
 
+                //todo 如果使用zk初始化失败，是否做降级处理，使用上次启动时候的文件启动应用
+
                 this.writeFile(Constants.BOOT_FILE);
             }
         } catch (Exception e) {

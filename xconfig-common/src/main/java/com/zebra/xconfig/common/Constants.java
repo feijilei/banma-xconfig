@@ -16,4 +16,6 @@ public class Constants {
     public static final long SYN_PERIOD_MILLIS = 1000*60*20;//多长时间同步一次
 
     public static final String NAME_CHECK_REGEX = "^[A-Za-z][A-Za-z0-9-_.]*$";
+
+    public static final String DEFUALT_PROFILE = "dev";
 }

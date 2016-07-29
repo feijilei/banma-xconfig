@@ -55,6 +55,22 @@
                 </resources>
             </build>
         </profile>
+
+        <!-- 		开发环境 -->
+        <profile>
+            <id>beta</id>
+            <!-- 			默认激活 -->
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <resources>
+                    <resource>
+                        <directory>${project.basedir}/src/main/resources-beta</directory>
+                    </resource>
+                </resources>
+            </build>
+        </profile>
     </profiles>
 
     <dependencies>

@@ -57,7 +57,7 @@
         </div>
         <div class="col-sm-1">
             <div class="pull-right">
-                <a href="javascript:void(0)"><span class="glyphicon glyphicon-cog" aria-hidden="true" data-toggle="modal" data-target="#"></span></a>
+                <a href="${basepath}/project/setting?project=${project?html}"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></a>
             </div>
         </div>
     </h1>
@@ -349,14 +349,14 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增环境</h4>
+                    <h4 class="modal-title"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增profile</h4>
                 </div>
                 <div class="modal-body">
                     <form id="addProfileForm" class="form-horizontal">
                         <input type="text" class="hide" name="project" value="${project?html}">
 
                         <div class="form-group">
-                            <label for="addProfileName" class="col-sm-2 control-label">环境名称</label>
+                            <label for="addProfileName" class="col-sm-2 control-label">profile名称</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="addProfileName" name="addProfileName" placeholder="dev">
                             </div>
@@ -391,44 +391,46 @@
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 
-<div id="removeProfileModal" class="modal fade">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除环境</h4>
-            </div>
-            <div class="modal-body">
-                <div>
-                    <p class="text-danger"><span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span> 警告：删除环境将不可恢复，请慎重！</p>
+    <div id="removeProfileModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除环境</h4>
                 </div>
-                <form id="removeProfileForm" class="form-horizontal">
-                    <input type="text" class="hide" name="project" value="${project?html}">
+                <div class="modal-body">
+                    <div>
+                        <p class="text-danger"><span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span> 警告：删除环境将不可恢复，请慎重！</p>
+                    </div>
+                    <form id="removeProfileForm" class="form-horizontal">
+                        <input type="text" class="hide" name="project" value="${project?html}">
 
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">环境名</label>
-                        <div class="col-sm-10">
-                            <div class="checkbox">
-                                <#list profiles as pf>
-                                    <label>
-                                        <input name="removeProfile" type="radio" value="${pf?html}"> ${pf?html}
-                                    </label>
-                                </#list>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">环境名</label>
+                            <div class="col-sm-10">
+                                <div class="checkbox">
+                                    <#list profiles as pf>
+                                        <label>
+                                            <input name="removeProfile" type="radio" value="${pf?html}"> ${pf?html}
+                                        </label>
+                                    </#list>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="alert alert-danger alert-dismissible hidden col-sm-offset-2 col-sm-10 errMsgDiv" role="alert">
-                            <strong>Error! </strong><span class="errMsg"></span>
+                        <div class="form-group">
+                            <div class="alert alert-danger alert-dismissible hidden col-sm-offset-2 col-sm-10 errMsgDiv" role="alert">
+                                <strong>Error! </strong><span class="errMsg"></span>
+                            </div>
                         </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                <button type="button" id="removeProfileButton" class="btn btn-primary">删除</button>
-            </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="removeProfileButton" class="btn btn-primary">删除</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <#--todo 应该增加个profile排序功能 -->
 </@baseHtml>

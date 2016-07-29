@@ -128,4 +128,9 @@
         WHERE project = #{project}
         AND profile = #{profile}
     </delete>
+
+    <delete id="delByProject" parameterType="map">
+        DELETE FROM x_kv
+        WHERE project = #{project}
+    </delete>
 </mapper>

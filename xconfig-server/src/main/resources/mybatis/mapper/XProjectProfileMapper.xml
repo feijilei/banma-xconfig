@@ -73,4 +73,24 @@
         WHERE project = #{project}
         AND profile = #{profile}
     </delete>
+
+    <insert id="insertProject" parameterType="map">
+        INSERT INTO x_project(project) VALUE (#{project})
+    </insert>
+
+    <delete id="delProject" parameterType="map">
+        DELETE FROM x_project
+        WHERE project = #{project}
+    </delete>
+
+    <select id="queryProjectsByDepedProject" parameterType="map" resultType="string">
+        SELECT project
+        FROM x_project_dependency
+        WHERE depProject = #{depProject}
+    </select>
+
+    <delete id="delProfileByProject" parameterType="map">
+        DELETE FROM x_profile
+        WHERE project = #{project}
+    </delete>
 </mapper>

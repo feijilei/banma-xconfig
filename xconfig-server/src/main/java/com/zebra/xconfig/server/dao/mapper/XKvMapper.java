@@ -43,4 +43,6 @@ public interface XKvMapper {
             @Param("project")String project,
             @Param("profile")String profile
     );
+
+    public void delByProject(@Param("project")String project);
 }

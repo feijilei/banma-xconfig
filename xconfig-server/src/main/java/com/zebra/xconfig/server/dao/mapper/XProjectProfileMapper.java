@@ -20,4 +20,8 @@ public interface XProjectProfileMapper {
     public String loadProfile(@Param("project")String project,@Param("profile")String profile);
     public void insertProfile(ProfilePo profilePo);
     public void delProfile(@Param("project")String project,@Param("profile")String profile);
+    public void insertProject(@Param("project")String project);
+    public void delProject(@Param("project")String project);
+    public List<String> queryProjectsByDepedProject(@Param("depProject")String depProject);
+    public void delProfileByProject(@Param("project")String project);
 }

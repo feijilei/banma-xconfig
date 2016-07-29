@@ -1,7 +1,11 @@
 package com.zebra.xconfig.server.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.zebra.xconfig.common.CommonUtil;
+import com.zebra.xconfig.common.Constants;
 import com.zebra.xconfig.common.exception.IllegalNameException;
+import com.zebra.xconfig.common.exception.XConfigException;
 import com.zebra.xconfig.server.dao.mapper.XKvMapper;
 import com.zebra.xconfig.server.dao.mapper.XProjectProfileMapper;
 import com.zebra.xconfig.server.po.KvPo;
@@ -10,6 +14,7 @@ import com.zebra.xconfig.server.po.ProjectDependency;
 import com.zebra.xconfig.server.po.ZkNode;
 import com.zebra.xconfig.server.service.XProjectProfileService;
 import com.zebra.xconfig.server.util.zk.XConfigServer;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,12 +76,12 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
             }
 
             if(dep.equals(project)){
-                throw new IllegalArgumentException("不能自己依赖自己");
+                throw new XConfigException("不能自己依赖自己");
             }
 
             String existPro = this.xProjectProfileMapper.loadProject(dep);
             if(StringUtils.isBlank(existPro)){
-                throw new IllegalArgumentException("不能依赖不存在的project："+dep);
+                throw new XConfigException("不能依赖不存在的project："+dep);
             }
 
             ProjectDependency projectDependency = new ProjectDependency();
@@ -99,42 +104,56 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
 
         profilePo.setMd5("");
 
-        //判断project和source是否存在
         String targetProject = this.xProjectProfileMapper.loadProject(profilePo.getProject());
-        String from = this.xProjectProfileMapper.loadProfile(profilePo.getProject(), source);
-
-        if(StringUtils.isBlank(targetProject) || StringUtils.isBlank(from)){
-            throw new IllegalArgumentException("找不到目标project或复制源");
+        if(StringUtils.isBlank(targetProject)){
+            throw new XConfigException("找不到目标project");
         }
 
-        //操作数据库，写入profile和kv
-        this.xProjectProfileMapper.insertProfile(profilePo);
-        this.xKvMapper.bathInsertKvsByProfile(profilePo.getProject(),profilePo.getProfile(),source);
+        if(StringUtils.isBlank(source) || "none".equals(source)){
+            this.xProjectProfileMapper.insertProfile(profilePo);
+            this.xConfigServer.createUpdateKvNode(CommonUtil.genProfilePath(profilePo.getProject(),profilePo.getProfile()),"");
+        }else{
+            String from = this.xProjectProfileMapper.loadProfile(profilePo.getProject(), source);
+            if(StringUtils.isBlank(from)) {
+                throw new XConfigException("找不到复制源");
+            }
 
-        //写入zk
-        List<KvPo> kvPos = this.xKvMapper.queryByProjectAndProfile(profilePo.getProject(),profilePo.getProfile());
-        List<ZkNode> zkNodes = new ArrayList<>();
-        //先写profile
-        ZkNode profileNode = new ZkNode();
-        profileNode.setPath(CommonUtil.genProfilePath(profilePo.getProject(),profilePo.getProfile()));
-        profileNode.setValue("");
-        zkNodes.add(profileNode);
-        //写kv
-        for(KvPo kvPo : kvPos){
-            ZkNode zkNode = new ZkNode();
-            zkNode.setPath(CommonUtil.genMKeyPath(kvPo.getProject(), kvPo.getProfile(), kvPo.getxKey()));
-            zkNode.setValue(kvPo.getxValue());
+            //操作数据库，写入profile和kv
+            this.xProjectProfileMapper.insertProfile(profilePo);
+            this.xKvMapper.bathInsertKvsByProfile(profilePo.getProject(),profilePo.getProfile(),source);
 
-            zkNodes.add(zkNode);
+            //写入zk
+            List<KvPo> kvPos = this.xKvMapper.queryByProjectAndProfile(profilePo.getProject(),profilePo.getProfile());
+            List<ZkNode> zkNodes = new ArrayList<>();
+            //先写profile
+            ZkNode profileNode = new ZkNode();
+            profileNode.setPath(CommonUtil.genProfilePath(profilePo.getProject(),profilePo.getProfile()));
+            profileNode.setValue("");
+            zkNodes.add(profileNode);
+            //写kv
+            for(KvPo kvPo : kvPos){
+                ZkNode zkNode = new ZkNode();
+                zkNode.setPath(CommonUtil.genMKeyPath(kvPo.getProject(), kvPo.getProfile(), kvPo.getxKey()));
+                zkNode.setValue(kvPo.getxValue());
+
+                zkNodes.add(zkNode);
+            }
+
+            this.xConfigServer.createKvNodesWithTransaction(zkNodes);
         }
-
-        this.xConfigServer.createKvNodesWithTransaction(zkNodes);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void removeProfile(String project, String profile) throws Exception{
         if(!CommonUtil.checkName(project) || !CommonUtil.checkName(profile)){
             throw new IllegalNameException();
+        }
+
+        //最后一个profile不允许删除
+        List<String> profiles = this.xProjectProfileMapper.queryProjectProfiles(project);
+        if(profiles.size() <= 1){
+            throw new XConfigException("不能删除最后一个profile");
         }
 
         //删除数据库profile和kv
@@ -142,5 +161,70 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
         this.xKvMapper.delByProjectAndProfile(project,profile);
 
         this.xConfigServer.deleteNode(CommonUtil.genProfilePath(project,profile));
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void addProject(String project,String[] profiles) throws Exception {
+        if(!CommonUtil.checkName(project)){
+            throw new IllegalNameException();
+        }
+
+        this.xProjectProfileMapper.insertProject(project);
+        if(profiles == null || profiles.length == 0){
+            ProfilePo profilePo = new ProfilePo();
+            profilePo.setProject(project);
+            profilePo.setProfile(Constants.DEFUALT_PROFILE);
+            profilePo.setMd5("");
+            profilePo.setProfileKey("");
+            this.xProjectProfileMapper.insertProfile(profilePo);
+
+            this.xConfigServer.createUpdateKvNode(CommonUtil.genProfilePath(project,profilePo.getProfile()),"");
+        }else{
+            List<ZkNode> zkNodes = new ArrayList<>(profiles.length);
+            ZkNode projectNode = new ZkNode();
+            projectNode.setPath(CommonUtil.genProjectPath(project));
+            projectNode.setValue("");
+            zkNodes.add(projectNode);
+
+            for(String profile : profiles){
+                if(!CommonUtil.checkName(profile)){
+                    throw  new IllegalNameException();
+                }
+
+                ProfilePo profilePo = new ProfilePo();
+                profilePo.setProject(project);
+                profilePo.setProfile(profile);
+                profilePo.setMd5("");
+                profilePo.setProfileKey("");
+
+                ZkNode zkNode = new ZkNode();
+                zkNode.setPath(CommonUtil.genProfilePath(project,profile));
+                zkNodes.add(zkNode);
+
+                this.xProjectProfileMapper.insertProfile(profilePo);
+            }
+
+            this.xConfigServer.createKvNodesWithTransaction(zkNodes);
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void removePoject(String project) throws Exception {
+        if(!CommonUtil.checkName(project)){
+            throw new IllegalNameException();
+        }
+
+        List<String> projects = this.xProjectProfileMapper.queryProjectsByDepedProject(project);
+        if(CollectionUtils.isNotEmpty(projects)){
+            throw  new XConfigException("当前项目被其他项目依赖，不允许删除。"+ JSON.toJSONString(projects));
+        }
+
+        this.xProjectProfileMapper.delProject(project);
+        this.xProjectProfileMapper.delProfileByProject(project);
+        this.xKvMapper.delByProject(project);
+
+        this.xConfigServer.deleteNode(CommonUtil.genProjectPath(project));
     }
 }

@@ -44,7 +44,8 @@ public class MainController {
 
         List<String> projects = xProjectProfileService.queryAllProjects();
 
-        mv.getModel().put("projects",JSON.toJSONString(projects));
+        mv.getModel().put("projects",projects);
+        mv.getModel().put("projectsJson",JSON.toJSONString(projects));
         mv.getModel().put("wisdom",wisdomService.getOne());
         mv.setViewName("page/index.ftl");
         return mv;
@@ -284,6 +285,38 @@ public class MainController {
             String profile = HtmlUtils.htmlEscape(webRequest.getParameter("removeProfile"));
 
             this.xProjectProfileService.removeProfile(project, profile);
+        }catch (Exception e){
+            logger.error(e.getMessage(),e);
+            ajaxResponse.setThrowable(e);
+        }
+        return ajaxResponse;
+    }
+
+    @RequestMapping("addProject")
+    @ResponseBody
+    public AjaxResponse addProject(WebRequest webRequest){
+        AjaxResponse ajaxResponse = new AjaxResponse();
+        try{
+            String project = HtmlUtils.htmlEscape(webRequest.getParameter("addProjectName"));
+            String profileStr = HtmlUtils.htmlEscape(webRequest.getParameter("preProfiles"));
+
+            String[] profiles = StringUtils.isBlank(profileStr) ? null : profileStr.split(",");
+            this.xProjectProfileService.addProject(project,profiles);
+        }catch (Exception e){
+            logger.error(e.getMessage(),e);
+            ajaxResponse.setThrowable(e);
+        }
+        return ajaxResponse;
+    }
+
+    @RequestMapping("removeProject")
+    @ResponseBody
+    public AjaxResponse removeProject(WebRequest webRequest){
+        AjaxResponse ajaxResponse = new AjaxResponse();
+        try{
+            String project = HtmlUtils.htmlEscape(webRequest.getParameter("project"));
+
+            this.xProjectProfileService.removePoject(project);
         }catch (Exception e){
             logger.error(e.getMessage(),e);
             ajaxResponse.setThrowable(e);

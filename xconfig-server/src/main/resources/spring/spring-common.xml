@@ -22,7 +22,7 @@
     <context:component-scan base-package="com.zebra.xconfig.server.service"></context:component-scan>
 
     <!-- 	mybatis -->
-    <context:property-placeholder location="classpath:properties/jdbc.properties" ignore-unresolvable="false" />
+    <context:property-placeholder location="classpath:properties/xconfig.properties" ignore-unresolvable="false" />
 
     <!--    数据源配置 -->
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
@@ -31,17 +31,17 @@
         <property name="username" value="${jdbc.username}"></property>
         <property name="password" value="${jdbc.password}"></property>
 
-        <property name="initialSize" value="${initialSize}"></property>
-        <property name="maxActive" value="${maxActive}"></property>
-        <property name="minIdle" value="${minIdle}"></property>
-        <property name="maxIdle" value="${maxIdle}"></property>
-        <property name="maxWait" value="${maxWait}"></property>
+        <property name="initialSize" value="${jdbc.initialSize}"></property>
+        <property name="maxActive" value="${jdbc.maxActive}"></property>
+        <property name="minIdle" value="${jdbc.minIdle}"></property>
+        <property name="maxIdle" value="${jdbc.maxIdle}"></property>
+        <property name="maxWait" value="${jdbc.maxWait}"></property>
 
         <property name="removeAbandoned" value="true"></property>
         <property name="removeAbandonedTimeout" value="10"></property>
 
         <property name="testWhileIdle" value="true"></property>
-        <property name="validationQuery" value="${validationQuery}"></property>
+        <property name="validationQuery" value="${jdbc.validationQuery}"></property>
     </bean>
 
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">

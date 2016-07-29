@@ -28,4 +28,8 @@ public interface XProjectProfileService {
     public void addProfile(ProfilePo profilePo,String source) throws Exception;
 
     public void removeProfile(String project,String profile) throws Exception;
+
+    public void addProject(String project,String[] profiles) throws Exception;
+
+    public void removePoject(String project) throws Exception;
 }

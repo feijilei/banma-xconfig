@@ -142,7 +142,7 @@ public class XConfigServer {
     public void createUpdateKvNode(String nodePath,String value) throws Exception{
         Stat stat = client.checkExists().forPath(nodePath);
         if(stat == null){
-            client.create().forPath(nodePath,value.getBytes());
+            client.create().creatingParentsIfNeeded().forPath(nodePath,value.getBytes());
         }else{
             client.setData().forPath(nodePath,value.getBytes());
         }
