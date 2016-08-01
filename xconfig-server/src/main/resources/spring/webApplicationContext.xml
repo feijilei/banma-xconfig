@@ -88,4 +88,19 @@
 
     <bean id="exceptionResolver" class="com.zebra.xconfig.server.web.ExceptionHandler"/>
 
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/mian/**"/>
+            <mvc:mapping path="/project/**"/>
+            <ref bean="permissionIntercepter"></ref>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+    <bean id="permissionIntercepter" class="com.zebra.xconfig.server.web.Intercepter.PermissionIntercepter">
+        <property name="resources">
+            <map>
+                <entry key="/mian/index" value="10"></entry>
+            </map>
+        </property>
+    </bean>
 </beans>
