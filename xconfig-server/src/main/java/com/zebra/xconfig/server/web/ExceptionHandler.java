@@ -18,19 +18,21 @@ public class ExceptionHandler implements HandlerExceptionResolver {
         ModelAndView mv = new ModelAndView();
 
         Cookie[] cookies = request.getCookies();
-        for(int i = 0 ;i < cookies.length ; i++){
-            if("debug".equals(cookies[i].getName())){
-                StackTraceElement[] stackTraces = ex.getStackTrace();
+        if(cookies != null) {
+            for (int i = 0; i < cookies.length; i++) {
+                if ("debug".equals(cookies[i].getName())) {
+                    StackTraceElement[] stackTraces = ex.getStackTrace();
 
-                StringBuilder stackTraceStr = new StringBuilder();
-                stackTraceStr.append(ex.toString())
-                        .append("<br>");
-                for(int j = 0 ; j < stackTraces.length ; j++){
-                    stackTraceStr.append(stackTraces[j].toString())
-                        .append("<br>");
+                    StringBuilder stackTraceStr = new StringBuilder();
+                    stackTraceStr.append(ex.toString())
+                            .append("<br>");
+                    for (int j = 0; j < stackTraces.length; j++) {
+                        stackTraceStr.append(stackTraces[j].toString())
+                                .append("<br>");
+                    }
+
+                    mv.getModel().put("stackTraces", stackTraceStr);
                 }
-
-                mv.getModel().put("stackTraces",stackTraceStr);
             }
         }
 

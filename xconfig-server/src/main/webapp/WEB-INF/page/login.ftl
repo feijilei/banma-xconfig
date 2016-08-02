@@ -3,7 +3,7 @@
 <div class="my_header my_header_img">
     <div class="overlay">
         <h1>xConfig</h1>
-        <form class="form-horizontal" style="text-align: left;width: 25%" action="${basepath}/loggin" method="post">
+        <form class="form-horizontal" style="text-align: left;width: 25%" action="${basepath}/login" method="post">
             <div class="form-group">
                 <label for="email" class="col-sm-3 control-label">邮箱</label>
                 <div class="col-sm-9">
@@ -25,11 +25,13 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group">
-                <div class="col-sm-offset-3 col-sm-9">
-                    <p><strong>用户名或密码错误!</strong></p>
+            <#if errMsg??>
+                <div class="form-group">
+                    <div class="col-sm-offset-3 col-sm-9">
+                        <p><strong>${errMsg!"未知错误"}</strong></p>
+                    </div>
                 </div>
-            </div>
+            </#if>
             <div class="form-group">
                 <div class="col-sm-offset-3 col-sm-9">
                     <button type="submit" class="btn btn-default">登录</button>

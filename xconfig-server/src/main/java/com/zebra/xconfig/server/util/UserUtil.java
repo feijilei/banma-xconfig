@@ -32,14 +32,16 @@ public class UserUtil {
      * 生成key
      * @param username
      * @param shaPassword
+     * @param timeMillis
      * @param salt
      * @return
      * @throws Exception
      */
-    public static String genSecurityKey(String username,String shaPassword,String salt) throws Exception{
+    public static String genSecurityKey(String username,String shaPassword,long timeMillis,String salt) throws Exception{
         StringBuilder sb = new StringBuilder();
         sb.append(username)
                 .append(shaPassword)
+                .append(timeMillis)
                 .append(salt);
 
         return shaEncode(sb.toString());

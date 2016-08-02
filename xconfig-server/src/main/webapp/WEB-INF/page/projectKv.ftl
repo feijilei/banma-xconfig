@@ -44,7 +44,9 @@
                                 <a class="label label-info" href="${basepath}/main/project?project=${dep?html}&profile=${profile?html}">${dep?html}</a>
                             </#if>
                         </#list>
-                        <a href="javascript:void(0)"><span class="glyphicon glyphicon-cog" aria-hidden="true" data-toggle="modal" data-target="#editDepModal"></span></a>
+                        <@dataRight role=role url="/main/updateProjectDeps">
+                            <a href="javascript:void(0)"><span class="glyphicon glyphicon-cog" aria-hidden="true" data-toggle="modal" data-target="#editDepModal"></span></a>
+                        </@dataRight>
                         &nbsp;
                         <label>
                             <input type="checkbox" id="allDep" <#if allDep?? && allDep == "true">checked</#if>> 加载所有依赖
@@ -56,9 +58,11 @@
             </span>
         </div>
         <div class="col-sm-1">
-            <div class="pull-right">
-                <a href="${basepath}/project/setting?project=${project?html}"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></a>
-            </div>
+            <@dataRight role=role url="/project/setting">
+                <div class="pull-right">
+                    <a href="${basepath}/project/setting?project=${project?html}"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></a>
+                </div>
+            </@dataRight>
         </div>
     </h1>
     <ul class="nav nav-tabs">
@@ -74,8 +78,12 @@
                 <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
-                <li data-toggle="modal" data-target="#addProfileModal"><a href="javascript:void(0)"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> profile</a></li>
-                <li data-toggle="modal" data-target="#removeProfileModal"><a href="javascript:void(0)"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span> profile</a></li>
+                <@dataRight role=role url="/main/addProfile">
+                    <li data-toggle="modal" data-target="#addProfileModal"><a href="javascript:void(0)"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> profile</a></li>
+                </@dataRight>
+                <@dataRight role=role url="/main/removeProfile">
+                    <li data-toggle="modal" data-target="#removeProfileModal"><a href="javascript:void(0)"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span> profile</a></li>
+                </@dataRight>
             </ul>
         </li>
     </ul>
@@ -101,14 +109,24 @@
                         </a>
                     </td>
 
-                    <td>
+                    <td style="text-align: center">
                         <a href="javascript:void(0)"><span class="glyphicon glyphicon-search" aria-hidden="true" data-toggle="modal" data-target="#detailModal"></span></a>
                         <#if project == kvVo.project>
-                            <a href="javascript:void(0)"><span class="glyphicon glyphicon-edit" aria-hidden="true" data-toggle="modal" data-target="#editModal"></span></a>
-                            <a href="javascript:void(0)"><span class="glyphicon glyphicon-remove" aria-hidden="true" data-toggle="modal" data-target="#removeModal"></span></a>
+                            <@dataRight role=role url="/main/editKv">
+                                <a href="javascript:void(0)"><span class="glyphicon glyphicon-edit" aria-hidden="true" data-toggle="modal" data-target="#editModal"></span></a>
+                            </@dataRight>
+
+                            <@dataRight role=role url="/main/removeKv">
+                                <a href="javascript:void(0)"><span class="glyphicon glyphicon-remove" aria-hidden="true" data-toggle="modal" data-target="#removeModal"></span></a>
+                            </@dataRight>
                         <#else>
-                            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                            <@dataRight role=role url="/main/editKv">
+                                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                            </@dataRight>
+
+                            <@dataRight role=role url="/main/removeKv">
+                                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                            </@dataRight>
                         </#if>
                     </td>
                 </tr>
@@ -118,6 +136,13 @@
     </div>
 
 <#--modal and template-->
+    <#--表格右上角工具条-->
+    <script type="text/html" id="gridToolbar">
+        <@dataRight role=role url="/main/addKvs">
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addKvModal"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> key </button>
+        </@dataRight>
+    </script>
+
     <div id="detailModal" class="modal fade">
     </div><!-- /.modal -->
 

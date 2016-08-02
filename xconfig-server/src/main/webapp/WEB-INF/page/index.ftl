@@ -18,7 +18,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <h3 style="text-align: center">projects <small><a href="javascript:void(0)"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true" data-toggle="modal" data-target="#addProjectModal"></span></a></small></h3>
+                <h3 style="text-align: center">projects <@dataRight role=role url="/main/addProject"><small><a href="javascript:void(0)"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true" data-toggle="modal" data-target="#addProjectModal"></span></a></small></@dataRight></h3>
                 <hr>
                 <div style="font-size: x-large">
                     <#list projects as project>

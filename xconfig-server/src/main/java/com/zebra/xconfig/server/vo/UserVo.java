@@ -8,6 +8,7 @@ public class UserVo {
     private String userNike;
     private int role;
     private String security;
+    private long timeMillis;
 
     public String getUserName() {
         return userName;
@@ -39,5 +40,13 @@ public class UserVo {
 
     public void setSecurity(String security) {
         this.security = security;
+    }
+
+    public long getTimeMillis() {
+        return timeMillis;
+    }
+
+    public void setTimeMillis(long timeMillis) {
+        this.timeMillis = timeMillis;
     }
 }

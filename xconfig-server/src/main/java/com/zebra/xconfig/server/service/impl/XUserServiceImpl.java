@@ -36,9 +36,10 @@ public class XUserServiceImpl implements XUserService {
 
         UserVo userVo = new UserVo();
         userVo.setUserName(userPo.getUserName());
-        userVo.setUserNike(userPo.getUserName());
+        userVo.setUserNike(userPo.getUserNike());
         userVo.setRole(userPo.getRole());
-        userVo.setSecurity(UserUtil.genSecurityKey(userPo.getUserName(),userPo.getPassword(),userPo.getSalt()));
+        userVo.setTimeMillis(System.currentTimeMillis());
+        userVo.setSecurity(UserUtil.genSecurityKey(userPo.getUserName(),userPo.getPassword(),userVo.getTimeMillis(),userPo.getSalt()));
 
         return userVo;
     }

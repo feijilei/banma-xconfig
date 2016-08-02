@@ -1,5 +1,6 @@
 package com.zebra.xconfig.server.util.freemarker;
 
+import com.zebra.xconfig.server.web.Intercepter.UrlResouces;
 import freemarker.core.Environment;
 import freemarker.template.*;
 
@@ -17,30 +18,23 @@ public class FreemarkerDataRightTag implements TemplateDirectiveModel {
 	public void execute(Environment env, Map params, TemplateModel[] loopVars,
 			TemplateDirectiveBody body) throws TemplateException, IOException {
 		
-		//参数
-		if(params.isEmpty()){
-			throw new TemplateModelException("参数不能为空，需要角色列表编码(roles)");
+		if(params.isEmpty() || params.size() != 2){
+			throw new TemplateModelException("参数不合法，需要角色编码(role)和资源路径(url)");
 		}
 		
-		TemplateModel valueModel = (TemplateModel)params.get("roles");
-		
-		if(valueModel == null){
-			throw new TemplateModelException("角色列表(roles)不存在");
+		TemplateModel role = (TemplateModel)params.get("role");
+		if(role == null){
+			throw new TemplateModelException("角色编码(role)不存在");
 		}
-		String roleStr = valueModel.toString();
-        String[] needRoles = roleStr.split(",");
-		
-//		//当前用户拥有的权限
-//		UserInfo userInfo = WebUtil.getSessionInfo();
-//		if(userInfo != null){
-//			List<String> roles = userInfo.getRoles();
-//            for(String role : needRoles){
-//                if(roles.contains(role)){//判断当前用户是否拥有这个权限
-//                    body.render(env.getOut());
-//                    break;
-//                }
-//            }
-//		}
-	}
+		String roleStr = role.toString();
+        int curRole = Integer.valueOf(roleStr);
 
+        TemplateModel urlModel = (TemplateModel)params.get("url");
+        String url = urlModel.toString();
+
+        int needRole = UrlResouces.getResouceRole(url);
+        if(curRole >= needRole){
+            body.render(env.getOut());
+        }
+	}
 }

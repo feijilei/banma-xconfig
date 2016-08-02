@@ -40,7 +40,7 @@ jQuery(document).ready(function ($) {
         }
     });
 
-    $("div.gridToolbar").html('<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addKvModal"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> key </button>');
+    $("div.gridToolbar").html($("#gridToolbar").html());
 
     //查看
     $('#detailModal').on('show.bs.modal', function (event) {

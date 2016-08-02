@@ -90,16 +90,27 @@
 
     <mvc:interceptors>
         <mvc:interceptor>
-            <mvc:mapping path="/mian/**"/>
+            <mvc:mapping path="/main/**"/>
             <mvc:mapping path="/project/**"/>
-            <ref bean="permissionIntercepter"></ref>
+            <bean class="com.zebra.xconfig.server.web.Intercepter.PermissionIntercepter"></bean>
         </mvc:interceptor>
     </mvc:interceptors>
 
-    <bean id="permissionIntercepter" class="com.zebra.xconfig.server.web.Intercepter.PermissionIntercepter">
+    <bean id="urlResouces" class="com.zebra.xconfig.server.web.Intercepter.UrlResouces">
         <property name="resources">
             <map>
-                <entry key="/mian/index" value="10"></entry>
+                <entry key="/main/index" value="10"></entry>
+                <entry key="/main/project" value="10"></entry>
+                <entry key="/main/addKvs" value="20"></entry>
+                <entry key="/main/editKv" value="20"></entry>
+                <entry key="/main/removeKv" value="20"></entry>
+                <entry key="/main/projectList" value="10"></entry>
+                <entry key="/main/updateProjectDeps" value="20"></entry>
+                <entry key="/main/addProfile" value="20"></entry>
+                <entry key="/main/removeProfile" value="20"></entry>
+                <entry key="/main/addProject" value="30"></entry>
+                <entry key="/main/removeProject" value="30"></entry>
+                <entry key="/project/setting" value="30"></entry>
             </map>
         </property>
     </bean>

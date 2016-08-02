@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
@@ -27,15 +26,20 @@ public class LogginController {
     private XUserService xUserService;
 
     @RequestMapping("/index")
-    public ModelAndView index(WebRequest webRequest){
+    public ModelAndView index(HttpServletRequest request){
         ModelAndView mv = new ModelAndView();
+
+        String _errMsg = (String)request.getAttribute("_errMsg");
+        if(StringUtils.isNotBlank(_errMsg)){
+            mv.getModel().put("errMsg",_errMsg);
+        }
 
         mv.setViewName("page/login.ftl");
         return mv;
     }
 
-    @RequestMapping("/loggin")
-    public ModelAndView loggin(HttpServletRequest request,HttpServletResponse response){
+    @RequestMapping("/login")
+    public ModelAndView login(HttpServletRequest request,HttpServletResponse response){
         ModelAndView mv = new ModelAndView();
 
         String errMsg = null;
@@ -50,7 +54,11 @@ public class LogginController {
             UserVo userVo = this.xUserService.checkUserAndPassword(email,password);
 
             response.addCookie(new Cookie("un",userVo.getUserName()));
-            response.addCookie(new Cookie("s",userVo.getSecurity()));
+            Cookie s = new Cookie("s",userVo.getSecurity());
+            s.setHttpOnly(true);
+            response.addCookie(s);
+            response.addCookie(new Cookie("nike",userVo.getUserNike()));
+            response.addCookie(new Cookie("t", String.valueOf(userVo.getTimeMillis())));
 
         }catch (Exception e){
             logger.error(e.getMessage(),e);
@@ -61,8 +69,15 @@ public class LogginController {
             return mv;
         }
 
-
         mv.setViewName("redirect:/main/index");
+        return mv;
+    }
+
+    @RequestMapping("logout")
+    public ModelAndView logout(HttpServletRequest request,HttpServletResponse response){
+        ModelAndView mv = new ModelAndView();
+
+        mv.setViewName("page/login.ftl");
         return mv;
     }
 }

@@ -20,6 +20,14 @@
             <link rel="stylesheet" href="${basepath}/resources/css/global.css"/>
             <script type="text/javascript">
                 var basepath = '${basepath}';
+
+                jQuery(document).ready(function($){
+                    $("#logout").bind("click",function(){
+                        $.cookie("un","",{path:"/",expires:-1});
+                        $.cookie("t","",{path:"/",expires:-1});
+                        window.location = basepath + "/logout";
+                    })
+                })
             </script>
         </@headHtml>
     </head>
@@ -70,22 +78,22 @@
               </div>
               <button type="submit" class="btn btn-default">Submit</button>
             </form> -->
-
-                <ul class="nav navbar-nav navbar-right">
-                    <p class="navbar-text">欢迎:</p>
-                    <li><a href="/j_spring_security_logout">注销</a></li>
-                <#--<li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
-                  <ul class="dropdown-menu">
-                    <li><a href="#">Action</a></li>
-                    <li><a href="#">Another action</a></li>
-                    <li><a href="#">Something else here</a></li>
-                    <li class="divider"></li>
-                    <li><a href="#">Separated link</a></li>
-                  </ul>
-                </li>-->
-                </ul>
-
+                <#if userNike??>
+                    <ul class="nav navbar-nav navbar-right">
+                    <#--<p class="navbar-text">欢迎:</p>-->
+                    <#--<li><a href="/j_spring_security_logout">注销</a></li>-->
+                        <li class="dropdown">
+                            <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> ${userNike!""} <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Action</a></li>
+                                <li><a href="#">Another action</a></li>
+                                <li><a href="#">Something else here</a></li>
+                                <li class="divider"></li>
+                                <li><a href="javascript:void(0)" id="logout">退出登录</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </#if>
             </div><#-- /.navbar-collapse -->
         </div>
     </header>
