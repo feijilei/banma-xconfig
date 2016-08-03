@@ -27,4 +27,55 @@
         WHERE userName = #{userName}
         AND project = #{project}
     </select>
+
+    <select id="queryByUserNamePagging" parameterType="map" resultType="com.zebra.xconfig.server.po.UserPo">
+        SELECT
+        <include refid="userCol"></include>
+        FROM x_user
+        <where>
+            <if test="userName != null and userName != ''">
+                userName LIKE CONCAT(#{userName},'%')
+            </if>
+        </where>
+        ORDER BY id DESC
+        LIMIT #{skip},#{pageSize}
+    </select>
+
+    <select id="counByUserName" parameterType="map" resultType="int">
+        SELECT count(1) FROM x_user
+        <where>
+            <if test="userName != null and userName != ''">
+                userName LIKE CONCAT(#{userName},'%')
+            </if>
+        </where>
+    </select>
+
+    <insert id="insertUser" parameterType="com.zebra.xconfig.server.po.UserPo">
+        INSERT INTO x_user
+        (
+            userName,
+            userNike,
+            password,
+            salt,
+            createTime,
+            role
+        )VALUE (
+            #{userName},
+            #{userNike},
+            #{password},
+            #{salt},
+            NOW(),
+            #{role}
+        )
+    </insert>
+
+    <delete id="deleteUserByUserName" parameterType="map">
+        DELETE FROM x_user
+        WHERE userName = #{userName}
+    </delete>
+
+    <delete id="deleteUserProjectRoleByUserName" parameterType="map">
+        DELETE FROM x_user_project_role
+        WHERE userName = #{userName}
+    </delete>
 </mapper>

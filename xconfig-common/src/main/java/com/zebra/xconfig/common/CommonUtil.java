@@ -2,6 +2,8 @@ package com.zebra.xconfig.common;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,6 +16,8 @@ import java.util.regex.Pattern;
  * path /project/profile/key xCofnig向zk注册的路径 例如 /mysql/dev/username
  */
 public class CommonUtil {
+
+    private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
     public static String genProfilePath(String project,String profile){
         StringBuilder sb = new StringBuilder("/")
@@ -122,6 +126,11 @@ public class CommonUtil {
         return strs[1];
     }
 
+    /**
+     * project profile key 名字校验
+     * @param name
+     * @return
+     */
     public static boolean checkName(String name) {
         if (StringUtils.isBlank(name)) {
             return false;
@@ -129,6 +138,28 @@ public class CommonUtil {
         Pattern pattern = Pattern.compile(Constants.NAME_CHECK_REGEX);
         Matcher m = pattern.matcher(name);
         return m.find();
+    }
+
+    /**
+     * 校验用户名
+     * @param userName
+     * @return
+     */
+    public static boolean checkUserName(String userName) {
+        if (StringUtils.isBlank(userName)) {
+            return false;
+        }
+        Pattern pattern = Pattern.compile(Constants.USERNAME_CHECK);
+        Matcher m = pattern.matcher(userName);
+        return m.find();
+    }
+
+    public static String date2String(Date date){
+        if(date == null){
+            return "1970-1-1 00:00:00";
+        }
+
+        return simpleDateFormat.format(date);
     }
 
 }

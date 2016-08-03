@@ -125,7 +125,7 @@ public class PermissionIntercepter extends HandlerInterceptorAdapter {
 
         response.setHeader("Pragma","No-cache");
         response.setHeader("Cache-Control","No-cache");
-        response.setDateHeader("Expires",-1);
+        response.setDateHeader("Expires",0);
         response.setHeader("Cache-Control", "No-store");
     }
 }

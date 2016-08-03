@@ -1,6 +1,6 @@
 <#--定义html文件中head标签里的内容-->
 <#include "headHtml.ftl"/>
-<#macro baseHtml title="xConfig" localJsFiles=[] remoteJsFiles=[] localCssFiles=[] curMenu="" bodyContainer=true >
+<#macro baseHtml title="xConfig" localJsFiles=[] remoteJsFiles=[] localCssFiles=[] curMenu="index" bodyContainer=true >
     <#escape x as x?html>
     <!DOCTYPE html>
     <html lang="zh-CN">
@@ -51,9 +51,9 @@
         <#-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="${basepath}/main/index">index</a></li>
-                    <li><a href="#">user</a></li>
-                    <li><a href="#">other</a></li>
+                    <li <#if curMenu == "index">class="active"</#if> ><a href="${basepath}/main/index">index</a></li>
+                    <li <#if curMenu == "user">class="active"</#if> ><a href="${basepath}/user/userList">user</a></li>
+                    <li <#if curMenu == "other">class="active"</#if> ><a href="#">other</a></li>
                 <#--
                 <li><a href="#">最新段子</a></li>
                 <li class="dropdown">
@@ -83,7 +83,7 @@
                     <#--<p class="navbar-text">欢迎:</p>-->
                     <#--<li><a href="/j_spring_security_logout">注销</a></li>-->
                         <li class="dropdown">
-                            <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> ${userNike!""} <b class="caret"></b></a>
+                            <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> ${userNike?html} <b class="caret"></b></a>
                             <ul class="dropdown-menu">
                                 <li><a href="#">Action</a></li>
                                 <li><a href="#">Another action</a></li>

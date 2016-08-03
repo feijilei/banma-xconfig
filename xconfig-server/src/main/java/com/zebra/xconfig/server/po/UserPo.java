@@ -11,7 +11,7 @@ public class UserPo {
     private String userNike;
     private String password;
     private String salt;
-    private Date reateTime;
+    private Date createTime;
     private int role;
 
     public int getId() {
@@ -54,12 +54,12 @@ public class UserPo {
         this.salt = salt;
     }
 
-    public Date getReateTime() {
-        return reateTime;
+    public Date getCreateTime() {
+        return createTime;
     }
 
-    public void setReateTime(Date reateTime) {
-        this.reateTime = reateTime;
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 
     public int getRole() {

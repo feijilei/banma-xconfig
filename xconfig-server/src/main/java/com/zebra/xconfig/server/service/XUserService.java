@@ -1,6 +1,8 @@
 package com.zebra.xconfig.server.service;
 
+import com.zebra.xconfig.server.vo.Pagging;
 import com.zebra.xconfig.server.vo.UserVo;
+import com.zebra.xconfig.server.vo.XUserVo;
 
 /**
  * Created by ying on 16/8/1.
@@ -8,4 +10,9 @@ import com.zebra.xconfig.server.vo.UserVo;
 public interface XUserService {
     public UserVo checkUserAndPassword(String userName,String password) throws Exception;
 
+    public Pagging<XUserVo> queryUsersByUserName(String userName,int pageNum,int pageSize);
+
+    public void addUser(String userName,String password,String userNike,int role) throws Exception;
+
+    public void removeUser(String userName) throws Exception;
 }

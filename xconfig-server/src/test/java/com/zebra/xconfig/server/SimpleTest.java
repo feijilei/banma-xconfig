@@ -20,6 +20,6 @@ public class SimpleTest {
     public void genPassword() throws Exception{
         String str = RandomStringUtils.random(10,true,true);
         System.out.println(str);
-        System.out.println(UserUtil.genShaPassword("admin@xconfig.com","admin",str));
+        System.out.println(UserUtil.genShaPassword("guest4@xconfig.com","guest",str));
     }
 }

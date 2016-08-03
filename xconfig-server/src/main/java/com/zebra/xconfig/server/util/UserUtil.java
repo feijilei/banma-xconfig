@@ -47,7 +47,7 @@ public class UserUtil {
         return shaEncode(sb.toString());
     }
 
-    public static String shaEncode(String inStr) throws Exception {
+    private static String shaEncode(String inStr) throws Exception {
         MessageDigest sha = null;
         sha = MessageDigest.getInstance("SHA");
 
