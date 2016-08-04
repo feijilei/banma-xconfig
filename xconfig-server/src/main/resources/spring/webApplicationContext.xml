@@ -90,8 +90,9 @@
 
     <mvc:interceptors>
         <mvc:interceptor>
-            <mvc:mapping path="/main/**"/>
-            <mvc:mapping path="/project/**"/>
+            <mvc:mapping path="/main/**" />
+            <mvc:mapping path="/project/**" />
+            <mvc:mapping path="/user/**" />
             <bean class="com.zebra.xconfig.server.web.Intercepter.PermissionIntercepter"></bean>
         </mvc:interceptor>
     </mvc:interceptors>
@@ -110,7 +111,13 @@
                 <entry key="/main/removeProfile" value="20"></entry>
                 <entry key="/main/addProject" value="30"></entry>
                 <entry key="/main/removeProject" value="30"></entry>
-                <entry key="/project/setting" value="30"></entry>
+                <entry key="/project/setting" value="20"></entry>
+                <entry key="/project/queryGuestUser" value="30"></entry>
+                <entry key="/project/addOwner" value="30"></entry>
+                <entry key="/project/removeOwner" value="30"></entry>
+                <entry key="/user/userList" value="10"></entry>
+                <entry key="/user/addUser" value="30"></entry>
+                <entry key="/user/removeUser" value="30"></entry>
             </map>
         </property>
     </bean>

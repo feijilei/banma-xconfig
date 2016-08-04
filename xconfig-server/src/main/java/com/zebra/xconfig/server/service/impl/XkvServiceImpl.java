@@ -5,6 +5,7 @@ import com.zebra.xconfig.common.exception.IllegalNameException;
 import com.zebra.xconfig.common.exception.XConfigException;
 import com.zebra.xconfig.server.dao.mapper.XKvMapper;
 import com.zebra.xconfig.server.dao.mapper.XProjectProfileMapper;
+import com.zebra.xconfig.server.dao.mapper.XUserMapper;
 import com.zebra.xconfig.server.po.KvPo;
 import com.zebra.xconfig.server.po.ZkNode;
 import com.zebra.xconfig.server.service.XKvService;

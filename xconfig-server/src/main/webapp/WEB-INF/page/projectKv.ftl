@@ -52,7 +52,7 @@
                             <input type="checkbox" id="allDep" <#if allDep?? && allDep == "true">checked</#if>> 加载所有依赖
                         </label>
                     <#else>
-                        空&nbsp;<a href="javascript:void(0)"><span class="glyphicon glyphicon-cog" aria-hidden="true" data-toggle="modal" data-target="#editDepModal"></span></a>
+                        空&nbsp;<@dataRight role=role url="/main/updateProjectDeps"><a href="javascript:void(0)"><span class="glyphicon glyphicon-cog" aria-hidden="true" data-toggle="modal" data-target="#editDepModal"></span></a></@dataRight>
                     </#if>
                 </span>
             </span>

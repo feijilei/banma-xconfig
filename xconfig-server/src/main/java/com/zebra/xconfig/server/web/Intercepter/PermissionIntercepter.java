@@ -30,10 +30,14 @@ public class PermissionIntercepter extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        String url = request.getRequestURI();
         try {
             String username = null;
             String security = null;
-            String project = request.getParameter("project");
+            String project = null;
+            if(url.startsWith("/main") || url.startsWith("/project")){//这两个路径下的请求我们附加上project角色
+                project = request.getParameter("project");
+            }
             long timeMillis = 0;
 
             Cookie[] cookies = request.getCookies();
@@ -77,7 +81,6 @@ public class PermissionIntercepter extends HandlerInterceptorAdapter {
                 Integer projectRole = xUserMapper.loadUserProjectRole(username,project);
                 role = (projectRole != null && projectRole >= role) ? projectRole : role;
             }
-            String url = request.getRequestURI();
             int needRole = UrlResouces.getResouceRole(url);//防止忘记设置权限带来的安全问题
             if(role >= needRole){
                 request.setAttribute("_role",role);

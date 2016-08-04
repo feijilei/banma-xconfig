@@ -1,6 +1,7 @@
 package com.zebra.xconfig.server.dao.mapper;
 
 import com.zebra.xconfig.server.po.UserPo;
+import com.zebra.xconfig.server.po.UserProjectRolePo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -16,4 +17,8 @@ public interface XUserMapper {
     public void insertUser(UserPo userPo);
     public void deleteUserByUserName(@Param("userName")String userName);
     public void deleteUserProjectRoleByUserName(@Param("userName")String userName);
+    public List<String> queryGuestUserByUserNameLike(@Param("userName")String userName);
+    public List<UserProjectRolePo> queryUserRoleByProject(@Param("project")String project);
+    public void insertUserProjectRole(UserProjectRolePo userProjectRolePo);
+    public void deleteUserProjectRole(@Param("project")String project,@Param("userName")String userName);
 }

@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.HtmlUtils;
@@ -58,7 +59,7 @@ public class MainController {
         String project = HtmlUtils.htmlEscape(webRequest.getParameter("project"));
         String profile = HtmlUtils.htmlEscape(webRequest.getParameter("profile"));
         String allDep = webRequest.getParameter("allDep");
-
+        int role = (int)webRequest.getAttribute("_role", RequestAttributes.SCOPE_REQUEST);
 
         List<String> profiles = xProjectProfileService.queryProjectProfiles(project);
 
@@ -82,7 +83,22 @@ public class MainController {
             KvVo kvVo = new KvVo();
 //            kvVo.setMkey(CommonUtil.genMKey(kvPo.getProject(), kvPo.getProfile(), kvPo.getxKey()));
             kvVo.setKey(CommonUtil.genKey(kvPo.getProject(),kvPo.getxKey()));
-            kvVo.setValue("Y".equals(kvPo.getSecurity()) ? "*********" : kvPo.getxValue());
+
+            //权限不够的高密字段隐藏
+            if(!"N".equals(kvPo.getSecurity())){//高密字段
+                if(kvPo.getProject().equals(project)){//当前项目
+                    if(role < 20){//权限不够
+                        kvVo.setValue("*********");
+                    }else{
+                        kvVo.setValue(kvPo.getxValue());
+                    }
+                }else{//非当前项目的高密字段
+                    kvVo.setValue("*********");
+                }
+            }else {
+                kvVo.setValue(kvPo.getxValue());
+            }
+
             kvVo.setDescription(kvPo.getDescription());
             kvVo.setSecurity(kvPo.getSecurity());
             kvVo.setCreateTime(simpleDateFormat.format(kvPo.getCreateTime()));

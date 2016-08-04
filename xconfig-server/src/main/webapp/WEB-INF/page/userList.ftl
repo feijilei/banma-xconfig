@@ -13,7 +13,9 @@
         </div>
         <div class="col-sm-1">
             <div class="pull-right">
+                <@dataRight role=role url="/user/addUser">
                 <a href="javascript:void(0)"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true" data-toggle="modal" data-target="#addUserModal"></span></a>
+                </@dataRight>
             </div>
         </div>
     </h1>
@@ -31,13 +33,15 @@
 
             <tbody>
                 <#list users.t as user>
-                    <tr>
+                    <tr data-key=${user.userName?html}>
                         <td>${user.userName?html}</td>
                         <td>${user.userNike?html}</td>
                         <td>${roleMap[user.role?string]}</td>
                         <td>${user.createTime}</td>
                         <td>
+                            <@dataRight role=role url="/user/removeUser">
                             <a href="javascript:void(0)"><span class="glyphicon glyphicon-remove" aria-hidden="true" data-toggle="modal" data-target="#removeUserModal"></span></a>
+                            </@dataRight>
                         </td>
                     </tr>
                 </#list>

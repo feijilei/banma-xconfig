@@ -20,4 +20,25 @@ jQuery(document).ready(function($){
         $(this).prop("disabled",true);
         addUserForm.submit();
     });
+
+    //删除user
+    $('#removeUserModal').on('show.bs.modal', function (event) {
+        $("#removeUserModal .errMsgDiv").addClass("hidden");
+        //$("#editButton").prop("disabled",false);
+        var button = $(event.relatedTarget) // Button that triggered the modal
+        var userName = button.parents("tr").first().attr("data-key");
+
+        $("#removeUserButton").unbind();
+        $("#removeUserButton").bind("click",function(){
+            $.post(basepath+"/user/removeUser",{"userName":userName},function(data){
+                if(data.code == 0){
+                    window.location = basepath + "/user/userList";
+                }else{
+                    //console.log(data.msg);
+                    $("#removeUserModal .errMsgDiv").removeClass("hidden");
+                    $("#removeUserModal .errMsg").text(data.msg);
+                }
+            })
+        });
+    });
 });

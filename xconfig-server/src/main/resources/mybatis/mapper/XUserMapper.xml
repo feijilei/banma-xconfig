@@ -78,4 +78,38 @@
         DELETE FROM x_user_project_role
         WHERE userName = #{userName}
     </delete>
+
+    <select id="queryGuestUserByUserNameLike" parameterType="map" resultType="string">
+        SELECT
+          userName
+        FROM x_user
+        WHERE userName LIKE CONCAT(#{userName},'%')
+        AND role = 10
+        ORDER BY id DESC
+    </select>
+
+    <select id="queryUserRoleByProject" parameterType="map" resultType="com.zebra.xconfig.server.po.UserProjectRolePo">
+        SELECT userName,project,role
+        FROM x_user_project_role
+        WHERE project = #{project}
+    </select>
+
+    <insert id="insertUserProjectRole" parameterType="com.zebra.xconfig.server.po.UserProjectRolePo">
+        INSERT INTO x_user_project_role
+        (
+          userName,
+          project,
+          role
+        )VALUE (
+          #{userName},
+          #{project},
+          #{role}
+        )
+    </insert>
+
+    <delete id="deleteUserProjectRole" parameterType="map">
+        DELETE FROM x_user_project_role
+        WHERE project = #{project}
+        AND userName = #{userName}
+    </delete>
 </mapper>

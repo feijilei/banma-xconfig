@@ -2,8 +2,10 @@ package com.zebra.xconfig.server.service.impl;
 
 import com.zebra.xconfig.common.CommonUtil;
 import com.zebra.xconfig.common.exception.XConfigException;
+import com.zebra.xconfig.server.dao.mapper.XProjectProfileMapper;
 import com.zebra.xconfig.server.dao.mapper.XUserMapper;
 import com.zebra.xconfig.server.po.UserPo;
+import com.zebra.xconfig.server.po.UserProjectRolePo;
 import com.zebra.xconfig.server.service.XUserService;
 import com.zebra.xconfig.server.util.UserUtil;
 import com.zebra.xconfig.server.vo.Pagging;
@@ -29,6 +31,8 @@ public class XUserServiceImpl implements XUserService {
 
     @Autowired
     private XUserMapper xUserMapper;
+    @Autowired
+    private XProjectProfileMapper xProjectProfileMapper;
 
     @Override
     public UserVo checkUserAndPassword(String userName, String password) throws Exception {
@@ -62,10 +66,7 @@ public class XUserServiceImpl implements XUserService {
         List<XUserVo> xUserVos = new ArrayList<>();
         for(UserPo userPo : userPos){
             XUserVo xUserVo = new XUserVo();
-            xUserVo.setUserName(userPo.getUserName());
-            xUserVo.setUserNike(userPo.getUserNike());
-            xUserVo.setRole(userPo.getRole());
-            xUserVo.setCreateTime(CommonUtil.date2String(userPo.getCreateTime()));
+            xUserVo.setUserPo(userPo);
 
             xUserVos.add(xUserVo);
         }
@@ -117,5 +118,53 @@ public class XUserServiceImpl implements XUserService {
     public void removeUser(String userName) throws Exception {
         this.xUserMapper.deleteUserByUserName(userName);
         this.xUserMapper.deleteUserProjectRoleByUserName(userName);
+    }
+
+    @Override
+    public List<String> queryGuestUser(String userNamePre) throws Exception {
+        return this.xUserMapper.queryGuestUserByUserNameLike(userNamePre);
+    }
+
+    @Override
+    public List<XUserVo> queryProjectOwner(String project) {
+        List<UserProjectRolePo> userProjectRolePos = this.xUserMapper.queryUserRoleByProject(project);
+
+        List<XUserVo> xUserVos = new ArrayList<>();
+        for(UserProjectRolePo tmp : userProjectRolePos){
+            UserPo userPo = this.xUserMapper.loadUser(tmp.getUserName());
+            if(userPo == null){
+                continue;
+            }
+            XUserVo xUserVo = new XUserVo();
+            xUserVo.setUserPo(userPo);
+
+            xUserVos.add(xUserVo);
+        }
+        return xUserVos;
+    }
+
+    @Override
+    public void addUserProjectRole(String project, String userName) throws Exception{
+        UserPo userPo = this.xUserMapper.loadUser(userName);
+        if(userPo == null || userPo.getRole() != 10){
+            throw new XConfigException("用户不存在或者用户角色不为guest");
+        }
+
+        String pj = this.xProjectProfileMapper.loadProject(project);
+        if(StringUtils.isBlank(pj)){
+            throw new XConfigException("当前project不存在");
+        }
+
+        UserProjectRolePo userProjectRolePo = new UserProjectRolePo();
+        userProjectRolePo.setUserName(userName);
+        userProjectRolePo.setProject(project);
+        userProjectRolePo.setRole(20);
+
+        this.xUserMapper.insertUserProjectRole(userProjectRolePo);
+    }
+
+    @Override
+    public void removeUserProjectRole(String project, String userName) throws Exception {
+        this.xUserMapper.deleteUserProjectRole(project,userName);
     }
 }
