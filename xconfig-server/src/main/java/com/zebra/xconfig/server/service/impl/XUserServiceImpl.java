@@ -167,4 +167,21 @@ public class XUserServiceImpl implements XUserService {
     public void removeUserProjectRole(String project, String userName) throws Exception {
         this.xUserMapper.deleteUserProjectRole(project,userName);
     }
+
+    @Override
+    public void updateUserNikeAndPassword(String userName, String userNike, String oldPassword, String newPassword) throws Exception {
+        UserPo userPo = this.xUserMapper.loadUser(userName);
+        if(userPo == null){
+            throw new XConfigException("当前用户已经不存在");
+        }
+
+        String oldShaPassword = UserUtil.genShaPassword(userName,oldPassword,userPo.getSalt());
+        if(!oldShaPassword.equals(userPo.getPassword())){
+            throw new XConfigException("旧的密码不正确，请重试");
+        }
+
+        String newShaPassword = UserUtil.genShaPassword(userName,newPassword,userPo.getSalt());
+
+        this.xUserMapper.updateUser(userName,userNike,newShaPassword);
+    }
 }

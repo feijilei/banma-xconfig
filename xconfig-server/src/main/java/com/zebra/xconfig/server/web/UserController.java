@@ -1,9 +1,11 @@
 package com.zebra.xconfig.server.web;
 
+import com.zebra.xconfig.common.exception.XConfigException;
 import com.zebra.xconfig.server.service.XUserService;
 import com.zebra.xconfig.server.vo.AjaxResponse;
 import com.zebra.xconfig.server.vo.Pagging;
 import com.zebra.xconfig.server.vo.XUserVo;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -81,5 +83,32 @@ public class UserController {
             ajaxResponse.setThrowable(e);
         }
         return ajaxResponse;
+    }
+
+    @RequestMapping("/updateUser")
+    public ModelAndView updateUser(WebRequest webRequest){
+        ModelAndView mv = new ModelAndView();
+        String msg = "";
+        try{
+            String userName = webRequest.getParameter("userName");
+            String oldPassword = webRequest.getParameter("oldPassword");
+            String newPassword1 = webRequest.getParameter("newPassword1");
+            String newPassword2 = webRequest.getParameter("newPassword2");
+
+            if(StringUtils.isBlank(newPassword1) || StringUtils.isBlank(newPassword2)){
+                new XConfigException("新密码不能为空");
+            }
+
+            if(newPassword1.equals(newPassword2)){
+
+            }
+        }catch (Exception e){
+            logger.error(e.getMessage(),e);
+            msg = e.getMessage();
+        }
+
+        mv.getModel().put("msg",msg);
+        mv.setViewName("page/changePassword.ftl");
+        return mv;
     }
 }

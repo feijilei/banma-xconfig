@@ -30,4 +30,6 @@ public interface XUserService {
     public void addUserProjectRole(String project,String userName) throws Exception;
 
     public void removeUserProjectRole(String project,String userName) throws  Exception;
+
+    public void updateUserNikeAndPassword(String userName,String userNike,String oldPassword,String newPassword) throws Exception;
 }

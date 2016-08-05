@@ -112,4 +112,12 @@
         WHERE project = #{project}
         AND userName = #{userName}
     </delete>
+
+    <update id="updateUser" parameterType="map">
+        UPDATE x_user
+        SET
+          userNike = #{userNike},
+          password = #{password}
+        WHERE userName = #{userName}
+    </update>
 </mapper>
