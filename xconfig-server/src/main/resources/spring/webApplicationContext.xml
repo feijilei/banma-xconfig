@@ -118,6 +118,8 @@
                 <entry key="/user/userList" value="10"></entry>
                 <entry key="/user/addUser" value="30"></entry>
                 <entry key="/user/removeUser" value="30"></entry>
+                <entry key="/user/changePassword" value="10"></entry>
+                <entry key="/user/updateUser" value="10"></entry>
             </map>
         </property>
     </bean>

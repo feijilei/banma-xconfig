@@ -85,23 +85,34 @@ public class UserController {
         return ajaxResponse;
     }
 
+    @RequestMapping("/changePassword")
+    public ModelAndView changePassword(){
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("page/changePassword.ftl");
+        return mv;
+    }
+
     @RequestMapping("/updateUser")
     public ModelAndView updateUser(WebRequest webRequest){
         ModelAndView mv = new ModelAndView();
-        String msg = "";
+        String msg;
         try{
-            String userName = webRequest.getParameter("userName");
+            String userName = webRequest.getParameter("_userName");
+            String userNike = webRequest.getParameter("userNike");
             String oldPassword = webRequest.getParameter("oldPassword");
             String newPassword1 = webRequest.getParameter("newPassword1");
             String newPassword2 = webRequest.getParameter("newPassword2");
 
             if(StringUtils.isBlank(newPassword1) || StringUtils.isBlank(newPassword2)){
-                new XConfigException("新密码不能为空");
+                throw new XConfigException("新密码不能为空");
             }
 
-            if(newPassword1.equals(newPassword2)){
-
+            if(!newPassword1.equals(newPassword2)){
+                throw new XConfigException("两次输入的密码不一致");
             }
+
+            this.xUserService.updateUserNikeAndPassword(userName,userNike,oldPassword,newPassword1);
+            msg = "ok";
         }catch (Exception e){
             logger.error(e.getMessage(),e);
             msg = e.getMessage();

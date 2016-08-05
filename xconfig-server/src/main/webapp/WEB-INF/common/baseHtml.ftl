@@ -85,7 +85,7 @@
                         <li class="dropdown">
                             <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> ${userNike?html} <b class="caret"></b></a>
                             <ul class="dropdown-menu">
-                                <li><a href="#"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> 修改密码</a></li>
+                                <li><a href="${basepath}/user/changePassword"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> 修改密码</a></li>
                                 <li class="divider"></li>
                                 <li><a href="javascript:void(0)" id="logout"><span class="glyphicon glyphicon-off" aria-hidden="true"></span> 退出登录</a></li>
                             </ul>

@@ -85,6 +85,7 @@ public class PermissionIntercepter extends HandlerInterceptorAdapter {
             if(role >= needRole){
                 request.setAttribute("_role",role);
                 request.setAttribute("_userNike",userPo.getUserNike());
+                request.setAttribute("_userName", userPo.getUserName());
                 return true;
             }else{
                 throw new XConfigException("您的权限不足");

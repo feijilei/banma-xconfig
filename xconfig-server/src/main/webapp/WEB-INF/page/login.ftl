@@ -16,15 +16,15 @@
                     <input type="password" class="form-control" id="password" name="password" placeholder="Password">
                 </div>
             </div>
-            <div class="form-group">
-                <div class="col-sm-offset-3 col-sm-9">
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" name="rememberMe"> 记住我
-                        </label>
-                    </div>
-                </div>
-            </div>
+            <#--<div class="form-group">-->
+                <#--<div class="col-sm-offset-3 col-sm-9">-->
+                    <#--<div class="checkbox">-->
+                        <#--<label>-->
+                            <#--<input type="checkbox" name="rememberMe"> 记住我-->
+                        <#--</label>-->
+                    <#--</div>-->
+                <#--</div>-->
+            <#--</div>-->
             <#if errMsg??>
                 <div class="form-group">
                     <div class="col-sm-offset-3 col-sm-9">
