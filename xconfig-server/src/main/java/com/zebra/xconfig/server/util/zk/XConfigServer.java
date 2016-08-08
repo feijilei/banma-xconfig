@@ -2,6 +2,7 @@ package com.zebra.xconfig.server.util.zk;
 
 import com.zebra.xconfig.common.CommonUtil;
 import com.zebra.xconfig.common.Constants;
+import com.zebra.xconfig.common.exception.XConfigException;
 import com.zebra.xconfig.server.dao.mapper.XKvMapper;
 import com.zebra.xconfig.server.dao.mapper.XProjectProfileMapper;
 import com.zebra.xconfig.server.po.KvPo;
@@ -12,6 +13,8 @@ import org.apache.curator.framework.api.transaction.CuratorTransaction;
 import org.apache.curator.framework.api.transaction.CuratorTransactionFinal;
 import org.apache.curator.framework.recipes.leader.LeaderLatch;
 import org.apache.curator.framework.recipes.leader.LeaderLatchListener;
+import org.apache.curator.framework.state.ConnectionState;
+import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by ying on 16/7/18.
@@ -34,8 +38,21 @@ public class XConfigServer {
 
     private volatile boolean isLeader = false;
     private volatile boolean timerRunning = false;
+    private volatile boolean zkConnected = false;
 
     public void init() throws Exception{
+        client.getConnectionStateListenable().addListener(new ConnectionStateListener() {
+            @Override
+            public void stateChanged(CuratorFramework client, ConnectionState newState) {
+                logger.info("zk stateChanged state:{},connected:{}",newState,newState.isConnected());
+                zkConnected = newState.isConnected();
+            }
+        });
+        zkConnected = client.blockUntilConnected(30, TimeUnit.SECONDS);
+        if(!zkConnected){
+            throw new XConfigException("zk连接超时失败！");
+        }
+
         LeaderLatch leaderLatch = new LeaderLatch(client, Constants.LEADER_SELECT_PATH, UUID.randomUUID().toString());
         leaderLatch.start();
 
@@ -46,7 +63,7 @@ public class XConfigServer {
                 try {
                     logger.debug("synTask running,isLeader:{}",isLeader);
 
-                    if(isLeader) {
+                    if(isLeader && zkConnected) {
                         Stat stat = client.checkExists().forPath("/");
                         if (System.currentTimeMillis() - stat.getMtime() > Constants.SYN_PERIOD_MILLIS) {//超过10分钟没有同步过
                             synDb2Zk();
@@ -87,7 +104,7 @@ public class XConfigServer {
      * 同步依赖信息
      */
     private void synDb2Zk(){
-        logger.debug("开始kv数据");
+        logger.debug("开始同步kv数据");
         List<KvPo> kvPos = this.xKvMapper.queryAll();
         for(KvPo kvPo : kvPos){
             String keyPath = CommonUtil.genMKeyPath(kvPo.getProject(), kvPo.getProfile(), kvPo.getxKey());
@@ -140,6 +157,9 @@ public class XConfigServer {
     }
 
     public void createUpdateKvNode(String nodePath,String value) throws Exception{
+        if(!zkConnected){
+            throw new XConfigException("zk is not Connected");
+        }
         Stat stat = client.checkExists().forPath(nodePath);
         if(stat == null){
             client.create().creatingParentsIfNeeded().forPath(nodePath,value.getBytes());
@@ -149,6 +169,9 @@ public class XConfigServer {
     }
 
     public void createKvNodesWithTransaction(List<ZkNode> zkNodes) throws Exception{
+        if(!zkConnected){
+            throw new XConfigException("zk is not Connected");
+        }
         if(zkNodes == null || zkNodes.size() == 0){
             return;
         }
@@ -169,6 +192,9 @@ public class XConfigServer {
      * @throws Exception
      */
     public void deleteNode(String nodePath) throws  Exception{
+        if(!zkConnected){
+            throw new XConfigException("zk is not Connected");
+        }
         Stat stat = client.checkExists().forPath(nodePath);
         if(stat != null){
             client.delete().deletingChildrenIfNeeded().forPath(nodePath);
@@ -176,6 +202,9 @@ public class XConfigServer {
     }
 
     public void deleteKvNodesWithTransaction(List<ZkNode> zkNodes) throws Exception{
+        if(!zkConnected){
+            throw new XConfigException("zk is not Connected");
+        }
         if(zkNodes == null || zkNodes.size() == 0){
             return;
         }

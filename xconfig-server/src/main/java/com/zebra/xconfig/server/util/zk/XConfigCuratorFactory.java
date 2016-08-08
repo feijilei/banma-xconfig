@@ -11,7 +11,7 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 public class XConfigCuratorFactory {
 
     public static CuratorFramework init(String zkConnStr){
-        ExponentialBackoffRetry retry = new ExponentialBackoffRetry(1000 * 2, 5);
+        ExponentialBackoffRetry retry = new ExponentialBackoffRetry(1000 * 1, 5);
         //创建zk客户端
         CuratorFramework client = CuratorFrameworkFactory.builder()
                 .connectString(zkConnStr)

@@ -29,7 +29,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by ying on 16/7/15.
  *
- * 注册TreeEvent当节点不存在的时候，性能开销比较大
+ * 注册TreeEvent当节点不存在的时候，性能开销比较大，不使用这种监听器
+ * //todo 依赖信息是否要动态监听 项目配置好的情况下修改频繁修改依赖的情况并不多见，这种情况大部分都需要重启应用，所以不需要动态监听
  */
 public class XConfigContext {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -228,8 +229,6 @@ public class XConfigContext {
             }
         }
     }
-
-    //todo 依赖信息是否要动态监听
 
     /**
      * Key监听器
