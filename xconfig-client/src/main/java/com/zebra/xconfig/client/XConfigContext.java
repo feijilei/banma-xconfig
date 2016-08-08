@@ -4,11 +4,14 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.zebra.xconfig.common.CommonUtil;
 import com.zebra.xconfig.common.Constants;
+import com.zebra.xconfig.common.exception.XConfigException;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
+import org.apache.curator.framework.state.ConnectionState;
+import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,28 +40,19 @@ public class XConfigContext {
     private final Map<String,String> cacheDepProject = new ConcurrentHashMap<String, String>(50);
 
     private XConfig xConfig;//配置信息
-    private String localDir;//本地文件夹路径
 
     private CuratorFramework client;//zk客户端
     private CountDownLatch countDownLatch;//zk初始化闭锁
     private boolean initOk = false;//是否初始化成功
+    private boolean zkConnected = false;//zk是否在线
 
     private XKeyObservable xKeyObservable;
 
-    XConfigContext(XConfig xConfig,XKeyObservable xKeyObservable){
+    XConfigContext(XConfig xConfig,XKeyObservable xKeyObservable) throws XConfigException{
         this.xKeyObservable = xKeyObservable;
         this.xConfig = xConfig;
 
-        this.localDir = System.getProperty("user.home")
-                + File.separator + Constants.LOCAL_FILE_DIR_NAME
-                + File.separator + xConfig.getProject() + "_"+xConfig.getProfile();
-        String localFilePath = this.localDir + File.separator + Constants.DEFAULT_FILE;
-
-        //创建文件目录
-        File fileDir = new File(this.localDir);
-        if(!fileDir.exists()){
-            fileDir.mkdirs();
-        }
+        String localFilePath = this.xConfig.getLocalConfigDir() + File.separator + Constants.DEFAULT_FILE;
 
         FileInputStream fileInputStream = null;
         try {
@@ -79,63 +73,97 @@ public class XConfigContext {
 
                 initOk = true;
             }else {//zk启动
-                ExponentialBackoffRetry retry = new ExponentialBackoffRetry(1000 * 2, 5);
+                ExponentialBackoffRetry retry = new ExponentialBackoffRetry(1000, 3);
                 //创建zk客户端
                 client = CuratorFrameworkFactory.builder()
-                        .connectString(xConfig.getZkConnStr())
+                        .connectString(xConfig.getZkConn())
                         .retryPolicy(retry)
                         .connectionTimeoutMs(1000 * 16)
                         .sessionTimeoutMs(1000 * 60)
                         .namespace(Constants.NAME_SPACE)
                         .build();
-                client.start();
-
-                //当前项目依赖
-                //        final NodeCache projectNode = new NodeCache(client,"/"+xConfig.getProject());
-                //        NodeCacheListener projectNodeListener = new NodeCacheListener() {
-                //            @Override
-                //            public void nodeChanged() throws Exception {
-                //                logger.debug("projectNodeChange:{}",projectNode.getCurrentData().getPath());
-                //
-                //                for()
-                //            }
-                //        };
-
-                String depStr = new String(client.getData().forPath("/" + xConfig.getProject()));
-
-                List<String> dependencies = new ArrayList<String>();
-                dependencies.addAll(Arrays.asList(depStr.split(",")));
-                dependencies.add(xConfig.getProject());
-                for (String tmp : dependencies) {
-                    this.cacheDepProject.put(tmp, "");
-                }
-                if (logger.isDebugEnabled()) {
-                    logger.debug("===>依赖检查完毕:{}", JSONArray.toJSONString(dependencies));
-                }
-
-
-                //注册profile监听子节点
-                this.countDownLatch = new CountDownLatch(dependencies.size());
-                for (String tmp : dependencies) {
-                    String profilePath = CommonUtil.genProfilePath(tmp, xConfig.getProfile());
-
-                    if ("0".equals(tmp)) {
-                        countDownLatch.countDown();
-                        continue;
+                client.getConnectionStateListenable().addListener(new ConnectionStateListener() {
+                    @Override
+                    public void stateChanged(CuratorFramework client, ConnectionState newState) {
+                        logger.info("zk stateChanged state:{},connected:{}",newState,newState.isConnected());
+                        zkConnected = newState.isConnected();
                     }
-                    logger.debug("===>监听子节点{}", profilePath);
-                    //监听key
-                    final PathChildrenCache keyCache = new PathChildrenCache(client, profilePath, true);
-                    KeyCacheListener keyCacheListener = new KeyCacheListener(profilePath);
-                    keyCache.getListenable().addListener(keyCacheListener);
-                    keyCache.start(PathChildrenCache.StartMode.POST_INITIALIZED_EVENT);
+                });
+                client.start();
+                client.blockUntilConnected(10,TimeUnit.SECONDS);
 
-                    logger.debug("===>子节点监听设置完成");
+                if(zkConnected) {
+                    logger.info("zk已连接，使用zk启动");
+                    //当前项目依赖
+                    //        final NodeCache projectNode = new NodeCache(client,"/"+xConfig.getProject());
+                    //        NodeCacheListener projectNodeListener = new NodeCacheListener() {
+                    //            @Override
+                    //            public void nodeChanged() throws Exception {
+                    //                logger.debug("projectNodeChange:{}",projectNode.getCurrentData().getPath());
+                    //
+                    //                for()
+                    //            }
+                    //        };
+
+                    String depStr = new String(client.getData().forPath("/" + xConfig.getProject()));
+
+                    List<String> dependencies = new ArrayList<String>();
+                    dependencies.addAll(Arrays.asList(depStr.split(",")));
+                    dependencies.add(xConfig.getProject());
+                    for (String tmp : dependencies) {
+                        this.cacheDepProject.put(tmp, "");
+                    }
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("===>依赖检查完毕:{}", JSONArray.toJSONString(dependencies));
+                    }
+
+
+                    //注册profile监听子节点
+                    this.countDownLatch = new CountDownLatch(dependencies.size());
+                    for (String tmp : dependencies) {
+                        String profilePath = CommonUtil.genProfilePath(tmp, xConfig.getProfile());
+
+                        if ("0".equals(tmp)) {
+                            countDownLatch.countDown();
+                            continue;
+                        }
+                        logger.debug("===>监听子节点{}", profilePath);
+                        //监听key
+                        final PathChildrenCache keyCache = new PathChildrenCache(client, profilePath, true);
+                        KeyCacheListener keyCacheListener = new KeyCacheListener(profilePath);
+                        keyCache.getListenable().addListener(keyCacheListener);
+                        keyCache.start(PathChildrenCache.StartMode.POST_INITIALIZED_EVENT);
+
+                        logger.debug("===>子节点监听设置完成");
+                    }
+                    initOk = countDownLatch.await(60, TimeUnit.SECONDS);//等待初始化完成
+                }else{
+                    //使用zk失败，做降级处理，使用上次启动时候的文件启动应用
+                    client.close();
+                    logger.warn("zk初始化失败，尝试使用最后一次更新的配置文件启动");
+                    File currentFile = new File(xConfig.getLocalConfigDir()+File.separator+Constants.CURRENT_FILE);
+                    File bootFile = new File(xConfig.getLocalConfigDir()+File.separator+Constants.BOOT_FILE);
+                    File userFile = null;
+                    if(currentFile.exists()){
+                        logger.warn("使用{}启动",currentFile.getAbsolutePath());
+                        userFile = currentFile;
+                    }else if(bootFile.exists()){
+                        logger.warn("使用{}启动",bootFile.getAbsoluteFile());
+                        userFile = bootFile;
+                    }else{
+                        throw new XConfigException("zk启动失败，尝试使用最近的配置文件启动失败，请检查！");
+                    }
+
+                    fileInputStream = new FileInputStream(userFile);
+                    Properties properties = new Properties();
+                    properties.load(fileInputStream);
+
+                    for(String key : properties.stringPropertyNames()){
+                        this.cacheKv.put(key,properties.getProperty(key));
+                    }
+
+                    initOk = true;
                 }
-
-                initOk = countDownLatch.await(60, TimeUnit.SECONDS);
-
-                //todo 如果使用zk初始化失败，是否做降级处理，使用上次启动时候的文件启动应用
 
                 this.writeFile(Constants.BOOT_FILE);
             }
@@ -152,8 +180,10 @@ public class XConfigContext {
             }
         }
 
-        if(!initOk){
-            throw new RuntimeException("XConfigContext init failed");
+        if(initOk){
+            this.xKeyObservable.ready();
+        }else{
+            throw new XConfigException("XConfigContext init failed");
         }
         logger.info("===>初始化完毕,key:{},dependencyProject:{}", JSON.toJSONString(this.cacheKv), JSON.toJSONString(this.cacheDepProject.keySet()));
 
@@ -177,7 +207,7 @@ public class XConfigContext {
 
         try {
             Properties properties = this.getProperties();
-            fileOutputStream = new FileOutputStream(this.localDir + File.separator + fileName);
+            fileOutputStream = new FileOutputStream(this.xConfig.getLocalConfigDir() + File.separator + fileName);
             properties.setProperty("createTime",new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
             properties.setProperty("profile",xConfig.getProfile());
             properties.store(fileOutputStream,"generate by xConfig");
