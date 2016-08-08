@@ -1,3 +1,3 @@
 <script>
-	window.location = "index/login";
+	window.location = "main/index";
 </script>

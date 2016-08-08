@@ -17,6 +17,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 
 /**
  * Created by ying on 16/8/1.
@@ -84,7 +86,7 @@ public class PermissionIntercepter extends HandlerInterceptorAdapter {
             int needRole = UrlResouces.getResouceRole(url);//防止忘记设置权限带来的安全问题
             if(role >= needRole){
                 request.setAttribute("_role",role);
-                request.setAttribute("_userNike",userPo.getUserNike());
+                request.setAttribute("_userNike", URLDecoder.decode(userPo.getUserNike(), "utf-8"));
                 request.setAttribute("_userName", userPo.getUserName());
                 return true;
             }else{

@@ -15,14 +15,22 @@
     </h1>
     <hr/>
     <div>
-        <#if msg != "ok">
-            <div class="alert alert-danger" role="alert">
-                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                <span class="sr-only">Error:</span>
-                Enter a valid email address
-            </div>
-        <
+        <#if msg??>
+            <#if msg != "ok">
+                <div class="alert alert-danger" role="alert">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    <span class="sr-only">Error:</span>
+                ${msg?html}
+                </div>
+            <#else >
+                <div class="alert alert-info" role="alert">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    <span class="sr-only">Success:</span>
+                    修改成功！
+                </div>
+            </#if>
         </#if>
+
 
         <form action="${basepath}/user/updateUser" method="post">
             <div class="form-group">

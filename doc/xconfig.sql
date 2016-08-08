@@ -45,15 +45,27 @@ CREATE TABLE `x_project_dependency` (
 
 CREATE TABLE `x_user` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `userName` varchar(50) NOT NULL DEFAULT '',
+  `userName` varchar(100) NOT NULL DEFAULT '',
   `userNike` varchar(50) NOT NULL DEFAULT '',
   `password` varchar(100) NOT NULL DEFAULT '',
+  `salt` varchar(50) NOT NULL DEFAULT '',
   `createTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `role` int(11) NOT NULL COMMENT 'guest 10，owner 20 ,master 30',
+  `role` int(11) NOT NULL COMMENT 'guest 10，developer 20 ,master 30',
   PRIMARY KEY (`id`),
   KEY `udx_userName` (`userName`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 
+CREATE TABLE `x_user_project_role` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `userName` varchar(50) NOT NULL DEFAULT '',
+  `project` varchar(50) NOT NULL DEFAULT '',
+  `role` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `udx_project_userName` (`project`,`userName`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+
+
+-- data
 INSERT INTO `wisdom` (`id`, `content`)
 VALUES
 	(1, 'UNIX很简单。但需要有一定天赋的人才能理解这种简单。'),

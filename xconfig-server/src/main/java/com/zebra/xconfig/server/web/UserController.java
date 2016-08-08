@@ -97,7 +97,7 @@ public class UserController {
         ModelAndView mv = new ModelAndView();
         String msg;
         try{
-            String userName = webRequest.getParameter("_userName");
+            String userName = (String)webRequest.getAttribute("_userName",WebRequest.SCOPE_REQUEST);
             String userNike = webRequest.getParameter("userNike");
             String oldPassword = webRequest.getParameter("oldPassword");
             String newPassword1 = webRequest.getParameter("newPassword1");

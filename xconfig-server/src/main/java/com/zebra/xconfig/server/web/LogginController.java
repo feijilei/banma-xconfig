@@ -14,6 +14,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
 
 /**
  * Created by ying on 16/8/1.
@@ -57,7 +58,7 @@ public class LogginController {
             Cookie s = new Cookie("s",userVo.getSecurity());
             s.setHttpOnly(true);
             response.addCookie(s);
-            response.addCookie(new Cookie("nike",userVo.getUserNike()));
+            response.addCookie(new Cookie("nike", URLEncoder.encode(userVo.getUserNike(),"utf-8")));
             response.addCookie(new Cookie("t", String.valueOf(userVo.getTimeMillis())));
 
         }catch (Exception e){
