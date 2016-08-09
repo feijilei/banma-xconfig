@@ -2,6 +2,7 @@ package com.zebra.xconfig.server.util.zk;
 
 import com.zebra.xconfig.common.CommonUtil;
 import com.zebra.xconfig.common.Constants;
+import com.zebra.xconfig.common.MyAclProvider;
 import com.zebra.xconfig.common.exception.XConfigException;
 import com.zebra.xconfig.server.dao.mapper.XKvMapper;
 import com.zebra.xconfig.server.dao.mapper.XProjectProfileMapper;
@@ -9,18 +10,26 @@ import com.zebra.xconfig.server.po.KvPo;
 import com.zebra.xconfig.server.po.ZkNode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.api.ACLProvider;
 import org.apache.curator.framework.api.transaction.CuratorTransaction;
 import org.apache.curator.framework.api.transaction.CuratorTransactionFinal;
 import org.apache.curator.framework.recipes.leader.LeaderLatch;
 import org.apache.curator.framework.recipes.leader.LeaderLatchListener;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
+import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.zookeeper.ZooDefs;
+import org.apache.zookeeper.data.ACL;
+import org.apache.zookeeper.data.Id;
 import org.apache.zookeeper.data.Stat;
+import org.apache.zookeeper.server.auth.DigestAuthenticationProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -29,45 +38,64 @@ import java.util.concurrent.TimeUnit;
  */
 public class XConfigServer {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    @Resource
-    private CuratorFramework client;
     @Autowired
     private XKvMapper xKvMapper;
     @Autowired
     private XProjectProfileMapper xProjectProfileMapper;
+    private String zkConnStr;
 
+    private String userName;
+    private String password;
+
+    private CuratorFramework client;
     private volatile boolean isLeader = false;
     private volatile boolean timerRunning = false;
     private volatile boolean zkConnected = false;
 
     public void init() throws Exception{
-        client.getConnectionStateListenable().addListener(new ConnectionStateListener() {
+        ExponentialBackoffRetry retry = new ExponentialBackoffRetry(1000 * 1, 5);
+        //创建，启动zk客户端
+        CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder()
+                .connectString(zkConnStr)
+                .retryPolicy(retry)
+                .connectionTimeoutMs(1000 * 16)
+                .sessionTimeoutMs(1000 * 30)
+                .namespace(Constants.NAME_SPACE);
+        if(StringUtils.isNotBlank(userName) && StringUtils.isNotBlank(password)){//acl
+            builder.aclProvider(new MyAclProvider(userName,password));
+            builder.authorization("digest",(userName+":"+password).getBytes());
+        }
+        client = builder.build();
+        client.getConnectionStateListenable().addListener(new ConnectionStateListener() {//连接状态监听
             @Override
             public void stateChanged(CuratorFramework client, ConnectionState newState) {
                 logger.info("zk stateChanged state:{},connected:{}",newState,newState.isConnected());
                 zkConnected = newState.isConnected();
             }
         });
+        client.start();
         zkConnected = client.blockUntilConnected(30, TimeUnit.SECONDS);
         if(!zkConnected){
             throw new XConfigException("zk连接超时失败！");
         }
 
+        //选举
         LeaderLatch leaderLatch = new LeaderLatch(client, Constants.LEADER_SELECT_PATH, UUID.randomUUID().toString());
         leaderLatch.start();
-
+        //定时器
         final Timer timer = new Timer(true);
         final TimerTask synTask = new TimerTask() {
             @Override
             public void run() {
                 try {
-                    logger.debug("synTask running,isLeader:{}",isLeader);
-
                     if(isLeader && zkConnected) {
+                        logger.debug("synTask running,isLeader:{}",isLeader);
                         Stat stat = client.checkExists().forPath("/");
-                        if (System.currentTimeMillis() - stat.getMtime() > Constants.SYN_PERIOD_MILLIS) {//超过10分钟没有同步过
+                        if ((System.currentTimeMillis() - stat.getMtime() > 1000*60*10) || (System.currentTimeMillis() - stat.getCtime() < 1000*60*10)) {//保证leader切换时候不会频繁同步，且第一次能够正确初始化
                             synDb2Zk();
                             client.setData().forPath("/", "0".getBytes());
+                        }else{
+
                         }
                     }
                 }catch (Exception e){
@@ -75,7 +103,6 @@ public class XConfigServer {
                 }
             }
         };
-
         leaderLatch.addListener(new LeaderLatchListener() {
             @Override
             public void isLeader() {
@@ -229,5 +256,29 @@ public class XConfigServer {
     }
     private CuratorTransactionFinal addSetDataToTransaction(CuratorTransaction curatorTransaction,ZkNode zkNode) throws  Exception{
         return curatorTransaction.setData().forPath(zkNode.getPath(), zkNode.getValue().getBytes()).and();
+    }
+
+    public String getZkConnStr() {
+        return zkConnStr;
+    }
+
+    public void setZkConnStr(String zkConnStr) {
+        this.zkConnStr = zkConnStr;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

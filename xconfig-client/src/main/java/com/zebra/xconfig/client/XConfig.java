@@ -23,8 +23,10 @@ public class XConfig {
 
     private String project;
     private String zkConn;
-    private String xconfigDir;//xconfig的默认目录
     private String profile;
+    private String userName;
+    private String password;
+    private String xconfigDir;//xconfig的默认目录
     private String localConfigDir;//当前配置目录
 
     public void init() throws XConfigException{
@@ -33,9 +35,9 @@ public class XConfig {
 
         //获取profile
         File cfFile = new File(this.xconfigDir + File.separator + Constants.CONFIG_FILE);
-        Properties properties = new Properties();
+        Properties xconfigProp = new Properties();
         try {
-            properties.load(new FileInputStream(cfFile));
+            xconfigProp.load(new FileInputStream(cfFile));
         } catch (FileNotFoundException e) {
             logger.error(e.getMessage(),e);
             throw new XConfigException("无法获取到配置文件，请确认是否存在："+cfFile);
@@ -43,14 +45,16 @@ public class XConfig {
             logger.error(e.getMessage(),e);
             throw new XConfigException("读取配置文件失败："+cfFile);
         }
-        this.profile = properties.getProperty("profile");
+        this.profile = xconfigProp.getProperty("profile");
         if(StringUtils.isBlank(this.profile)){
             throw new XConfigException("无法获取到profile信息！");
         }
 
         if(StringUtils.isBlank(this.zkConn)){
-            this.zkConn = properties.getProperty("zkConn");
+            this.zkConn = xconfigProp.getProperty("zkConn");
         }
+        this.userName = xconfigProp.getProperty("userName");
+        this.password = xconfigProp.getProperty("password");
 
         //生成当前配置目录
         this.localConfigDir = this.xconfigDir + File.separator + this.project + "_"+this.profile;
@@ -109,5 +113,13 @@ public class XConfig {
 
     public void setZkConn(String zkConn) {
         this.zkConn = zkConn;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public String getPassword() {
+        return password;
     }
 }

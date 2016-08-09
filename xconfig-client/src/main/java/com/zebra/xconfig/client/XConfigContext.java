@@ -4,15 +4,22 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.zebra.xconfig.common.CommonUtil;
 import com.zebra.xconfig.common.Constants;
+import com.zebra.xconfig.common.MyAclProvider;
 import com.zebra.xconfig.common.exception.XConfigException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.api.ACLProvider;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.zookeeper.ZooDefs;
+import org.apache.zookeeper.data.ACL;
+import org.apache.zookeeper.data.Id;
+import org.apache.zookeeper.server.auth.DigestAuthenticationProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +27,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,12 +52,12 @@ public class XConfigContext {
 
     private CuratorFramework client;//zk客户端
     private CountDownLatch countDownLatch;//zk初始化闭锁
-    private boolean initOk = false;//是否初始化成功
-    private boolean zkConnected = false;//zk是否在线
+    private volatile  boolean initOk = false;//是否初始化成功
+    private volatile boolean zkConnected = false;//zk是否在线
 
     private XKeyObservable xKeyObservable;
 
-    XConfigContext(XConfig xConfig,XKeyObservable xKeyObservable) throws XConfigException{
+    XConfigContext(final XConfig xConfig,XKeyObservable xKeyObservable) throws XConfigException{
         this.xKeyObservable = xKeyObservable;
         this.xConfig = xConfig;
 
@@ -76,13 +84,17 @@ public class XConfigContext {
             }else {//zk启动
                 ExponentialBackoffRetry retry = new ExponentialBackoffRetry(1000, 3);
                 //创建zk客户端
-                client = CuratorFrameworkFactory.builder()
+                CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder()
                         .connectString(xConfig.getZkConn())
                         .retryPolicy(retry)
                         .connectionTimeoutMs(1000 * 16)
                         .sessionTimeoutMs(1000 * 60)
-                        .namespace(Constants.NAME_SPACE)
-                        .build();
+                        .namespace(Constants.NAME_SPACE);
+                if (StringUtils.isNotBlank(xConfig.getUserName()) && StringUtils.isNotBlank(xConfig.getPassword())){
+                    builder.aclProvider(new MyAclProvider(xConfig.getUserName(),xConfig.getPassword()));
+                    builder.authorization("digest",(xConfig.getUserName()+":"+xConfig.getPassword()).getBytes());
+                }
+                client = builder.build();
                 client.getConnectionStateListenable().addListener(new ConnectionStateListener() {
                     @Override
                     public void stateChanged(CuratorFramework client, ConnectionState newState) {
@@ -91,7 +103,7 @@ public class XConfigContext {
                     }
                 });
                 client.start();
-                client.blockUntilConnected(10,TimeUnit.SECONDS);
+                zkConnected = client.blockUntilConnected(10,TimeUnit.SECONDS);
 
                 if(zkConnected) {
                     logger.info("zk已连接，使用zk启动");
@@ -277,9 +289,10 @@ public class XConfigContext {
                 }
             }
 
-            if(event.getType() == PathChildrenCacheEvent.Type.CHILD_ADDED
+            //每次变动都写入文件
+            if(initOk && (event.getType() == PathChildrenCacheEvent.Type.CHILD_ADDED
                     || event.getType() == PathChildrenCacheEvent.Type.CHILD_UPDATED
-                    || event.getType() == PathChildrenCacheEvent.Type.CHILD_REMOVED){
+                    || event.getType() == PathChildrenCacheEvent.Type.CHILD_REMOVED)){
                 writeFile(Constants.CURRENT_FILE);
             }
         }
