@@ -175,6 +175,10 @@ public class XUserServiceImpl implements XUserService {
             throw new XConfigException("当前用户已经不存在");
         }
 
+        if(StringUtils.isBlank(userNike)){
+            userNike = userPo.getUserNike();
+        }
+
         String oldShaPassword = UserUtil.genShaPassword(userName,oldPassword,userPo.getSalt());
         if(!oldShaPassword.equals(userPo.getPassword())){
             throw new XConfigException("旧的密码不正确，请重试");

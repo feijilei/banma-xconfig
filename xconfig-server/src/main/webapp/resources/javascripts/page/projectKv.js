@@ -218,4 +218,6 @@ jQuery(document).ready(function ($) {
         $(this).prop("disabled",true);
         removeProfileForm.submit();
     });
+
+    $("input[type='search']").focus();
 })

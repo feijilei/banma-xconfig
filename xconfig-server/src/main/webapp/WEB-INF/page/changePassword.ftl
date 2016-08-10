@@ -1,11 +1,13 @@
 <#include "/common/baseHtml.ftl" />
 <@baseHtml localJsFiles=[
-        "javascripts/page/projectSetting.js"
     ] remoteJsFiles=[] localCssFiles=[]>
     <style type="text/css">
     </style>
 
     <script type="application/javascript">
+        jQuery(document).ready(function($){
+            $("#userNike").focus();
+        });
     </script>
 
     <h1 class="row">
@@ -35,7 +37,7 @@
         <form action="${basepath}/user/updateUser" method="post">
             <div class="form-group">
                 <label for="userNike">昵称</label>
-                <input type="text" class="form-control" id="userNike" name="userNike" placeholder="张三">
+                <input type="text" class="form-control" id="userNike" name="userNike" placeholder="昵称不修改可以不填写">
             </div>
             <div class="form-group">
                 <label for="oldPassword">旧密码</label>
