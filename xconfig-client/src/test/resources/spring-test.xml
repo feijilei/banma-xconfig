@@ -22,4 +22,12 @@
     <bean id="mysqlConf" class="com.zebra.xconfig.client.MysqlConf">
         <property name="password" value="${mysql.jdbc.password}"></property>
     </bean>
+
+    <!--    数据源配置 -->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${mysql.jdbc.driver}"></property>
+        <property name="url" value="${mysql.jdbc.url}"></property>
+        <property name="username" value="${mysql.jdbc.username}"></property>
+        <property name="password" value="${mysql.jdbc.password}"></property>
+    </bean>
 </beans>

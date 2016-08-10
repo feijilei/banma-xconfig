@@ -81,6 +81,10 @@ public class XkvServiceImpl implements XKvService {
             throw new XConfigException("无法查询到待更新key，请确认是否存在");
         }
 
+        boolean valueChange = true;
+        if(kv.getxValue().equals(kvPo.getxValue())){
+            valueChange = false;
+        }
 
         kv.setxValue(kvPo.getxValue());
         kv.setDescription(kvPo.getDescription());
@@ -92,7 +96,9 @@ public class XkvServiceImpl implements XKvService {
 
         this.xKvMapper.updateOne(kv);
 
-        xConfigServer.createUpdateKvNode(CommonUtil.genMKeyPath(kv.getProject(), kv.getProfile(), kv.getxKey()),kv.getxValue());
+        if(valueChange) {
+            xConfigServer.createUpdateKvNode(CommonUtil.genMKeyPath(kv.getProject(), kv.getProfile(), kv.getxKey()), kv.getxValue());
+        }
     }
 
     @Override

@@ -45,7 +45,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">xConfig</a>
+                <a class="navbar-brand" href="#">zebra</a>
             </div>
 
         <#-- Collect the nav links, forms, and other content for toggling -->

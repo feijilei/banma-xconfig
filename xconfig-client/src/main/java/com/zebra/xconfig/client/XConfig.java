@@ -53,8 +53,10 @@ public class XConfig {
         if(StringUtils.isBlank(this.zkConn)){
             this.zkConn = xconfigProp.getProperty("zkConn");
         }
-        this.userName = xconfigProp.getProperty("userName");
-        this.password = xconfigProp.getProperty("password");
+        if(StringUtils.isBlank(this.userName) && StringUtils.isBlank(this.password)){
+            this.userName = xconfigProp.getProperty("userName");
+            this.password = xconfigProp.getProperty("password");
+        }
 
         //生成当前配置目录
         this.localConfigDir = this.xconfigDir + File.separator + this.project + "_"+this.profile;
@@ -78,8 +80,23 @@ public class XConfig {
         xKeyObservable.removeObserver(observer);
     }
 
+    /**
+     * 获取配置value
+     * @param key
+     * @return 不存在的配置项或者已删除的配置项会返回null
+     */
     public static String getValue(String key){
         return xConfigContext.getValue(key);
+    }
+
+    /**
+     * 获取配置value
+     * @param key
+     * @param defaultValue 默认值
+     * @return
+     */
+    public static String getValue(String key,String defaultValue){
+        return xConfigContext.getValue(key) == null ? defaultValue : xConfigContext.getValue(key);
     }
 
     //setter getter
@@ -121,5 +138,13 @@ public class XConfig {
 
     public String getPassword() {
         return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }
