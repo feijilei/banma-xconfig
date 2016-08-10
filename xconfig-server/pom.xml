@@ -67,6 +67,18 @@
                 </resources>
             </build>
         </profile>
+
+        <!-- 		prd环境 -->
+        <profile>
+            <id>prd</id>
+            <build>
+                <resources>
+                    <resource>
+                        <directory>${project.basedir}/config</directory>
+                    </resource>
+                </resources>
+            </build>
+        </profile>
     </profiles>
 
     <dependencies>

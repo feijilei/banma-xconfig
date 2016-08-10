@@ -31,17 +31,17 @@
         <property name="username" value="${jdbc.username}"></property>
         <property name="password" value="${jdbc.password}"></property>
 
-        <property name="initialSize" value="${jdbc.initialSize}"></property>
-        <property name="maxActive" value="${jdbc.maxActive}"></property>
-        <property name="minIdle" value="${jdbc.minIdle}"></property>
-        <property name="maxIdle" value="${jdbc.maxIdle}"></property>
-        <property name="maxWait" value="${jdbc.maxWait}"></property>
+        <property name="initialSize" value="20"></property>
+        <property name="maxActive" value="50"></property>
+        <property name="minIdle" value="20"></property>
+        <property name="maxIdle" value="50"></property>
+        <property name="maxWait" value="20"></property>
 
         <property name="removeAbandoned" value="true"></property>
         <property name="removeAbandonedTimeout" value="10"></property>
 
         <property name="testWhileIdle" value="true"></property>
-        <property name="validationQuery" value="${jdbc.validationQuery}"></property>
+        <property name="validationQuery" value="SELECT 1"></property>
     </bean>
 
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
