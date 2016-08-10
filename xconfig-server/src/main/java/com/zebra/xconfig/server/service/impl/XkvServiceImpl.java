@@ -49,19 +49,17 @@ public class XkvServiceImpl implements XKvService {
     @Override
     @Transactional(rollbackFor = Throwable.class)
     public void addKv(KvPo kvPo) throws Exception {
-        if(!CommonUtil.checkName(kvPo.getProject())
-                || !CommonUtil.checkName(kvPo.getProfile())
-                || !CommonUtil.checkName(kvPo.getxKey())
-        ){
-            throw new IllegalNameException();
-        }
+        CommonUtil.checkName(kvPo.getProject());
+        CommonUtil.checkName(kvPo.getProfile());
+        CommonUtil.checkName(kvPo.getxKey());
+        CommonUtil.checkValue(kvPo.getxValue());
+
+        this.checkProjectAndProfile(kvPo.getProject(),kvPo.getProfile());
 
         KvPo one = this.xKvMapper.load(kvPo.getProject(),kvPo.getProfile(),kvPo.getxKey());
         if(one != null){
             throw new XConfigException("当前key值已存在，不允许重复添加");
         }
-
-        //todo 需要校验对应的project和profile是否存在
 
        this.xKvMapper.addOne(kvPo);
 
@@ -71,20 +69,18 @@ public class XkvServiceImpl implements XKvService {
     @Override
     @Transactional(rollbackFor = Throwable.class)
     public void updateKv(KvPo kvPo) throws Exception {
-        if(!CommonUtil.checkName(kvPo.getProject())
-                || !CommonUtil.checkName(kvPo.getProfile())
-                || !CommonUtil.checkName(kvPo.getxKey())
-                ){
-            throw new IllegalNameException();
-        }
+        CommonUtil.checkName(kvPo.getProject());
+        CommonUtil.checkName(kvPo.getProfile());
+        CommonUtil.checkName(kvPo.getxKey());
+        CommonUtil.checkValue(kvPo.getxValue());
+
+        this.checkProjectAndProfile(kvPo.getProject(),kvPo.getProfile());
 
         KvPo kv = this.xKvMapper.load(kvPo.getProject(),kvPo.getProfile(),kvPo.getxKey());
-
         if(kv == null){
             throw new XConfigException("无法查询到待更新key，请确认是否存在");
         }
 
-        //todo 需要校验对应的project和profile是否存在
 
         kv.setxValue(kvPo.getxValue());
         kv.setDescription(kvPo.getDescription());
@@ -104,12 +100,12 @@ public class XkvServiceImpl implements XKvService {
     public void addKvs(List<KvPo> kvPos) throws Exception {
         List<ZkNode> zkNodes = new ArrayList<>();
         for(KvPo kvPo : kvPos){
-            if(!CommonUtil.checkName(kvPo.getProject())
-                    || !CommonUtil.checkName(kvPo.getProfile())
-                    || !CommonUtil.checkName(kvPo.getxKey())
-                    ){
-                throw new IllegalNameException();
-            }
+            CommonUtil.checkName(kvPo.getProject());
+            CommonUtil.checkName(kvPo.getProfile());
+            CommonUtil.checkName(kvPo.getxKey());
+            CommonUtil.checkValue(kvPo.getxValue());
+
+            this.checkProjectAndProfile(kvPo.getProject(),kvPo.getProfile());
 
             KvPo one = this.xKvMapper.load(kvPo.getProject(),kvPo.getProfile(),kvPo.getxKey());
             if(one != null){
@@ -153,5 +149,16 @@ public class XkvServiceImpl implements XKvService {
 
 
         return this.xKvMapper.queryByProjectsAndProfile(deps,profile);
+    }
+
+    private void checkProjectAndProfile(String project,String profile) throws XConfigException{
+        String pj = this.xProjectProfileMapper.loadProject(project);
+        if(StringUtils.isBlank(pj)){
+            throw new XConfigException("project不存在："+project);
+        }
+        String pf = this.xProjectProfileMapper.loadProfile(project,profile);
+        if(StringUtils.isBlank(pf)){
+            throw new XConfigException("profile不存在："+profile);
+        }
     }
 }

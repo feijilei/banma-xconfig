@@ -1,5 +1,7 @@
 package com.zebra.xconfig.common;
 
+import com.zebra.xconfig.common.exception.IllegalNameException;
+import com.zebra.xconfig.common.exception.XConfigException;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.SimpleDateFormat;
@@ -131,13 +133,31 @@ public class CommonUtil {
      * @param name
      * @return
      */
-    public static boolean checkName(String name) {
+    public static void checkName(String name) throws XConfigException{
         if (StringUtils.isBlank(name)) {
-            return false;
+            throw new XConfigException("project profile key名字不能为空");
         }
+
+        if(name.length() > 50){
+            throw new XConfigException("project profile key名字长度不能超过50个字符");
+        }
+
         Pattern pattern = Pattern.compile(Constants.NAME_CHECK_REGEX);
         Matcher m = pattern.matcher(name);
-        return m.find();
+        if(!m.find()){
+            throw new IllegalNameException();
+        }
+    }
+
+    /**
+     *
+     * @param value
+     * @throws XConfigException
+     */
+    public static void checkValue(String value) throws XConfigException{
+        if (value.length() > 500){
+            throw new XConfigException("value长度不能超过500个字符");
+        }
     }
 
     /**

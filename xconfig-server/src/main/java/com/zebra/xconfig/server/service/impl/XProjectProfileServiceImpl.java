@@ -64,16 +64,12 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void addDepenedencies(String project, Set<String> deps) throws Exception{
-        if(!CommonUtil.checkName(project)){
-            throw new IllegalNameException();
-        }
+        CommonUtil.checkName(project);
 
 
         List<ProjectDependency> projectDependencies = new ArrayList<>();
         for(String dep : deps){
-            if(!CommonUtil.checkName(dep)) {
-                throw new IllegalNameException();
-            }
+            CommonUtil.checkName(dep);
 
             if(dep.equals(project)){
                 throw new XConfigException("不能自己依赖自己");
@@ -98,9 +94,9 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void addProfile(ProfilePo profilePo, String source) throws Exception{
-        if(!CommonUtil.checkName(profilePo.getProject()) || !CommonUtil.checkName(profilePo.getProfile()) || !CommonUtil.checkName(source)){
-            throw new IllegalNameException();
-        }
+        CommonUtil.checkName(profilePo.getProject());
+        CommonUtil.checkName(profilePo.getProfile());
+        CommonUtil.checkName(source);
 
         profilePo.setMd5("");
 
@@ -146,9 +142,8 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void removeProfile(String project, String profile) throws Exception{
-        if(!CommonUtil.checkName(project) || !CommonUtil.checkName(profile)){
-            throw new IllegalNameException();
-        }
+        CommonUtil.checkName(project);
+        CommonUtil.checkName(profile);
 
         //最后一个profile不允许删除
         List<String> profiles = this.xProjectProfileMapper.queryProjectProfiles(project);
@@ -166,9 +161,7 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void addProject(String project,String[] profiles) throws Exception {
-        if(!CommonUtil.checkName(project)){
-            throw new IllegalNameException();
-        }
+        CommonUtil.checkName(project);
 
         this.xProjectProfileMapper.insertProject(project);
         if(profiles == null || profiles.length == 0){
@@ -188,9 +181,7 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
             zkNodes.add(projectNode);
 
             for(String profile : profiles){
-                if(!CommonUtil.checkName(profile)){
-                    throw  new IllegalNameException();
-                }
+                CommonUtil.checkName(profile);
 
                 ProfilePo profilePo = new ProfilePo();
                 profilePo.setProject(project);
@@ -212,9 +203,7 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void removePoject(String project) throws Exception {
-        if(!CommonUtil.checkName(project)){
-            throw new IllegalNameException();
-        }
+        CommonUtil.checkName(project);
 
         List<String> projects = this.xProjectProfileMapper.queryProjectsByDepedProject(project);
         if(CollectionUtils.isNotEmpty(projects)){
