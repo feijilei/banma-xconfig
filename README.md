@@ -1,16 +1,16 @@
-#xconfig
+# xconfig
 
-##简介
+## 简介
 基于zookeeper的配置中心，统一存储应用的配置，可以解决项目中各种环境（profile）的配置文件分散，难以维护问题。可以主动推送配置变化信息，让应用实时感知配置变化。
 
-##名词解释
+## 名词解释
 * project 表示一个项目，比如user-web,mysql。
 * profile 表示一个项目的不同环境（maven中也用profile来区分环境），比如user-web分为dev，alpha，beta，pre，prd环境。
 * key 表示一个配置项，与properties文件中的key一直，xconfig中的key值都是以project开头的，比如user-web中的key为：user-web.size,user-web.tag
 * value 表示一个value值
 * 依赖 为了简化配置，project允许依赖，比如user-web可能要用到mysql数据，可以设置user-web依赖mysql，项目启动时拉取user-web配置会将其依赖的mysql配置也加入进来。
 
-##web界面预览
+## web界面预览
 ![web界面预览1](doc/xconfig-web1.png)
 ![web界面预览2](doc/xconfig-web2.png)
 ![web界面预览3](doc/xconfig-web3.png)
@@ -19,10 +19,10 @@
 * 提供模糊匹配筛选功能，能够快速筛选想看的key。
 * 修改value会实时（准实时）推送到应用中。
 
-##xconfig-web部署
+## xconfig-web部署
 
 
-##client如何使用
+## client如何使用
 1. 引入jar
 
 	    <groupId>com.zebra.carcloud</groupId>
@@ -91,5 +91,5 @@
     * 在频繁更新某个value的情况下，zk会保证client得到的value的最终一致性，此监听器中的回调方法也一样。当你需要在新线程中处理value变化的时候，需要你自己来保证一致性。
     * 建议回调方法中不要做耗时操作。
     
-##设计架构
-##可能的问题
+## 设计架构
+## 可能的问题
