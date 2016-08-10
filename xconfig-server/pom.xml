@@ -56,13 +56,9 @@
             </build>
         </profile>
 
-        <!-- 		开发环境 -->
+        <!-- 		beta环境 -->
         <profile>
             <id>beta</id>
-            <!-- 			默认激活 -->
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <build>
                 <resources>
                     <resource>

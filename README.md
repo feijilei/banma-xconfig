@@ -55,12 +55,12 @@
         </bean>
 
 3. 指定profile等配置信息，公共配置。默认读取当前用户目录下（~/.xconfig/config.properties）文件，其中有zk连接串，用户名信息，以及当前机器所属的环境。eg:/Users/ying/.xconfig/config.preperties。
-
+ 
 	    profile=daily
 	    zkConn=localhost:2181
 	    userName=xconfig
 	    password=xconfig
-	    
+	 
 	* profile信息目前只能从这里读取，也符合大部分项目部署的情况，一般不存在一个机器同时部署两个环境等情况。后续我们可以增加从启动参数设置profile信息。
 	* zkConn，userName，password也是可以spring配置Xconfig的时候指定，这里做统一配置。遵循最近覆盖原则，如果在Spring配置的时候指定了，这里的配置就会被覆盖掉。
 	* userName,password需要与xconfig-web部署的时候指定的一致，这个是zk节点的访问权限信息，如果xconfig-web没有指定，这里也可以不设置。
@@ -92,4 +92,9 @@
     * 建议回调方法中不要做耗时操作。
     
 ## 设计架构
+1. 111111
+2. 222222
+3. 333333
+	* 333333
+	* 333333
 ## 可能的问题
