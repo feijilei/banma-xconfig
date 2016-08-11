@@ -1,23 +1,26 @@
+-- Create syntax for TABLE 'wisdom'
 CREATE TABLE `wisdom` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `content` varchar(500) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
 
+-- Create syntax for TABLE 'x_kv'
 CREATE TABLE `x_kv` (
   `id` bigint(11) unsigned NOT NULL AUTO_INCREMENT,
   `project` varchar(50) NOT NULL,
   `profile` varchar(50) NOT NULL DEFAULT '',
   `xKey` varchar(50) NOT NULL DEFAULT '' COMMENT 'key',
-  `xValue` varchar(200) NOT NULL DEFAULT '',
+  `xValue` varchar(500) NOT NULL DEFAULT '',
   `security` char(11) NOT NULL DEFAULT 'N' COMMENT 'Y，N，是否高密字段，高密字段只有master可以查看',
   `description` varchar(500) NOT NULL DEFAULT '' COMMENT '描述信息',
   `createTime` timestamp NOT NULL DEFAULT '2016-07-01 00:00:00',
   `updateTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `udx_project_profile_xKey` (`project`,`profile`,`xKey`)
-) ENGINE=InnoDB AUTO_INCREMENT=137 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=133 DEFAULT CHARSET=utf8;
 
+-- Create syntax for TABLE 'x_profile'
 CREATE TABLE `x_profile` (
   `id` bigint(11) unsigned NOT NULL AUTO_INCREMENT,
   `project` varchar(50) NOT NULL,
@@ -26,15 +29,17 @@ CREATE TABLE `x_profile` (
   `profileKey` varchar(50) DEFAULT NULL COMMENT '安全秘钥',
   PRIMARY KEY (`id`),
   UNIQUE KEY `udx_project_profile` (`project`,`profile`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
 
+-- Create syntax for TABLE 'x_project'
 CREATE TABLE `x_project` (
   `id` bigint(11) unsigned NOT NULL AUTO_INCREMENT,
   `project` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `udx_project` (`project`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
+-- Create syntax for TABLE 'x_project_dependency'
 CREATE TABLE `x_project_dependency` (
   `id` bigint(11) unsigned NOT NULL AUTO_INCREMENT,
   `project` varchar(50) NOT NULL DEFAULT '',
@@ -43,6 +48,7 @@ CREATE TABLE `x_project_dependency` (
   KEY `udx_project_dep` (`project`,`depProject`)
 ) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
 
+-- Create syntax for TABLE 'x_user'
 CREATE TABLE `x_user` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userName` varchar(100) NOT NULL DEFAULT '',
@@ -55,6 +61,7 @@ CREATE TABLE `x_user` (
   KEY `udx_userName` (`userName`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 
+-- Create syntax for TABLE 'x_user_project_role'
 CREATE TABLE `x_user_project_role` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userName` varchar(50) NOT NULL DEFAULT '',
@@ -63,7 +70,6 @@ CREATE TABLE `x_user_project_role` (
   PRIMARY KEY (`id`),
   KEY `udx_project_userName` (`project`,`userName`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
-
 
 -- data
 INSERT INTO `wisdom` (`id`, `content`)
@@ -85,3 +91,7 @@ VALUES
 	(15, '用代码行数来测评软件开发进度，就相对于用重量来计算飞机建造进度。'),
 	(16, '最初的90%的代码用去了最初90%的开发时间。余下的10%的代码用掉另外90%的开发时间。'),
 	(17, '程序员和上帝打赌要开发出更大更好——傻瓜都会用的软件。而上帝却总能创造出更大更傻的傻瓜。所以，上帝总能赢。');
+
+INSERT INTO `x_user` (`id`, `userName`, `userNike`, `password`, `salt`, `createTime`, `role`)
+VALUES
+	(1, 'admin@xconfig.com', 'admin', '226418d2524d1c771fe72ce6c56fa343805be9ab', 'SlUoNA3e6o', '2016-08-01 18:33:00', 30);
