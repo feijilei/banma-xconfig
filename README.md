@@ -95,10 +95,10 @@
 	
 		>  这种配置方式，符合大部分项目部署的情况，一般不存在一个机器同时部署两个环境等情况。统一部署的时候推荐使用这种方式。
 	
-		    profile=daily
-		    zkConn=localhost:2181
-		    userName=xconfig
-		    password=xconfig
+			    profile=daily
+			    zkConn=localhost:2181
+			    userName=xconfig
+			    password=xconfig
 				
 	2. 使用jvm启动参数配置。jvm启动的时候可以指定启动参数。
 	
