@@ -39,6 +39,7 @@
 	7. 部署成功之后页面，localhost:8080，使用默认用户名密码登录：admin/admin。
 	8. 请先在右上角修改密码。
 * xconfig-server启动之后，会自动将mysql中的配置信息同步到zk，之后每隔一段时间（目前是20分钟），都会自动将mysql的配置与zk同步（作为一种容错方式）。
+* 注意修改zookeeper连接数，默认支持修改为支持500个连接，zoo.cfg中配置：maxClientCnxns=500。
 
 ## xconfig-server的使用
 
@@ -158,6 +159,13 @@
 	![zk节点结构图](doc/xconfig-zk.png "zk节点结构图")
 	
 4. 思维导图
+
 	![思维导图](doc/xconfig.png "思维导图")
 	
 5. 性能测试
+
+	* 节点数增加不会对读写造成影响。
+	* 节点数据大小会严重影响zk效率（value最多500个字符）。
+	* 单个节点上独立session的watch数量对性能有一定影响。同一个session的watch数量基本没有影响。
+	* 我单独对多个session的情况作了测试。
+		![zktest](doc/xconfig-test-1.png "zktest")
