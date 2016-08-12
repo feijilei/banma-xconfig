@@ -163,9 +163,8 @@
 	![思维导图](doc/xconfig.png "思维导图")
 	
 5. 性能测试
-
 	* 节点数增加不会对读写造成影响。
 	* 节点数据大小会严重影响zk效率（value最多500个字符）。
 	* 单个节点上独立session的watch数量对性能有一定影响。同一个session的watch数量基本没有影响。
 	* 我单独对多个session的情况作了测试。
-		![zktest](doc/xconfig-test-1.png "zktest")
+	![zktest](doc/xconfig-test-1.png "zktest")
