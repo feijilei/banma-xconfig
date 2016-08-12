@@ -90,28 +90,26 @@
 
 	1. 公共配置(需要管理员统一配置)。默认读取当前用户目录下（~/.xconfig/config.properties）文件，其中有zk连接串，用户名信息，以及当前机器所属的环境。eg:/Users/ying/.xconfig/config.preperties。
 	
-		    profile=daily
-		    zkConn=localhost:2181
-		    userName=xconfig
-		    password=xconfig
-		
-		
 		* userName,password需要与xconfig-web部署的时候指定的一致，这个是zk节点的访问权限信息，如果xconfig-server没有指定，这里也可以不设置。
 		* 当前机器上使用xconfig的项目都会读取这个配置文件。
 	
 		>  这种配置方式，符合大部分项目部署的情况，一般不存在一个机器同时部署两个环境等情况。统一部署的时候推荐使用这种方式。
-		
+	
+		    profile=daily
+		    zkConn=localhost:2181
+		    userName=xconfig
+		    password=xconfig
+				
 	2. 使用jvm启动参数配置。jvm启动的时候可以指定启动参数。
 	
-		    -Dxconfig.profile=beta
-		    -Dxconfig.zkConn=localhost:2181
-		    -DuserName=xconfig
-		    -Dpassword=xconfig
-		
 		* 以上参数可以单独指定，配置遵循就近覆盖原则，jvm参数将会覆盖掉公共配置。比如我启动的时候单独使用了-Dxconfig.profile=beta，那么client的其他参数扔使用公共配置，但是profile会使用beta。（userName,password只会统一取一处配置）。
 		
 		> 此种方式比较适合本地测试，单独指定配置文件。
 	
+		    -Dxconfig.profile=beta
+		    -Dxconfig.zkConn=localhost:2181
+		    -DuserName=xconfig
+		    -Dpassword=xconfig	
 	
 4. 编程式获取配置信息。配置信息将会在client中缓存一份，并且会实时更新，可以通过下面这种方式编程式获取配置信息。
 
