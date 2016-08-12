@@ -88,7 +88,7 @@
 		    zkConn=localhost:2181
 		    userName=xconfig
 		    password=xconfig
-		    
+		
 		* userName,password需要与xconfig-web部署的时候指定的一致，这个是zk节点的访问权限信息，如果xconfig-server没有指定，这里也可以不设置。
 		* 当前机器上使用xconfig的项目都会读取这个配置文件。
 		
@@ -100,7 +100,7 @@
 		    -Dxconfig.zkConn=localhost:2181
 		    -DuserName=xconfig
 		    -Dpassword=xconfig
-		    
+		
 		* 以上参数可以单独指定，配置遵循就近覆盖原则，jvm参数将会覆盖掉公共配置。比如我启动的时候单独使用了-Dxconfig.profile=beta，那么client的其他参数扔使用公共配置，但是profile会使用beta。（userName,password只会统一取一处配置）。
 		
 		> 此种方式比较适合本地测试，单独指定配置文件。
