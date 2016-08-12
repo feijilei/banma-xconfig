@@ -1,9 +1,11 @@
 # xconfig
 
 ## 简介
+
 基于zookeeper的配置中心，统一存储应用的配置，可以解决项目中各种环境（profile）的配置文件分散，难以维护问题。可以主动推送配置变化信息，让应用实时感知配置变化。
 
 ## 名词解释
+
 * project 表示一个项目，比如user-web,mysql。
 * profile 表示一个项目的不同环境（maven中也用profile来区分环境），比如user-web分为dev，alpha，beta，pre，prd环境。
 * key 表示一个配置项，与properties文件中的key一直，xconfig中的key值都是以project开头的，比如user-web中的key为：user-web.size,user-web.tag。
@@ -12,7 +14,9 @@
 
 ## web界面预览
 ![web界面预览1](doc/xconfig-web1.png)
+
 ![web界面预览2](doc/xconfig-web2.png)
+
 ![web界面预览3](doc/xconfig-web3.png)
 
 * 所见即所得，所有配置项都能在web界面中看到（其中高密的value会被隐藏，需要一定权限），方便项目开发时候使用。
@@ -50,6 +54,7 @@
 * project的依赖只有一层，不存在依赖传递等问题。
 
 ## client如何使用
+
 1. 引入jar
 
 	    <groupId>com.zebra.carcloud</groupId>
@@ -82,14 +87,16 @@
         </bean>
 
 3. 指定profile等配置信息，有两种配置方式。
+
 	1. 公共配置(需要管理员统一配置)。默认读取当前用户目录下（~/.xconfig/config.properties）文件，其中有zk连接串，用户名信息，以及当前机器所属的环境。eg:/Users/ying/.xconfig/config.preperties。
 	
 		    profile=daily
 		    zkConn=localhost:2181
 		    userName=xconfig
 		    password=xconfig
-		
+		    
 		* userName,password需要与xconfig-web部署的时候指定的一致，这个是zk节点的访问权限信息，如果xconfig-server没有指定，这里也可以不设置。
+		
 		* 当前机器上使用xconfig的项目都会读取这个配置文件。
 		
 		>  这种配置方式，符合大部分项目部署的情况，一般不存在一个机器同时部署两个环境等情况。统一部署的时候推荐使用这种方式。
