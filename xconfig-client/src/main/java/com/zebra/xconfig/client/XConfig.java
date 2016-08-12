@@ -33,7 +33,12 @@ public class XConfig {
         this.xconfigDir = System.getProperty("user.home")
                 + File.separator + Constants.LOCAL_FILE_DIR_NAME;
 
-        //获取profile
+        //获取配置，优先jvm，其次配置文件
+        this.zkConn = System.getProperty("xconfig.zkConn");
+        this.profile = System.getProperty("xconfig.profile");
+        this.userName = System.getProperty("xconfig.userName");
+        this.password = System.getProperty("xconfig.password");
+        //配置文件
         File cfFile = new File(this.xconfigDir + File.separator + Constants.CONFIG_FILE);
         Properties xconfigProp = new Properties();
         try {
@@ -45,11 +50,12 @@ public class XConfig {
             logger.error(e.getMessage(),e);
             throw new XConfigException("读取配置文件失败："+cfFile);
         }
-        this.profile = xconfigProp.getProperty("profile");
-        if(StringUtils.isBlank(this.profile)){
-            throw new XConfigException("无法获取到profile信息！");
+        if(StringUtils.isBlank(this.profile)) {
+            this.profile = xconfigProp.getProperty("profile");
+            if (StringUtils.isBlank(this.profile)) {
+                throw new XConfigException("无法获取到profile信息！");
+            }
         }
-
         if(StringUtils.isBlank(this.zkConn)){
             this.zkConn = xconfigProp.getProperty("zkConn");
         }
@@ -128,10 +134,6 @@ public class XConfig {
         return zkConn;
     }
 
-    public void setZkConn(String zkConn) {
-        this.zkConn = zkConn;
-    }
-
     public String getUserName() {
         return userName;
     }
@@ -140,11 +142,4 @@ public class XConfig {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
 }

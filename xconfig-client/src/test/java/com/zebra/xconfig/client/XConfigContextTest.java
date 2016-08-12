@@ -20,8 +20,12 @@ public class XConfigContextTest {
 
     @Resource
     private MysqlConf mysqlConf;
+    @Resource
+    private XConfig xConfig;
+
     @Test
     public void test(){
+        logger.debug("====>profile:{}",xConfig.getProfile());
         logger.debug("====>{}",XConfig.getValue("mysql.jdbc.password"));
         logger.debug("====>{}", JSON.toJSONString(mysqlConf));
 
