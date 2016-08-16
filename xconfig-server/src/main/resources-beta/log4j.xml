@@ -14,7 +14,7 @@
 
     <!-- File Appender, used to record debug & info log. -->
     <appender name="file" class="org.apache.log4j.DailyRollingFileAppender">
-        <param name="File" value="/alidata1/zcc_log/xconfig/xconfig-server.log" />
+        <param name="File" value="/opt/zcc_log/xconfig/xconfig-server.log" />
         <param name="Append" value="true" />
         <param name="DatePattern" value="'.'yyyy-MM-dd'.log'"/>
         <layout class="org.apache.log4j.PatternLayout">

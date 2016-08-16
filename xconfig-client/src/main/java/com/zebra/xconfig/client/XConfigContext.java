@@ -2,9 +2,11 @@ package com.zebra.xconfig.client;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.dianping.cat.Cat;
 import com.zebra.xconfig.common.CommonUtil;
 import com.zebra.xconfig.common.Constants;
 import com.zebra.xconfig.common.MyAclProvider;
+import com.zebra.xconfig.common.exception.XConfigBootException;
 import com.zebra.xconfig.common.exception.XConfigException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
@@ -71,6 +73,7 @@ public class XConfigContext {
             //local.properties存在，启动本地模式
             if(localFile.exists() && localFile.isFile()){
                 logger.info("检测到{}文件，启动本地模式",localFile);
+                Cat.logError(new XConfigBootException("xconfig启动本地模式："+localFilePath));
 
                 fileInputStream = new FileInputStream(localFile);
                 Properties properties = new Properties();
@@ -159,9 +162,13 @@ public class XConfigContext {
                     File userFile = null;
                     if(currentFile.exists()){
                         logger.warn("使用{}启动",currentFile.getAbsolutePath());
+                        Cat.logError(new XConfigBootException("xconfig降级启动:"+currentFile.getAbsolutePath()));
+
                         userFile = currentFile;
                     }else if(bootFile.exists()){
                         logger.warn("使用{}启动",bootFile.getAbsoluteFile());
+                        Cat.logError(new XConfigBootException("xconfig降级启动:"+currentFile.getAbsolutePath()));
+
                         userFile = bootFile;
                     }else{
                         throw new XConfigException("zk启动失败，尝试使用最近的配置文件启动失败，请检查！");
