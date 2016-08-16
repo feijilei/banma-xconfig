@@ -11,14 +11,14 @@ CREATE TABLE `x_kv` (
   `project` varchar(50) NOT NULL,
   `profile` varchar(50) NOT NULL DEFAULT '',
   `xKey` varchar(50) NOT NULL DEFAULT '' COMMENT 'key',
-  `xValue` varchar(500) NOT NULL DEFAULT '',
+  `xValue` varchar(1000) NOT NULL DEFAULT '',
   `security` char(11) NOT NULL DEFAULT 'N' COMMENT 'Y，N，是否高密字段，高密字段只有master可以查看',
   `description` varchar(500) NOT NULL DEFAULT '' COMMENT '描述信息',
   `createTime` timestamp NOT NULL DEFAULT '2016-07-01 00:00:00',
   `updateTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `udx_project_profile_xKey` (`project`,`profile`,`xKey`)
-) ENGINE=InnoDB AUTO_INCREMENT=133 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=132 DEFAULT CHARSET=utf8;
 
 -- Create syntax for TABLE 'x_profile'
 CREATE TABLE `x_profile` (

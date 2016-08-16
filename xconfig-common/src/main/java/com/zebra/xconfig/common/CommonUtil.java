@@ -155,8 +155,8 @@ public class CommonUtil {
      * @throws XConfigException
      */
     public static void checkValue(String value) throws XConfigException{
-        if (value.length() > 500){
-            throw new XConfigException("value长度不能超过500个字符");
+        if (value.length() > 1000){
+            throw new XConfigException("value长度不能超过1000个字符");
         }
     }
 
