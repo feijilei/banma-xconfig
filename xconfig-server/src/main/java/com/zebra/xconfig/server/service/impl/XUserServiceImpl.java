@@ -91,7 +91,7 @@ public class XUserServiceImpl implements XUserService {
             throw new XConfigException("用户名（email）格式不正确");
         }
 
-        if(role != 10 && role != 20){
+        if(role != 10 && role != 30){
             throw new XConfigException("role不合法");
         }
 
