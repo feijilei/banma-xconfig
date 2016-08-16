@@ -69,6 +69,10 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
 
         List<ProjectDependency> projectDependencies = new ArrayList<>();
         for(String dep : deps){
+            if(StringUtils.isBlank(dep)){
+                continue;
+            }
+
             CommonUtil.checkName(dep);
 
             if(dep.equals(project)){
@@ -88,7 +92,11 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
         }
 
         this.xProjectProfileMapper.delDependencies(project);
-        this.xProjectProfileMapper.batchInsertDependencies(projectDependencies);
+        if(projectDependencies.size() > 0) {
+            this.xProjectProfileMapper.batchInsertDependencies(projectDependencies);
+        }
+        xConfigServer.createUpdateKvNode(CommonUtil.genProjectPath(project),projectDependencies.size() > 0 ? StringUtils.join(deps,","):"");
+
     }
 
     @Transactional(rollbackFor = Exception.class)

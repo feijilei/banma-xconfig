@@ -139,7 +139,7 @@ public class XConfigContext {
                     for (String tmp : dependencies) {
                         String profilePath = CommonUtil.genProfilePath(tmp, xConfig.getProfile());
 
-                        if ("0".equals(tmp)) {
+                        if ("0".equals(tmp) || StringUtils.isBlank(tmp)) {
                             countDownLatch.countDown();
                             continue;
                         }
