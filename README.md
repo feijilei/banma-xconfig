@@ -36,7 +36,7 @@
 	4. 生成war包。在xconfig-server目录下，执行：mvn clean compile package -Pprd，会在xconfig-server/target目录下生成war包。
 	5. 将war部署到web容器，请将web部署到容器根目录。（其中一种部署方式，tomcat的server.xml中增加context：`<Context path="" docBase="../war/xconfig-server.war" debug="0" reloadable="true"/>`）。
 	6. xconfig-server可以部署多台，多台部署的时候前面需要ngnix之类的反向代理工具，这里就不再赘述。
-	7. 部署成功之后页面，localhost:8080，使用默认用户名密码登录：admin/admin。
+	7. 部署成功之后页面，localhost:8080，使用默认用户名密码登录：admin@xconfig.com/admin。
 	8. 请先在右上角修改密码。
 * xconfig-server启动之后，会自动将mysql中的配置信息同步到zk，之后每隔一段时间（目前是20分钟），都会自动将mysql的配置与zk同步（作为一种容错方式）。
 * 注意修改zookeeper连接数，默认支持修改为支持500个连接，zoo.cfg中配置：maxClientCnxns=500。
