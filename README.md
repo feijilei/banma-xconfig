@@ -30,7 +30,7 @@
 * jdk版本1.7。
 * maven3。
 * 部署步骤（目前我只在linux上面部署，如果是window可能需要作出相应调整）
-	1. 下载源代码。
+	1. 下载源代码。执行doc/xconfig.sql中的脚本建立数据库。
 	2. install到maven仓库。在xconfig目录下，执行：mvn install -DskipTests=true。
 	3. 修改xconfig-server配置。修改xconfig/xconfig-server/config/xconfig.properties文件，将其中配置信息修改为自己的。其中如果不需要对zk节点使用acl权限，zkUserName,zkPassword可以设置为空。
 	4. 生成war包。在xconfig-server目录下，执行：mvn clean compile package -Pprd，会在xconfig-server/target目录下生成war包。
