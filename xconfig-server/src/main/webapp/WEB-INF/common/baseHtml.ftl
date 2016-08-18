@@ -25,7 +25,7 @@
                     $("#logout").bind("click",function(){
                         $.cookie("un","",{path:"/",expires:-1});
                         $.cookie("t","",{path:"/",expires:-1});
-                        window.location = basepath + "/logout";
+                        window.location = basepath + "/auth/logout";
                     })
                 })
             </script>

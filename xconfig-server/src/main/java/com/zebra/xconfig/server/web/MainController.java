@@ -1,12 +1,16 @@
 package com.zebra.xconfig.server.web;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.dianping.cat.Cat;
+import com.dianping.cat.message.Message;
 import com.zebra.xconfig.common.CommonUtil;
 import com.zebra.xconfig.server.po.KvPo;
 import com.zebra.xconfig.server.po.ProfilePo;
 import com.zebra.xconfig.server.service.WisdomService;
 import com.zebra.xconfig.server.service.XKvService;
 import com.zebra.xconfig.server.service.XProjectProfileService;
+import com.zebra.xconfig.server.util.WebAttributeConstants;
 import com.zebra.xconfig.server.vo.AjaxResponse;
 import com.zebra.xconfig.server.vo.KvVo;
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.HtmlUtils;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -126,15 +131,15 @@ public class MainController {
 
     @RequestMapping("/addKvs")
     @ResponseBody
-    public AjaxResponse addKvs(WebRequest webRequest){
+    public AjaxResponse addKvs(HttpServletRequest webRequest){
         AjaxResponse ajaxResponse = new AjaxResponse();
 
+        String project = HtmlUtils.htmlEscape(webRequest.getParameter("project"));
+        String[] profiles = webRequest.getParameterValues("profiles");
+        String key = HtmlUtils.htmlEscape(webRequest.getParameter("xkey"));
+        String value = webRequest.getParameter("xvalue");
         try {
-            String project = HtmlUtils.htmlEscape(webRequest.getParameter("project"));
-            String[] profiles = webRequest.getParameterValues("profiles");
             String profile = HtmlUtils.htmlEscape(webRequest.getParameter("profile"));
-            String key = HtmlUtils.htmlEscape(webRequest.getParameter("xkey"));
-            String value = webRequest.getParameter("xvalue");
             String security = HtmlUtils.htmlEscape(webRequest.getParameter("security"));
             String description = HtmlUtils.htmlEscape(webRequest.getParameter("description"));
 
@@ -169,6 +174,12 @@ public class MainController {
         }catch (Exception e){
             logger.error(e.getMessage(),e);
             ajaxResponse.setThrowable(e);
+        }finally {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("operator",webRequest.getAttribute(WebAttributeConstants.USER_NIKE));
+            jsonObject.put("profiles",profiles);
+            jsonObject.put("key",key);
+            Cat.logEvent(project,"addkvs",ajaxResponse.getCode() == 0 ? Message.SUCCESS : ajaxResponse.getMsg(),jsonObject.toJSONString());
         }
 
         return ajaxResponse;
@@ -176,13 +187,13 @@ public class MainController {
 
     @RequestMapping("editKv")
     @ResponseBody
-    public AjaxResponse editKv(WebRequest webRequest){
+    public AjaxResponse editKv(HttpServletRequest webRequest){
         AjaxResponse ajaxResponse = new AjaxResponse();
+        String project = webRequest.getParameter("project");
+        String profile = webRequest.getParameter("profile");
+        String key = webRequest.getParameter("key");
+        String value = webRequest.getParameter("xvalue");
         try{
-            String project = webRequest.getParameter("project");
-            String profile = webRequest.getParameter("profile");
-            String key = webRequest.getParameter("key");
-            String value = webRequest.getParameter("xvalue");
             String description = HtmlUtils.htmlEscape(webRequest.getParameter("description"));
 
             String xkey = CommonUtil.genXKeyByKey(key);
@@ -198,6 +209,12 @@ public class MainController {
         }catch (Exception e){
             logger.error(e.getMessage(),e);
             ajaxResponse.setThrowable(e);
+        }finally {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("operator",webRequest.getAttribute(WebAttributeConstants.USER_NIKE));
+            jsonObject.put("profile",profile);
+            jsonObject.put("key",key);
+            Cat.logEvent(project,"editKv",ajaxResponse.getCode() == 0 ? Message.SUCCESS : ajaxResponse.getMsg(),jsonObject.toJSONString());
         }
 
         return ajaxResponse;
@@ -205,16 +222,22 @@ public class MainController {
 
     @RequestMapping("removeKv")
     @ResponseBody
-    public AjaxResponse removeKv(WebRequest webRequest){
+    public AjaxResponse removeKv(HttpServletRequest webRequest){
         AjaxResponse ajaxResponse = new AjaxResponse();
 
+        String key = webRequest.getParameter("key");
+        String profile = webRequest.getParameter("profile");
         try{
-            String profile = webRequest.getParameter("profile");
-            String key = webRequest.getParameter("key");
             this.xKvService.removeKvBykey(profile,key);
         }catch (Exception e){
             logger.error(e.getMessage(),e);
             ajaxResponse.setThrowable(e);
+        }finally {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("operator",webRequest.getAttribute(WebAttributeConstants.USER_NIKE));
+            jsonObject.put("profile",profile);
+            jsonObject.put("key", key);
+            Cat.logEvent(CommonUtil.genProjectByKey(key),"editKv",ajaxResponse.getCode() == 0 ? Message.SUCCESS : ajaxResponse.getMsg(),jsonObject.toJSONString());
         }
 
         return ajaxResponse;
@@ -246,12 +269,12 @@ public class MainController {
 
     @RequestMapping("updateProjectDeps")
     @ResponseBody
-    public AjaxResponse updateProjectDeps(WebRequest webRequest){
+    public AjaxResponse updateProjectDeps(HttpServletRequest webRequest){
         AjaxResponse ajaxResponse = new AjaxResponse();
 
+        String project = HtmlUtils.htmlEscape(webRequest.getParameter("project"));
+        String deps = HtmlUtils.htmlEscape(webRequest.getParameter("deps"));
         try {
-            String project = HtmlUtils.htmlEscape(webRequest.getParameter("project"));
-            String deps = HtmlUtils.htmlEscape(webRequest.getParameter("deps"));
 
             Set<String> pDeps = new HashSet<>();
             String[] depArray = deps.split(",");
@@ -263,6 +286,11 @@ public class MainController {
         }catch (Exception e){
             logger.error(e.getMessage(),e);
             ajaxResponse.setThrowable(e);
+        }finally {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("operator",webRequest.getAttribute(WebAttributeConstants.USER_NIKE));
+            jsonObject.put("deps",deps);
+            Cat.logEvent(project,"updateProjectDeps",ajaxResponse.getCode() == 0 ? Message.SUCCESS : ajaxResponse.getMsg(),jsonObject.toJSONString());
         }
 
         return ajaxResponse;
@@ -270,13 +298,13 @@ public class MainController {
 
     @RequestMapping("addProfile")
     @ResponseBody
-    public AjaxResponse addProfile(WebRequest webRequest){
+    public AjaxResponse addProfile(HttpServletRequest webRequest){
         AjaxResponse ajaxResponse = new AjaxResponse();
+        String project = HtmlUtils.htmlEscape(webRequest.getParameter("project"));
+        String profile = HtmlUtils.htmlEscape(webRequest.getParameter("addProfileName"));
+        String source = HtmlUtils.htmlEscape(webRequest.getParameter("cpSource"));
         try {
-            String project = HtmlUtils.htmlEscape(webRequest.getParameter("project"));
-            String profile = HtmlUtils.htmlEscape(webRequest.getParameter("addProfileName"));
             String profileKey = HtmlUtils.htmlEscape(webRequest.getParameter("profileKey"));
-            String source = HtmlUtils.htmlEscape(webRequest.getParameter("cpSource"));
 
             ProfilePo profilePo = new ProfilePo();
             profilePo.setProject(project);
@@ -287,6 +315,13 @@ public class MainController {
         }catch (Exception e){
             logger.error(e.getMessage(),e);
             ajaxResponse.setThrowable(e);
+        }finally {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("operator",webRequest.getAttribute(WebAttributeConstants.USER_NIKE));
+            jsonObject.put("project",project);
+            jsonObject.put("profile",profile);
+            jsonObject.put("source",source);
+            Cat.logEvent(project,"addProfile",ajaxResponse.getCode() == 0 ? Message.SUCCESS : ajaxResponse.getMsg(),jsonObject.toJSONString());
         }
         return ajaxResponse;
     }
@@ -294,48 +329,62 @@ public class MainController {
 
     @RequestMapping("removeProfile")
     @ResponseBody
-    public AjaxResponse removeProfile(WebRequest webRequest){
+    public AjaxResponse removeProfile(HttpServletRequest webRequest){
         AjaxResponse ajaxResponse = new AjaxResponse();
+        String project = HtmlUtils.htmlEscape(webRequest.getParameter("project"));
+        String profile = HtmlUtils.htmlEscape(webRequest.getParameter("removeProfile"));
         try {
-            String project = HtmlUtils.htmlEscape(webRequest.getParameter("project"));
-            String profile = HtmlUtils.htmlEscape(webRequest.getParameter("removeProfile"));
 
             this.xProjectProfileService.removeProfile(project, profile);
         }catch (Exception e){
             logger.error(e.getMessage(),e);
             ajaxResponse.setThrowable(e);
+        }finally {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("operator",webRequest.getAttribute(WebAttributeConstants.USER_NIKE));
+            jsonObject.put("profile",profile);
+            Cat.logEvent(project,"removeProfile",ajaxResponse.getCode() == 0 ? Message.SUCCESS : ajaxResponse.getMsg(),jsonObject.toJSONString());
         }
         return ajaxResponse;
     }
 
     @RequestMapping("addProject")
     @ResponseBody
-    public AjaxResponse addProject(WebRequest webRequest){
+    public AjaxResponse addProject(HttpServletRequest webRequest){
         AjaxResponse ajaxResponse = new AjaxResponse();
+        String project = HtmlUtils.htmlEscape(webRequest.getParameter("addProjectName"));
+        String profileStr = HtmlUtils.htmlEscape(webRequest.getParameter("preProfiles"));
         try{
-            String project = HtmlUtils.htmlEscape(webRequest.getParameter("addProjectName"));
-            String profileStr = HtmlUtils.htmlEscape(webRequest.getParameter("preProfiles"));
 
             String[] profiles = StringUtils.isBlank(profileStr) ? null : profileStr.split(",");
             this.xProjectProfileService.addProject(project,profiles);
         }catch (Exception e){
             logger.error(e.getMessage(),e);
             ajaxResponse.setThrowable(e);
+        }finally {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("operator",webRequest.getAttribute(WebAttributeConstants.USER_NIKE));
+            jsonObject.put("profile",profileStr);
+            Cat.logEvent(project,"addProject",ajaxResponse.getCode() == 0 ? Message.SUCCESS : ajaxResponse.getMsg(),jsonObject.toJSONString());
         }
         return ajaxResponse;
     }
 
     @RequestMapping("removeProject")
     @ResponseBody
-    public AjaxResponse removeProject(WebRequest webRequest){
+    public AjaxResponse removeProject(HttpServletRequest webRequest){
         AjaxResponse ajaxResponse = new AjaxResponse();
+        String project = HtmlUtils.htmlEscape(webRequest.getParameter("project"));
         try{
-            String project = HtmlUtils.htmlEscape(webRequest.getParameter("project"));
 
             this.xProjectProfileService.removePoject(project);
         }catch (Exception e){
             logger.error(e.getMessage(),e);
             ajaxResponse.setThrowable(e);
+        }finally {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("operator",webRequest.getAttribute(WebAttributeConstants.USER_NIKE));
+            Cat.logEvent(project,"removeProject",ajaxResponse.getCode() == 0 ? Message.SUCCESS : ajaxResponse.getMsg(),jsonObject.toJSONString());
         }
         return ajaxResponse;
     }

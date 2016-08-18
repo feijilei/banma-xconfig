@@ -6,6 +6,7 @@ import com.zebra.xconfig.common.exception.XConfigUserCheckException;
 import com.zebra.xconfig.server.dao.mapper.XUserMapper;
 import com.zebra.xconfig.server.po.UserPo;
 import com.zebra.xconfig.server.util.UserUtil;
+import com.zebra.xconfig.server.util.WebAttributeConstants;
 import com.zebra.xconfig.server.vo.AjaxResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -86,9 +87,9 @@ public class PermissionIntercepter extends HandlerInterceptorAdapter {
             }
             int needRole = UrlResouces.getResouceRole(url);//防止忘记设置权限带来的安全问题
             if(role >= needRole){
-                request.setAttribute("_role",role);
-                request.setAttribute("_userNike", URLDecoder.decode(userPo.getUserNike(), "utf-8"));
-                request.setAttribute("_userName", userPo.getUserName());
+                request.setAttribute(WebAttributeConstants.ROLE,role);
+                request.setAttribute(WebAttributeConstants.USER_NIKE, URLDecoder.decode(userPo.getUserNike(), "utf-8"));
+                request.setAttribute(WebAttributeConstants.USER_NAME, userPo.getUserName());
                 return true;
             }else{
                 throw new XConfigException("您的权限不足");
@@ -104,9 +105,9 @@ public class PermissionIntercepter extends HandlerInterceptorAdapter {
                 PrintWriter out = response.getWriter();
                 out.print(JSON.toJSONString(ajaxResponse));
                 out.flush();
-            }else{
+            }else{//非ajax请求跳转登陆页
                 request.setAttribute("_errMsg",e.getMessage());
-                request.getRequestDispatcher("/index").forward(request,response);
+                request.getRequestDispatcher("/auth/index").forward(request,response);
             }
 
             return  false;
@@ -120,11 +121,11 @@ public class PermissionIntercepter extends HandlerInterceptorAdapter {
 
         }else {
             //只能是非ajax请求才能执行model里面的put操作，否则会报错
-            Integer _role = (Integer)request.getAttribute("_role");
+            Integer _role = (Integer)request.getAttribute(WebAttributeConstants.ROLE);
             if(_role != null){
                 modelAndView.getModel().put("role",_role);
             }
-            String _userNike = (String)request.getAttribute("_userNike");
+            String _userNike = (String)request.getAttribute(WebAttributeConstants.USER_NIKE);
             if(StringUtils.isNotBlank(_userNike)){
                 modelAndView.getModel().put("userNike",_userNike);
             }

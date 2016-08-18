@@ -1,9 +1,14 @@
 package com.zebra.xconfig.server.web;
 
+import com.alibaba.fastjson.JSONObject;
+import com.dianping.cat.Cat;
+import com.dianping.cat.message.Message;
 import com.zebra.xconfig.common.exception.XConfigException;
 import com.zebra.xconfig.server.service.XUserService;
+import com.zebra.xconfig.server.util.WebAttributeConstants;
 import com.zebra.xconfig.server.vo.AjaxResponse;
 import com.zebra.xconfig.server.vo.Pagging;
+import com.zebra.xconfig.server.vo.UserVo;
 import com.zebra.xconfig.server.vo.XUserVo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -15,6 +20,10 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
 
 /**
  * Created by ying on 16/8/3.
@@ -52,35 +61,46 @@ public class UserController {
 
     @RequestMapping("/addUser")
     @ResponseBody
-    public AjaxResponse addUser(WebRequest webRequest){
+    public AjaxResponse addUser(HttpServletRequest webRequest){
         AjaxResponse ajaxResponse = new AjaxResponse();
+        String userName = webRequest.getParameter("userName");
+        String passwrod = webRequest.getParameter("password");
+        String userNike = webRequest.getParameter("userNike");
+        String role = webRequest.getParameter("role");
         try{
-            String userName = webRequest.getParameter("userName");
-            String passwrod = webRequest.getParameter("password");
-            String userNike = webRequest.getParameter("userNike");
-            String role = webRequest.getParameter("role");
 
             this.xUserService.addUser(userName,passwrod,userNike,Integer.valueOf(role));
 
         }catch (Exception e){
             logger.error(e.getMessage(),e);
             ajaxResponse.setThrowable(e);
+        }finally {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("operator",webRequest.getAttribute(WebAttributeConstants.USER_NIKE));
+            jsonObject.put("userName",userName);
+            jsonObject.put("role",role);
+            Cat.logEvent("userManager", "addUser", ajaxResponse.getCode() == 0 ? Message.SUCCESS : ajaxResponse.getMsg(), jsonObject.toJSONString());
         }
         return ajaxResponse;
     }
 
     @RequestMapping("/removeUser")
     @ResponseBody
-    public AjaxResponse removeUser(WebRequest webRequest){
+    public AjaxResponse removeUser(HttpServletRequest webRequest){
         AjaxResponse ajaxResponse = new AjaxResponse();
+        String userName = webRequest.getParameter("userName");
         try{
-            String userName = webRequest.getParameter("userName");
 
             this.xUserService.removeUser(userName);
 
         }catch (Exception e){
             logger.error(e.getMessage(),e);
             ajaxResponse.setThrowable(e);
+        }finally {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("operator",webRequest.getAttribute(WebAttributeConstants.USER_NIKE));
+            jsonObject.put("userName",userName);
+            Cat.logEvent("userManager", "removeUser", ajaxResponse.getCode() == 0 ? Message.SUCCESS : ajaxResponse.getMsg(), jsonObject.toJSONString());
         }
         return ajaxResponse;
     }
@@ -93,12 +113,12 @@ public class UserController {
     }
 
     @RequestMapping("/updateUser")
-    public ModelAndView updateUser(WebRequest webRequest){
+    public ModelAndView updateUser(HttpServletRequest webRequest){
         ModelAndView mv = new ModelAndView();
-        String msg;
+        String msg = null;
+        String userName = (String)webRequest.getAttribute("_userName");
+        String userNike = webRequest.getParameter("userNike");
         try{
-            String userName = (String)webRequest.getAttribute("_userName",WebRequest.SCOPE_REQUEST);
-            String userNike = webRequest.getParameter("userNike");
             String oldPassword = webRequest.getParameter("oldPassword");
             String newPassword1 = webRequest.getParameter("newPassword1");
             String newPassword2 = webRequest.getParameter("newPassword2");
@@ -116,6 +136,12 @@ public class UserController {
         }catch (Exception e){
             logger.error(e.getMessage(),e);
             msg = e.getMessage();
+        }finally {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("operator",webRequest.getAttribute(WebAttributeConstants.USER_NIKE));
+            jsonObject.put("userName",userName);
+            jsonObject.put("userNike",userNike);
+            Cat.logEvent("userManager", "updateUser", (msg == null || "ok".equals(msg)) ? Message.SUCCESS : msg, jsonObject.toJSONString());
         }
 
         mv.getModel().put("msg",msg);

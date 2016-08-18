@@ -1,7 +1,11 @@
 package com.zebra.xconfig.server.web;
 
+import com.alibaba.fastjson.JSONObject;
+import com.dianping.cat.Cat;
+import com.dianping.cat.message.Message;
 import com.zebra.xconfig.server.service.XProjectProfileService;
 import com.zebra.xconfig.server.service.XUserService;
+import com.zebra.xconfig.server.util.WebAttributeConstants;
 import com.zebra.xconfig.server.vo.AjaxResponse;
 import com.zebra.xconfig.server.vo.XUserVo;
 import org.slf4j.Logger;
@@ -13,6 +17,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -57,32 +62,42 @@ public class ProjectController {
 
     @RequestMapping("addOwner")
     @ResponseBody
-    public AjaxResponse addOwner(WebRequest webRequest){
+    public AjaxResponse addOwner(HttpServletRequest webRequest){
         AjaxResponse ajaxResponse = new AjaxResponse();
+        String userName = webRequest.getParameter("addOwer");
+        String project = webRequest.getParameter("project");
         try{
-            String userName = webRequest.getParameter("addOwer");
-            String project = webRequest.getParameter("project");
 
             this.xUserService.addUserProjectRole(project,userName);
         }catch (Exception e){
             logger.error(e.getMessage(),e);
             ajaxResponse.setThrowable(e);
+        }finally {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("operator",webRequest.getAttribute(WebAttributeConstants.USER_NIKE));
+            jsonObject.put("owner",userName);
+            Cat.logEvent(project, "addOwner", ajaxResponse.getCode() == 0 ? Message.SUCCESS : ajaxResponse.getMsg(), jsonObject.toJSONString());
         }
         return ajaxResponse;
     }
 
     @RequestMapping("removeOwner")
     @ResponseBody
-    public AjaxResponse removeOwner(WebRequest webRequest){
+    public AjaxResponse removeOwner(HttpServletRequest webRequest){
         AjaxResponse ajaxResponse = new AjaxResponse();
+        String userName = webRequest.getParameter("userName");
+        String project = webRequest.getParameter("project");
         try{
-            String userName = webRequest.getParameter("userName");
-            String project = webRequest.getParameter("project");
 
             this.xUserService.removeUserProjectRole(project,userName);
         }catch (Exception e){
             logger.error(e.getMessage(),e);
             ajaxResponse.setThrowable(e);
+        }finally {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("operator",webRequest.getAttribute(WebAttributeConstants.USER_NIKE));
+            jsonObject.put("owner",userName);
+            Cat.logEvent(project,"removeOwner",ajaxResponse.getCode() == 0 ? Message.SUCCESS : ajaxResponse.getMsg(),jsonObject.toJSONString());
         }
         return ajaxResponse;
     }

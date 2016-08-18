@@ -6,4 +6,7 @@
     <typeAliases>
     </typeAliases>
 
+    <plugins>
+        <plugin interceptor="com.zebra.carcloud.mybatisExt.Interceptor.SqlInterceptor"></plugin>
+    </plugins>
 </configuration>

@@ -28,10 +28,12 @@
         <!--<appender-ref ref="console"/>-->
         <!--<appender-ref ref="file"/>-->
     <!--</logger>-->
+    <appender name="catAppender" class="com.dianping.cat.log4j.CatAppender"></appender>
 
     <root>
         <priority value="DEBUG" />
         <appender-ref ref="console" />
         <appender-ref ref="file" />
+        <appender-ref ref="catAppender"/>
     </root>
 </log4j:configuration>

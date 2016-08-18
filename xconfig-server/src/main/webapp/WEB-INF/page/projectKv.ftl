@@ -174,6 +174,12 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <label for="security" class="col-sm-2 control-label">是否高密</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="security" name="security" placeholder="key" value="{{=it.security}}">
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <label for="createTime" class="col-sm-2 control-label">创建时间</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="createTime" name="createTime" value="{{=it.createTime}}">

@@ -336,9 +336,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.dianping.cat</groupId>
-            <artifactId>cat-client</artifactId>
-            <version>1.3.6</version>
+            <groupId>com.zebra.carcloud</groupId>
+            <artifactId>dubbo_ext</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
