@@ -29,6 +29,10 @@ public class XConfig {
     private String xconfigDir;//xconfig的默认目录
     private String localConfigDir;//当前配置目录
 
+    /**
+     * 主要提供spring使用
+     * @throws XConfigException
+     */
     public void init() throws XConfigException{
         this.xconfigDir = System.getProperty("user.home")
                 + File.separator + Constants.LOCAL_FILE_DIR_NAME;
@@ -76,6 +80,19 @@ public class XConfig {
 
         xKeyObservable = new XKeyObservable();
         xConfigContext = new XConfigContext(this,xKeyObservable);
+    }
+
+    /**
+     * 初始化 主要用在编程式启动
+     * @param project
+     * @throws XConfigException
+     */
+    public static XConfig instance(String project) throws XConfigException{
+        XConfig xConfig = new XConfig();
+        xConfig.setProject(project);
+        xConfig.init();
+
+        return xConfig;
     }
 
     public static void addObserver(XKeyObserver observer){

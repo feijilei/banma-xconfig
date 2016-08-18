@@ -11,8 +11,7 @@
     http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
     <bean id="xConfig" class="com.zebra.xconfig.client.XConfig" init-method="init">
-        <property name="project" value="mysql"></property>
-        <!--<property name="zkConn" value="localhost:2181"></property>-->
+        <property name="project" value="demo"></property>
     </bean>
 
     <bean class="com.zebra.xconfig.client.XConfigPropertyPlaceholderConfigurer">

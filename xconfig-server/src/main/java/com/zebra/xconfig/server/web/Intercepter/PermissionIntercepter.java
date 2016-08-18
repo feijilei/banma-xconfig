@@ -2,6 +2,7 @@ package com.zebra.xconfig.server.web.Intercepter;
 
 import com.alibaba.fastjson.JSON;
 import com.zebra.xconfig.common.exception.XConfigException;
+import com.zebra.xconfig.common.exception.XConfigUserCheckException;
 import com.zebra.xconfig.server.dao.mapper.XUserMapper;
 import com.zebra.xconfig.server.po.UserPo;
 import com.zebra.xconfig.server.util.UserUtil;
@@ -64,17 +65,17 @@ public class PermissionIntercepter extends HandlerInterceptorAdapter {
 
             //登录是否过期
             if((System.currentTimeMillis() - timeMillis) > expirySecond){
-                throw new XConfigException("登录已过期，请重新登录");
+                throw new XConfigUserCheckException("登录已过期，请重新登录");
             }
 
             //校验签名信息
             UserPo userPo = xUserMapper.loadUser(username);
             if(userPo == null){
-                throw new XConfigException("当前用户不存在");
+                throw new XConfigUserCheckException("当前用户不存在");
             }
             String genSecurity = UserUtil.genSecurityKey(username,userPo.getPassword(),timeMillis,userPo.getSalt());
             if(!genSecurity.equals(security)){
-                throw new XConfigException("验证失败，需要重新登录");
+                throw new XConfigUserCheckException("验证失败，需要重新登录");
             }
 
             //校验权限信息

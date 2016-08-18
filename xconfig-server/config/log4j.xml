@@ -14,7 +14,7 @@
 
     <!-- File Appender, used to record debug & info log. -->
     <appender name="file" class="org.apache.log4j.DailyRollingFileAppender">
-        <param name="File" value="/data/applogs/xconfig/xconfig-client.log" />
+        <param name="File" value="/alidata1/zcc_log/xconfig/xconfig-server.log" />
         <param name="Append" value="true" />
         <param name="DatePattern" value="'.'yyyy-MM-dd'.log'"/>
         <layout class="org.apache.log4j.PatternLayout">
@@ -23,15 +23,13 @@
         </layout>
     </appender>
 
-    <logger name="com.zebra" additivity="false">
-        <level value="DEBUG"/>
-        <appender-ref ref="console"/>
-        <appender-ref ref="file"/>
-    </logger>
+    <!--接入cat监控-->
+    <appender name="catAppender" class="com.dianping.cat.log4j.CatAppender"></appender>
 
     <root>
-        <priority value="info" />
+        <priority value="INFO" />
         <appender-ref ref="console" />
         <appender-ref ref="file" />
+        <appender-ref ref="catAppender"/>
     </root>
 </log4j:configuration>
