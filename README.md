@@ -168,3 +168,9 @@
 	* 单个节点上独立session的watch数量对性能有一定影响。同一个session的watch数量基本没有影响。
 	* 我单独对多个session的情况作了测试。
 	![zktest](doc/xconfig-test-1.png "zktest")
+	
+# 整合时候遇到的问题
+
+* `com.google.collections:google-collections:1.0` 和 `com.google.guava:guava:18.0`这两个jar存在类冲突，请屏蔽掉第一个jar包，使用第二个jar即可。否则启动时候可能会提示找不到某些方法。
+* 使用的`org.apache.zookeeper:zookeeper:3.4.6`版本过低可能会导致启动时候找不到方法，使用以上版本不存在这种问题。
+* 

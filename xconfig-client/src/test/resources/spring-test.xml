@@ -20,7 +20,7 @@
     </bean>
 
     <bean id="mysqlConf" class="com.zebra.xconfig.client.MysqlConf">
-        <property name="password" value="${mysql.jdbc.password}"></property>
+        <property name="password" value="${mysql.jdbc.driver}${mysql.jdbc.password}"></property>
     </bean>
 
     <!--    数据源配置 -->
