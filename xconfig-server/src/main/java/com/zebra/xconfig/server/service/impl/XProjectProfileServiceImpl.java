@@ -64,7 +64,7 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void addDepenedencies(String project, Set<String> deps) throws Exception{
-        CommonUtil.checkName(project);
+        CommonUtil.checkProjectProfileName(project);
 
 
         List<ProjectDependency> projectDependencies = new ArrayList<>();
@@ -73,7 +73,7 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
                 continue;
             }
 
-            CommonUtil.checkName(dep);
+            CommonUtil.checkProjectProfileName(dep);
 
             if(dep.equals(project)){
                 throw new XConfigException("不能自己依赖自己");
@@ -102,9 +102,9 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void addProfile(ProfilePo profilePo, String source) throws Exception{
-        CommonUtil.checkName(profilePo.getProject());
-        CommonUtil.checkName(profilePo.getProfile());
-        CommonUtil.checkName(source);
+        CommonUtil.checkProjectProfileName(profilePo.getProject());
+        CommonUtil.checkProjectProfileName(profilePo.getProfile());
+        CommonUtil.checkProjectProfileName(source);
 
         profilePo.setMd5("");
 
@@ -150,8 +150,8 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void removeProfile(String project, String profile) throws Exception{
-        CommonUtil.checkName(project);
-        CommonUtil.checkName(profile);
+        CommonUtil.checkProjectProfileName(project);
+        CommonUtil.checkProjectProfileName(profile);
 
         //最后一个profile不允许删除
         List<String> profiles = this.xProjectProfileMapper.queryProjectProfiles(project);
@@ -169,7 +169,7 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void addProject(String project,String[] profiles) throws Exception {
-        CommonUtil.checkName(project);
+        CommonUtil.checkProjectProfileName(project);
 
         this.xProjectProfileMapper.insertProject(project);
         if(profiles == null || profiles.length == 0){
@@ -189,7 +189,7 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
             zkNodes.add(projectNode);
 
             for(String profile : profiles){
-                CommonUtil.checkName(profile);
+                CommonUtil.checkProjectProfileName(profile);
 
                 ProfilePo profilePo = new ProfilePo();
                 profilePo.setProject(project);
@@ -211,7 +211,7 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void removePoject(String project) throws Exception {
-        CommonUtil.checkName(project);
+        CommonUtil.checkProjectProfileName(project);
 
         List<String> projects = this.xProjectProfileMapper.queryProjectsByDepedProject(project);
         if(CollectionUtils.isNotEmpty(projects)){

@@ -49,9 +49,9 @@ public class XkvServiceImpl implements XKvService {
     @Override
     @Transactional(rollbackFor = Throwable.class)
     public void addKv(KvPo kvPo) throws Exception {
-        CommonUtil.checkName(kvPo.getProject());
-        CommonUtil.checkName(kvPo.getProfile());
-        CommonUtil.checkName(kvPo.getxKey());
+        CommonUtil.checkProjectProfileName(kvPo.getProject());
+        CommonUtil.checkProjectProfileName(kvPo.getProfile());
+        CommonUtil.checkKeyName(kvPo.getxKey());
         CommonUtil.checkValue(kvPo.getxValue());
 
         this.checkProjectAndProfile(kvPo.getProject(),kvPo.getProfile());
@@ -69,9 +69,9 @@ public class XkvServiceImpl implements XKvService {
     @Override
     @Transactional(rollbackFor = Throwable.class)
     public void updateKv(KvPo kvPo) throws Exception {
-        CommonUtil.checkName(kvPo.getProject());
-        CommonUtil.checkName(kvPo.getProfile());
-        CommonUtil.checkName(kvPo.getxKey());
+        CommonUtil.checkProjectProfileName(kvPo.getProject());
+        CommonUtil.checkProjectProfileName(kvPo.getProfile());
+        CommonUtil.checkKeyName(kvPo.getxKey());
         CommonUtil.checkValue(kvPo.getxValue());
 
         this.checkProjectAndProfile(kvPo.getProject(),kvPo.getProfile());
@@ -106,9 +106,9 @@ public class XkvServiceImpl implements XKvService {
     public void addKvs(List<KvPo> kvPos) throws Exception {
         List<ZkNode> zkNodes = new ArrayList<>();
         for(KvPo kvPo : kvPos){
-            CommonUtil.checkName(kvPo.getProject());
-            CommonUtil.checkName(kvPo.getProfile());
-            CommonUtil.checkName(kvPo.getxKey());
+            CommonUtil.checkProjectProfileName(kvPo.getProject());
+            CommonUtil.checkProjectProfileName(kvPo.getProfile());
+            CommonUtil.checkKeyName(kvPo.getxKey());
             CommonUtil.checkValue(kvPo.getxValue());
 
             this.checkProjectAndProfile(kvPo.getProject(),kvPo.getProfile());

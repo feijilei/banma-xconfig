@@ -16,7 +16,8 @@ public class Constants {
     public static final String PROJECT_DEPENDENCY_PATH = "/_dependencies";//项目依赖节点路径 project/_dependencies
     public static final long SYN_PERIOD_MILLIS = 1000*60*20;//多长时间同步一次
 
-    public static final String NAME_CHECK_REGEX = "^[A-Za-z][A-Za-z0-9-_.]*$";//project profile key 校验
+    public static final String NAME_CHECK_KEY_REGEX = "^[A-Za-z][A-Za-z0-9-_.]*$";//project profile key 校验
+    public static final String NAME_CHECK_PRO_REGEX = "^[A-Za-z][A-Za-z0-9-_]*$";//project profile 校验
     public static final String USERNAME_CHECK = "^[A-Za-z][A-Za-z0-9-_.@]*$";//用户名校验
 
     public static final String DEFUALT_PROFILE = "dev";

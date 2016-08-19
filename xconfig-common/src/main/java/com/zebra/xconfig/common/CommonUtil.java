@@ -1,6 +1,7 @@
 package com.zebra.xconfig.common;
 
 import com.zebra.xconfig.common.exception.IllegalNameException;
+import com.zebra.xconfig.common.exception.IllegalProNameException;
 import com.zebra.xconfig.common.exception.XConfigException;
 import org.apache.commons.lang3.StringUtils;
 
@@ -110,7 +111,7 @@ public class CommonUtil {
      */
     public static String genXKeyByMKey(String mkey){
         String[] keys = mkey.split("\\.");
-        return StringUtils.join(keys,".",2,keys.length);
+        return StringUtils.join(keys, ".", 2, keys.length);
     }
 
     public static String genProjectByMkey(String mkey){
@@ -133,7 +134,7 @@ public class CommonUtil {
      * @param name
      * @return
      */
-    public static void checkName(String name) throws XConfigException{
+    public static void checkKeyName(String name) throws XConfigException{
         if (StringUtils.isBlank(name)) {
             throw new XConfigException("project profile key名字不能为空");
         }
@@ -142,10 +143,26 @@ public class CommonUtil {
             throw new XConfigException("project profile key名字长度不能超过50个字符");
         }
 
-        Pattern pattern = Pattern.compile(Constants.NAME_CHECK_REGEX);
+        Pattern pattern = Pattern.compile(Constants.NAME_CHECK_KEY_REGEX);
         Matcher m = pattern.matcher(name);
         if(!m.find()){
             throw new IllegalNameException();
+        }
+    }
+
+    public static void checkProjectProfileName(String name) throws XConfigException{
+        if (StringUtils.isBlank(name)) {
+            throw new XConfigException("project profile名字不能为空");
+        }
+
+        if(name.length() > 50){
+            throw new XConfigException("project profile名字长度不能超过50个字符");
+        }
+
+        Pattern pattern = Pattern.compile(Constants.NAME_CHECK_PRO_REGEX);
+        Matcher m = pattern.matcher(name);
+        if(!m.find()){
+            throw new IllegalProNameException();
         }
     }
 
