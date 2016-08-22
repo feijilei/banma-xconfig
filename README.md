@@ -173,4 +173,9 @@
 
 * `com.google.collections:google-collections:1.0` 和 `com.google.guava:guava:18.0`这两个jar存在类冲突，请屏蔽掉第一个jar包，使用第二个jar即可。否则启动时候可能会提示找不到某些方法。
 * 使用的`org.apache.zookeeper:zookeeper:3.4.6`版本过低可能会导致启动时候找不到方法，使用以上版本不存在这种问题。
-* 
+* beta环境config.properties配置	
+
+	    profile=
+	    zkConnStr=10.125.14.91:2181,10.125.0.106:2181,10.125.14.198:2181
+	    zkUserName=xconfig
+	    zkPassword=xconfig
