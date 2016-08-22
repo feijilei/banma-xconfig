@@ -175,7 +175,7 @@
 * 使用的`org.apache.zookeeper:zookeeper:3.4.6`版本过低可能会导致启动时候找不到方法，使用以上版本不存在这种问题。
 * beta环境config.properties配置	
 
-	    profile=
-	    zkConnStr=10.125.14.91:2181,10.125.0.106:2181,10.125.14.198:2181
-	    zkUserName=xconfig
-	    zkPassword=xconfig
+	    profile=daily
+	    zkConn=10.125.14.91:2181,10.125.0.106:2181,10.125.14.198:2181
+	    userName=xconfig
+	    password=xconfig
