@@ -20,7 +20,7 @@ public interface XKvService {
 
     public void updateKv(KvPo kvPo) throws Exception;
 
-    public void removeKvBykey(String profile,String key) throws Exception;
+    public void removeKvBykey(String project ,String profile,String key) throws Exception;
 
     public List<KvPo> queryByProjectAndProfileWithDeps(String project,String profile);
 

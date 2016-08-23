@@ -18,6 +18,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -98,6 +100,37 @@ public class ProjectController {
             jsonObject.put("operator",webRequest.getAttribute(WebAttributeConstants.USER_NIKE));
             jsonObject.put("owner",userName);
             Cat.logEvent(project,"removeOwner",ajaxResponse.getCode() == 0 ? Message.SUCCESS : ajaxResponse.getMsg(),jsonObject.toJSONString());
+        }
+        return ajaxResponse;
+    }
+
+    @RequestMapping("profilesOrder")
+    public ModelAndView profilesOrder(HttpServletRequest request){
+        ModelAndView mv = new ModelAndView();
+
+        List<String> profiles = this.xProjectProfileService.queryProfilesOrder();
+
+        mv.getModel().put("profiles",profiles);
+        mv.setViewName("page/profileOrder.ftl");
+        return mv;
+    }
+
+    @RequestMapping("saveProfilesOrder")
+    @ResponseBody
+    public AjaxResponse saveProfilesOrder(HttpServletRequest request){
+        AjaxResponse ajaxResponse = new AjaxResponse();
+        try {
+            String profiles = request.getParameter("profiles");
+
+            List<String> profileList = new ArrayList<>();
+            String[] arr = profiles.split(",");
+            for(int i = 0 ; i < arr.length ; i++ ){
+                profileList.add(i,arr[i]);
+            }
+            this.xProjectProfileService.saveProfilesOrder(profileList);
+        }catch (Exception e){
+            logger.error(e.getMessage(),e);
+            ajaxResponse.setThrowable(e);
         }
         return ajaxResponse;
     }

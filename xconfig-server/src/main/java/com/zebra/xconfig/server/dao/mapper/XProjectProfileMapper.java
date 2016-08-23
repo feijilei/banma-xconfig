@@ -24,4 +24,7 @@ public interface XProjectProfileMapper {
     public void delProject(@Param("project")String project);
     public List<String> queryProjectsByDepedProject(@Param("depProject")String depProject);
     public void delProfileByProject(@Param("project")String project);
+    public List<String> queryProfilesOrder();
+    public void insertProfilesOrder(List<String> profiles);
+    public void delProfilesOrder();
 }

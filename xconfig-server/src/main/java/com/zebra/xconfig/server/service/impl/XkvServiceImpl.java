@@ -1,11 +1,9 @@
 package com.zebra.xconfig.server.service.impl;
 
 import com.zebra.xconfig.common.CommonUtil;
-import com.zebra.xconfig.common.exception.IllegalNameException;
 import com.zebra.xconfig.common.exception.XConfigException;
 import com.zebra.xconfig.server.dao.mapper.XKvMapper;
 import com.zebra.xconfig.server.dao.mapper.XProjectProfileMapper;
-import com.zebra.xconfig.server.dao.mapper.XUserMapper;
 import com.zebra.xconfig.server.po.KvPo;
 import com.zebra.xconfig.server.po.ZkNode;
 import com.zebra.xconfig.server.service.XKvService;
@@ -131,12 +129,11 @@ public class XkvServiceImpl implements XKvService {
 
     @Override
     @Transactional(rollbackFor = Throwable.class)
-    public void removeKvBykey(String profile,String key) throws Exception {
-        if(StringUtils.isBlank(key) || StringUtils.isBlank(profile)){
-            throw new XConfigException("key,profile不能为空");
+    public void removeKvBykey(String project,String profile,String key) throws Exception {
+        if(StringUtils.isBlank(key) || StringUtils.isBlank(profile) || StringUtils.isBlank(project)){
+            throw new XConfigException("key,profile,project不能为空");
         }
 
-        String project = CommonUtil.genProjectByKey(key);
         String xkey = CommonUtil.genXKeyByKey(key);
 
         this.xKvMapper.delOne(project,profile,xkey);

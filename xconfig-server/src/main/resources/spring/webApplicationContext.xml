@@ -115,6 +115,8 @@
                 <entry key="/project/queryGuestUser" value="30"></entry>
                 <entry key="/project/addOwner" value="30"></entry>
                 <entry key="/project/removeOwner" value="30"></entry>
+                <entry key="/project/profilesOrder" value="10"></entry>
+                <entry key="/project/saveProfilesOrder" value="30"></entry>
                 <entry key="/user/userList" value="10"></entry>
                 <entry key="/user/addUser" value="30"></entry>
                 <entry key="/user/removeUser" value="30"></entry>

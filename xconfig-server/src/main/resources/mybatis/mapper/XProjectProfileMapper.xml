@@ -18,11 +18,10 @@
     </select>
 
     <select id="queryProjectProfiles" resultType="string" parameterType="map">
-        SELECT
-          profile
-        FROM x_profile
-        WHERE project = #{project}
-        ORDER BY id
+        SELECT a.profile
+        FROM x_profile a LEFT JOIN x_profile_order b ON a.profile = b.profile
+        WHERE a.project = #{project}
+        ORDER BY b.pOrder ASC
     </select>
 
     <select id="queryProjectsByPrefix" resultType="string" parameterType="map">
@@ -93,4 +92,23 @@
         DELETE FROM x_profile
         WHERE project = #{project}
     </delete>
+
+    <select id="queryProfilesOrder" resultType="string">
+        SELECT profile
+        FROM x_profile_order
+        ORDER BY pOrder ASC
+    </select>
+
+    <delete id="delProfilesOrder">
+        DELETE FROM x_profile_order
+    </delete>
+
+    <insert id="insertProfilesOrder" parameterType="list">
+        INSERT INTO x_profile_order
+          (profile,pOrder)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator="," >
+            (#{item},${index})
+        </foreach>
+    </insert>
 </mapper>

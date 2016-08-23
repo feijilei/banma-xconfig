@@ -61,7 +61,7 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
         return xProjectProfileMapper.queryProjectsByPrefix(projectPre);
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Throwable.class)
     @Override
     public void addDepenedencies(String project, Set<String> deps) throws Exception{
         CommonUtil.checkProjectProfileName(project);
@@ -99,7 +99,7 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
 
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Throwable.class)
     @Override
     public void addProfile(ProfilePo profilePo, String source) throws Exception{
         CommonUtil.checkProjectProfileName(profilePo.getProject());
@@ -147,7 +147,7 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
         }
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Throwable.class)
     @Override
     public void removeProfile(String project, String profile) throws Exception{
         CommonUtil.checkProjectProfileName(project);
@@ -166,7 +166,7 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
         this.xConfigServer.deleteNode(CommonUtil.genProfilePath(project,profile));
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Throwable.class)
     @Override
     public void addProject(String project,String[] profiles) throws Exception {
         CommonUtil.checkProjectProfileName(project);
@@ -208,7 +208,7 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
         }
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Throwable.class)
     @Override
     public void removePoject(String project) throws Exception {
         CommonUtil.checkProjectProfileName(project);
@@ -223,5 +223,22 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
         this.xKvMapper.delByProject(project);
 
         this.xConfigServer.deleteNode(CommonUtil.genProjectPath(project));
+    }
+
+    public List<String> queryProfilesOrder(){
+        return this.xProjectProfileMapper.queryProfilesOrder();
+    }
+
+    @Transactional(rollbackFor = Throwable.class)
+    public void saveProfilesOrder(List<String> profiles) throws Exception{
+        if(CollectionUtils.isEmpty(profiles)){
+            throw new XConfigException("profiles长度不能空");
+        }
+
+        for(String profile : profiles){
+            CommonUtil.checkProjectProfileName(profile);
+        }
+        this.xProjectProfileMapper.delProfilesOrder();
+        this.xProjectProfileMapper.insertProfilesOrder(profiles);
     }
 }

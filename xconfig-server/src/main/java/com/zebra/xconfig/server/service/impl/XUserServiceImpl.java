@@ -80,7 +80,7 @@ public class XUserServiceImpl implements XUserService {
         return pagging;
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Throwable.class)
     @Override
     public void addUser(String userName, String password, String userNike, int role) throws Exception {
         if(StringUtils.isBlank(userName) || StringUtils.isBlank(password) || StringUtils.isBlank(userNike)) {
@@ -113,7 +113,7 @@ public class XUserServiceImpl implements XUserService {
         this.xUserMapper.insertUser(userPo);
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Throwable.class)
     @Override
     public void removeUser(String userName) throws Exception {
         this.xUserMapper.deleteUserByUserName(userName);

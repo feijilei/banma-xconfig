@@ -118,7 +118,7 @@ jQuery(document).ready(function ($) {
 
         $("#removeButton").unbind();
         $("#removeButton").bind("click",function(){
-            $.post(basepath+"/main/removeKv",{"key":key,"profile":profile},function(data){
+            $.post(basepath+"/main/removeKv",{"key":key,"profile":profile,"project":project},function(data){
                 if(data.code == 0){
                     window.location = basepath + "/main/project?project=" + project + "&profile=" + profile;
                 }else{
@@ -142,7 +142,8 @@ jQuery(document).ready(function ($) {
         datumTokenizer: function(d) {
             return Bloodhound.tokenizers.whitespace(d.value);
         },
-        queryTokenizer: Bloodhound.tokenizers.whitespace
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        sufficient: 15
     });
 
     engine.initialize();
@@ -150,7 +151,8 @@ jQuery(document).ready(function ($) {
     $('#deps').tokenfield({
         //tokens:"red",
         typeahead: [null, {
-            source: engine.ttAdapter()
+            source: engine.ttAdapter(),
+            limit: 15
         }]
     });
 

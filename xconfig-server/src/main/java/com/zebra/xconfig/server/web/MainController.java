@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.dianping.cat.Cat;
 import com.dianping.cat.message.Message;
 import com.zebra.xconfig.common.CommonUtil;
+import com.zebra.xconfig.common.exception.XConfigException;
 import com.zebra.xconfig.server.po.KvPo;
 import com.zebra.xconfig.server.po.ProfilePo;
 import com.zebra.xconfig.server.service.WisdomService;
@@ -227,8 +228,10 @@ public class MainController {
 
         String key = webRequest.getParameter("key");
         String profile = webRequest.getParameter("profile");
+        String project = webRequest.getParameter("project");
         try{
-            this.xKvService.removeKvBykey(profile,key);
+
+            this.xKvService.removeKvBykey(project,profile,key);
         }catch (Exception e){
             logger.error(e.getMessage(),e);
             ajaxResponse.setThrowable(e);

@@ -53,6 +53,7 @@
                 <ul class="nav navbar-nav">
                     <li <#if curMenu == "index">class="active"</#if> ><a href="${basepath}/main/index">index</a></li>
                     <li <#if curMenu == "user">class="active"</#if> ><a href="${basepath}/user/userList">user</a></li>
+                    <li <#if curMenu == "profiles">class="active"</#if> ><a href="${basepath}/project/profilesOrder">profiles</a></li>
                     <li <#if curMenu == "other">class="active"</#if> ><a href="#">other</a></li>
                 <#--
                 <li><a href="#">最新段子</a></li>

@@ -32,4 +32,8 @@ public interface XProjectProfileService {
     public void addProject(String project,String[] profiles) throws Exception;
 
     public void removePoject(String project) throws Exception;
+
+    public List<String> queryProfilesOrder();
+
+    public void saveProfilesOrder(List<String> profiles) throws Exception;
 }
