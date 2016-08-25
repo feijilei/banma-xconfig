@@ -52,10 +52,8 @@ public class XConfigContext {
 
     private XConfig xConfig;//配置信息
 
-    private CuratorFramework client;//zk客户端
     private CountDownLatch countDownLatch;//zk初始化闭锁
     private volatile  boolean initOk = false;//是否初始化成功
-    private volatile boolean zkConnected = false;//zk是否在线
 
     private XKeyObservable xKeyObservable;
 
@@ -85,31 +83,10 @@ public class XConfigContext {
 
                 initOk = true;
             }else {//zk启动
-                ExponentialBackoffRetry retry = new ExponentialBackoffRetry(1000, 3);
-                //创建zk客户端
-                CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder()
-                        .connectString(xConfig.getZkConn())
-                        .retryPolicy(retry)
-                        .connectionTimeoutMs(1000 * 16)
-                        .sessionTimeoutMs(1000 * 60)
-                        .namespace(Constants.NAME_SPACE);
-                if (StringUtils.isNotBlank(xConfig.getUserName()) && StringUtils.isNotBlank(xConfig.getPassword())){
-                    builder.aclProvider(new MyAclProvider(xConfig.getUserName(),xConfig.getPassword()));
-                    builder.authorization("digest",(xConfig.getUserName()+":"+xConfig.getPassword()).getBytes());
-                }
-                client = builder.build();
-                client.getConnectionStateListenable().addListener(new ConnectionStateListener() {
-                    @Override
-                    public void stateChanged(CuratorFramework client, ConnectionState newState) {
-                        logger.info("zk stateChanged state:{},connected:{}",newState,newState.isConnected());
-                        zkConnected = newState.isConnected();
-                    }
-                });
-                client.start();
-                zkConnected = client.blockUntilConnected(10,TimeUnit.SECONDS);
-
-                if(zkConnected) {
+                if(xConfig.getxZkClient().isConnected()) {
                     logger.info("zk已连接，使用zk启动");
+                    CuratorFramework client = xConfig.getxZkClient().getClient();
+
                     //当前项目依赖
                     //        final NodeCache projectNode = new NodeCache(client,"/"+xConfig.getProject());
                     //        NodeCacheListener projectNodeListener = new NodeCacheListener() {
@@ -155,7 +132,6 @@ public class XConfigContext {
                     initOk = countDownLatch.await(60, TimeUnit.SECONDS);//等待初始化完成
                 }else{
                     //使用zk失败，做降级处理，使用上次启动时候的文件启动应用
-                    client.close();
                     logger.warn("zk初始化失败，尝试使用最后一次更新的配置文件启动");
                     File currentFile = new File(xConfig.getLocalConfigDir()+File.separator+Constants.CURRENT_FILE);
                     File bootFile = new File(xConfig.getLocalConfigDir()+File.separator+Constants.BOOT_FILE);
@@ -186,6 +162,9 @@ public class XConfigContext {
                 }
 
                 this.writeFile(Constants.BOOT_FILE);
+
+                //写备份文件
+                this.writeBootHistoryFile();
             }
         } catch (Exception e) {
             initOk = false;
@@ -222,6 +201,10 @@ public class XConfigContext {
         return properties;
     }
 
+    /**
+     * 写文件到configDir下
+     * @param fileName
+     */
     private void writeFile(String fileName){
         FileOutputStream fileOutputStream = null;
 
@@ -247,6 +230,41 @@ public class XConfigContext {
                 }
             }
         }
+    }
+
+    /**
+     * 此方法在每次初始化完成的时候调用，在configDir/bootHis目录下记录每次启动时候的properties文件快照
+     */
+    private void writeBootHistoryFile(){
+        FileOutputStream fileOutputStream = null;
+
+        try {
+            String bootHisDir = this.xConfig.getLocalConfigDir() + File.separator + Constants.LOCAL_BOOT_HIS_DIR;
+
+            Date now = new Date();
+            String currentTimeStr = new SimpleDateFormat("yyyyMMddhhmmss").format(now);
+
+            Properties properties = this.getProperties();
+            fileOutputStream = new FileOutputStream(bootHisDir + File.separator + Constants.BOOT_FILE + "." +currentTimeStr);
+            properties.setProperty("createTime",new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(now));
+            properties.setProperty("profile",xConfig.getProfile());
+            properties.store(fileOutputStream,"generate by xConfig");
+
+        }catch (IOException e){
+            logger.error(e.getMessage(),e);
+        }finally {
+            if(fileOutputStream != null){
+                try {
+                    fileOutputStream.close();
+                } catch (IOException e) {
+                    logger.error(e.getMessage(),e);
+                }
+            }
+        }
+    }
+
+    public XKeyObservable getxKeyObservable() {
+        return xKeyObservable;
     }
 
     /**
@@ -304,4 +322,5 @@ public class XConfigContext {
             }
         }
     }
+
 }

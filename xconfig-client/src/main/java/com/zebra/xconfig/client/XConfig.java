@@ -1,5 +1,6 @@
 package com.zebra.xconfig.client;
 
+import com.zebra.xconfig.common.CommonUtil;
 import com.zebra.xconfig.common.Constants;
 import com.zebra.xconfig.common.exception.XConfigException;
 import org.apache.commons.lang3.StringUtils;
@@ -10,6 +11,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -18,8 +21,10 @@ import java.util.Properties;
 public class XConfig {
     private final Logger logger = LoggerFactory.getLogger(XConfig.class);
 
-    private static XConfigContext xConfigContext;
-    private static XKeyObservable xKeyObservable;
+//    private static XConfigContext xConfigContext;
+//    private static XKeyObservable xKeyObservable;
+
+    private static Map<String,XConfigContext> contexts = new HashMap<>();
 
     private String project;
     private String zkConn;
@@ -29,6 +34,7 @@ public class XConfig {
     private String xconfigDir;//xconfig的默认目录
     private String localConfigDir;//当前配置目录
 
+    private XZkClient xZkClient;
     /**
      * 主要提供spring使用
      * @throws XConfigException
@@ -73,13 +79,23 @@ public class XConfig {
         //创建文件目录
         File fileDir = new File(this.localConfigDir);
         if(!fileDir.exists()){
-            if(!fileDir.mkdirs()){
+            if(!fileDir.mkdir()){
                 throw new XConfigException("无法创建目录："+this.localConfigDir);
             }
         }
+        //创建BootHis目录
+        File bootHisDir = new File(this.localConfigDir+File.separator+Constants.LOCAL_BOOT_HIS_DIR);
+        if(!bootHisDir.exists()){
+            if(!bootHisDir.mkdir()){
+                throw new XConfigException("无法创建目录："+bootHisDir.getAbsolutePath());
+            }
+        }
 
-        xKeyObservable = new XKeyObservable();
-        xConfigContext = new XConfigContext(this,xKeyObservable);
+        //初始化zk zk只初始化一次
+        this.xZkClient = XZkClient.init(this.zkConn,this.userName,this.password);
+
+        XConfigContext xConfigContext = new XConfigContext(this,new XKeyObservable());
+        contexts.put(project,xConfigContext);
     }
 
     /**
@@ -96,11 +112,21 @@ public class XConfig {
     }
 
     public static void addObserver(XKeyObserver observer){
-        xKeyObservable.addObserver(observer);
+        XConfigContext xConfigContext = contexts.get(CommonUtil.genProjectByMkey(observer.getKey()));
+        if(xConfigContext == null){
+
+        }else{
+            xConfigContext.getxKeyObservable().addObserver(observer);
+        }
     }
 
     public static void removeObserver(XKeyObserver observer){
-        xKeyObservable.removeObserver(observer);
+        XConfigContext xConfigContext = contexts.get(CommonUtil.genProjectByMkey(observer.getKey()));
+        if(xConfigContext == null){
+
+        }else{
+            xConfigContext.getxKeyObservable().removeObserver(observer);
+        }
     }
 
     /**
@@ -109,7 +135,13 @@ public class XConfig {
      * @return 不存在的配置项或者已删除的配置项会返回null
      */
     public static String getValue(String key){
-        return xConfigContext.getValue(key);
+        XConfigContext xConfigContext = contexts.get(CommonUtil.genProjectByMkey(key));
+        if(xConfigContext == null){
+            return null;
+        }else{
+            return xConfigContext.getValue(key);
+        }
+
     }
 
     /**
@@ -119,11 +151,17 @@ public class XConfig {
      * @return
      */
     public static String getValue(String key,String defaultValue){
-        return xConfigContext.getValue(key) == null ? defaultValue : xConfigContext.getValue(key);
+        String value = getValue(key);
+        return value == null ? defaultValue : value;
+    }
+
+    public XZkClient getxZkClient() {
+        return xZkClient;
     }
 
     //setter getter
     public Properties getProperties(){
+        XConfigContext xConfigContext = contexts.get(this.getProject());
         return xConfigContext.getProperties();
     }
 

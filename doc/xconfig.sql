@@ -71,6 +71,13 @@ CREATE TABLE `x_user_project_role` (
   KEY `udx_project_userName` (`project`,`userName`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 
+CREATE TABLE `x_profile_order` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `profile` varchar(50) NOT NULL DEFAULT '',
+  `pOrder` int(11) NOT NULL DEFAULT '0' COMMENT '顺序',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8;
+
 -- data
 INSERT INTO `wisdom` (`id`, `content`)
 VALUES

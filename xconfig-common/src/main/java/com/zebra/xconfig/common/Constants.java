@@ -6,6 +6,7 @@ package com.zebra.xconfig.common;
 public class Constants {
     public static final String NAME_SPACE = "xConfig";//zk 命名空间
     public static final String LOCAL_FILE_DIR_NAME = ".xconfig";//本地默认文件夹
+    public static final String LOCAL_BOOT_HIS_DIR = "bootHis";//每次启动时候配置文件备份
     public static final String CONFIG_FILE = "config.properties";//xconfig的配置文件
     public static final String DEFAULT_FILE = "local.properties";//默认启动本地模式配置文件
 

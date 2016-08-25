@@ -59,4 +59,49 @@ public class XConfigDemo {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void test2XConfig(){
+        try {
+            //1
+            XConfig xConfig = XConfig.instance(PROJECT);
+
+            logger.info("===>project:{},profile:{}",xConfig.getProject(),xConfig.getProfile());
+
+            logger.info("===>{}:{}",DEMO_CONFIG,XConfig.getValue(DEMO_CONFIG));
+            logger.info("===>{}:{}",DEMO_WATCH,XConfig.getValue(DEMO_WATCH));
+
+            //注册监听
+            XConfig.addObserver(new XKeyObserver() {
+                @Override
+                public String getKey() {
+                    return DEMO_WATCH;
+                }
+
+                @Override
+                public void change(String value) {
+                    logger.info("====change===>{}:{}",DEMO_WATCH,XConfig.getValue(DEMO_WATCH));
+                }
+            });
+
+            //2
+            XConfig.instance("odps");
+            logger.info("===>{}:{}","odps.endpoint.inner",XConfig.getValue("odps.endpoint.inner"));
+            xConfig.addObserver(new XKeyObserver() {
+                @Override
+                public String getKey() {
+                    return "odps.endpoint.inner";
+                }
+
+                @Override
+                public void change(String value) {
+                    logger.info("====change===>{}:{}","odps.endpoint.inner",XConfig.getValue("odps.endpoint.inner"));
+                }
+            });
+
+            Thread.sleep(1000*60*30);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 }
