@@ -208,7 +208,7 @@ jQuery(document).ready(function ($) {
         type:"POST",
         success:function(data){
             if(data.code == 0){
-                window.location = basepath+"/main/project?project="+project+"&profile="+profile;
+                window.location = basepath+"/main/project?project="+project;
             }else{
                 $("#removeProfileModal .errMsgDiv").removeClass("hidden");
                 $("#removeProfileModal .errMsg").text(data.msg);

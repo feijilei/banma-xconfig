@@ -4,6 +4,7 @@ import com.zebra.xconfig.common.CommonUtil;
 import com.zebra.xconfig.common.Constants;
 import com.zebra.xconfig.common.exception.XConfigException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.curator.framework.imps.CuratorFrameworkState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,8 +24,14 @@ public class XConfig {
 
 //    private static XConfigContext xConfigContext;
 //    private static XKeyObservable xKeyObservable;
-
+    private static Map<String,XConfig> xconfigs = new HashMap<>();
     private static Map<String,XConfigContext> contexts = new HashMap<>();
+    private static boolean isInit = false;//是否已经初始化过
+    /**
+     * 是否只支持一个project，默认我们只允许一个project，推荐这种用法，当此处为true的时候，只允许加载一个project（实例化多个Xconfig），否则会报错
+     * 可以通过设置jvm参数 -Dxconfig.isSingleProject=false 支持多个project，可以实例化多个xonfig
+     */
+    private static boolean isSingleProject = true;
 
     private String project;
     private String zkConn;
@@ -43,59 +50,85 @@ public class XConfig {
         this.xconfigDir = System.getProperty("user.home")
                 + File.separator + Constants.LOCAL_FILE_DIR_NAME;
 
-        //获取配置，优先jvm，其次配置文件
-        this.zkConn = System.getProperty("xconfig.zkConn");
-        this.profile = System.getProperty("xconfig.profile");
-        this.userName = System.getProperty("xconfig.userName");
-        this.password = System.getProperty("xconfig.password");
-        //配置文件
-        File cfFile = new File(this.xconfigDir + File.separator + Constants.CONFIG_FILE);
-        Properties xconfigProp = new Properties();
-        try {
-            xconfigProp.load(new FileInputStream(cfFile));
-        } catch (FileNotFoundException e) {
-            logger.error(e.getMessage(),e);
-            throw new XConfigException("无法获取到配置文件，请确认是否存在："+cfFile);
-        } catch (IOException e) {
-            logger.error(e.getMessage(),e);
-            throw new XConfigException("读取配置文件失败："+cfFile);
-        }
-        if(StringUtils.isBlank(this.profile)) {
-            this.profile = xconfigProp.getProperty("profile");
-            if (StringUtils.isBlank(this.profile)) {
-                throw new XConfigException("无法获取到profile信息！");
-            }
-        }
-        if(StringUtils.isBlank(this.zkConn)){
-            this.zkConn = xconfigProp.getProperty("zkConn");
-        }
-        if(StringUtils.isBlank(this.userName) && StringUtils.isBlank(this.password)){
-            this.userName = xconfigProp.getProperty("userName");
-            this.password = xconfigProp.getProperty("password");
+        String singleProject = System.getProperty("xconfig.isSingleProject");
+        if(StringUtils.isNotBlank(singleProject)){
+            isSingleProject = Boolean.valueOf(singleProject);
         }
 
-        //生成当前配置目录
-        this.localConfigDir = this.xconfigDir + File.separator + this.project + "_"+this.profile;
-        //创建文件目录
-        File fileDir = new File(this.localConfigDir);
-        if(!fileDir.exists()){
-            if(!fileDir.mkdir()){
-                throw new XConfigException("无法创建目录："+this.localConfigDir);
+        synchronized (XConfig.class){
+            if (isSingleProject){
+                if(isInit){
+                    throw new XConfigException("XConfig只允许实例化一次");
+                }
             }
-        }
-        //创建BootHis目录
-        File bootHisDir = new File(this.localConfigDir+File.separator+Constants.LOCAL_BOOT_HIS_DIR);
-        if(!bootHisDir.exists()){
-            if(!bootHisDir.mkdir()){
-                throw new XConfigException("无法创建目录："+bootHisDir.getAbsolutePath());
+
+            //获取配置，优先jvm，其次配置文件
+            this.zkConn = System.getProperty("xconfig.zkConn");
+            this.profile = System.getProperty("xconfig.profile");
+            this.userName = System.getProperty("xconfig.userName");
+            this.password = System.getProperty("xconfig.password");
+            //配置文件
+            File cfFile = new File(this.xconfigDir + File.separator + Constants.CONFIG_FILE);
+            Properties xconfigProp = new Properties();
+            try {
+                xconfigProp.load(new FileInputStream(cfFile));
+            } catch (FileNotFoundException e) {
+                logger.error(e.getMessage(),e);
+                throw new XConfigException("无法获取到配置文件，请确认是否存在："+cfFile);
+            } catch (IOException e) {
+                logger.error(e.getMessage(),e);
+                throw new XConfigException("读取配置文件失败："+cfFile);
             }
+            if(StringUtils.isBlank(this.profile)) {
+                this.profile = xconfigProp.getProperty("profile");
+                if (StringUtils.isBlank(this.profile)) {
+                    throw new XConfigException("无法获取到profile信息！");
+                }
+            }
+            if(StringUtils.isBlank(this.zkConn)){
+                this.zkConn = xconfigProp.getProperty("zkConn");
+            }
+            if(StringUtils.isBlank(this.userName) && StringUtils.isBlank(this.password)){
+                this.userName = xconfigProp.getProperty("userName");
+                this.password = xconfigProp.getProperty("password");
+            }
+
+            //生成当前配置目录
+            this.localConfigDir = this.xconfigDir + File.separator + this.project + "_"+this.profile;
+            //创建文件目录
+            File fileDir = new File(this.localConfigDir);
+            if(!fileDir.exists()){
+                if(!fileDir.mkdir()){
+                    throw new XConfigException("无法创建目录："+this.localConfigDir);
+                }
+            }
+            //创建BootHis目录
+            File bootHisDir = new File(this.localConfigDir+File.separator+Constants.LOCAL_BOOT_HIS_DIR);
+            if(!bootHisDir.exists()){
+                if(!bootHisDir.mkdir()){
+                    throw new XConfigException("无法创建目录："+bootHisDir.getAbsolutePath());
+                }
+            }
+
+            //初始化zk zk只初始化一次
+            this.xZkClient = XZkClient.init(this.zkConn,this.userName,this.password);
+
+            XConfigContext xConfigContext = new XConfigContext(this,new XKeyObservable());
+            for(String depProject : xConfigContext.getCacheDepProject().keySet()){
+                contexts.put(depProject,xConfigContext);
+            }
+
+            xconfigs.put(project,this);
+
+            isInit = true;
+
         }
+    }
 
-        //初始化zk zk只初始化一次
-        this.xZkClient = XZkClient.init(this.zkConn,this.userName,this.password);
-
-        XConfigContext xConfigContext = new XConfigContext(this,new XKeyObservable());
-        contexts.put(project,xConfigContext);
+    public void destory(){
+        if(xZkClient.getClient().getState() == CuratorFrameworkState.STARTED){
+            xZkClient.getClient().close();
+        }
     }
 
     /**
@@ -104,10 +137,14 @@ public class XConfig {
      * @throws XConfigException
      */
     public static XConfig instance(String project) throws XConfigException{
-        XConfig xConfig = new XConfig();
-        xConfig.setProject(project);
-        xConfig.init();
-
+        XConfig xConfig = xconfigs.get(project);
+        if(null != xConfig){
+            return xconfigs.get(project);
+        }else {
+            xConfig = new XConfig();
+            xConfig.setProject(project);
+            xConfig.init();
+        }
         return xConfig;
     }
 

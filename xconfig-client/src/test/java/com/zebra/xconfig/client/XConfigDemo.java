@@ -18,6 +18,7 @@ public class XConfigDemo {
     public void test(){
         try {
             XConfig xConfig = XConfig.instance(PROJECT);
+//            XConfig.instance("base-mysql");
 
             logger.info("===>project:{},profile:{}",xConfig.getProject(),xConfig.getProfile());
 

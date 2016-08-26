@@ -12,10 +12,7 @@ import org.apache.curator.framework.recipes.cache.*;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.curator.retry.RetryNTimes;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooDefs;
-import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Id;
 import org.apache.zookeeper.data.Stat;
@@ -25,6 +22,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -133,6 +131,21 @@ public class CuratorTest {
 
         System.in.read();
 
+    }
+
+    @Test
+    public void testEphemeralNode(){
+        try{
+
+            String ip = InetAddress.getLocalHost().getHostAddress();
+            logger.info("======>ip:{}",ip);
+
+            client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath("/_client/project/profile/"+ip,"1".getBytes());
+
+            System.in.read();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Test

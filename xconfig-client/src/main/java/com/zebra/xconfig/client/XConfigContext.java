@@ -284,8 +284,12 @@ public class XConfigContext {
         }
     }
 
-    public XKeyObservable getxKeyObservable() {
+    protected XKeyObservable getxKeyObservable() {
         return xKeyObservable;
+    }
+
+    protected Map<String, String> getCacheDepProject() {
+        return cacheDepProject;
     }
 
     /**

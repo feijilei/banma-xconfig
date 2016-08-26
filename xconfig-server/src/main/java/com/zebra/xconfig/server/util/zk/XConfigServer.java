@@ -91,7 +91,7 @@ public class XConfigServer {
                     if(isLeader && zkConnected) {
                         logger.debug("synTask running,isLeader:{}",isLeader);
                         Stat stat = client.checkExists().forPath("/");
-                        if ((System.currentTimeMillis() - stat.getMtime() > 1000*60*10) || (System.currentTimeMillis() - stat.getCtime() < 1000*60*10)) {//保证leader切换时候不会频繁同步，且第一次能够正确初始化
+                        if ((System.currentTimeMillis() - stat.getMtime() > Constants.SYN_PERIOD_MILLIS) || (System.currentTimeMillis() - stat.getCtime() < 1000*60*10)) {//保证leader切换时候不会频繁同步，且第一次能够正确初始化
                             synDb2Zk();
                             client.setData().forPath("/", "0".getBytes());
                         }else{
@@ -162,13 +162,21 @@ public class XConfigServer {
                 String projectPath = CommonUtil.genProjectPath(project);
 
                 List<String> dependencies = this.xProjectProfileMapper.queryProjectDependencies(project);
-
                 String depStr = StringUtils.join(dependencies,",");
 
-                String zkStr = new String(client.getData().forPath(projectPath));
+                Stat projectStat = client.checkExists().forPath(projectPath);
+                if(projectStat == null){
+                    client.create().forPath(projectPath,depStr.getBytes());
 
-                if(!depStr.equals(zkStr)){
-                    client.setData().forPath(projectPath,depStr.getBytes());
+                    List<String> profiles = this.xProjectProfileMapper.queryProjectProfiles(project);
+                    for(String profile : profiles){
+                        client.create().creatingParentsIfNeeded().forPath(CommonUtil.genProfilePath(project,profile));
+                    }
+                }else {
+                    String zkStr = new String(client.getData().forPath(projectPath));
+                    if (!depStr.equals(zkStr)) {
+                        client.setData().forPath(projectPath, depStr.getBytes());
+                    }
                 }
             }catch (Exception e){
                 logger.error(e.getMessage(),e);

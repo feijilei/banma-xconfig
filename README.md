@@ -89,7 +89,7 @@
 
 3. 指定profile等配置信息，有两种配置方式。
 
-	1. 公共配置(需要管理员统一配置)。默认读取当前用户目录下（~/.xconfig/config.properties）文件，其中有zk连接串，用户名信息，以及当前机器所属的环境。eg:/Users/ying/.xconfig/config.preperties。
+	1. 公共配置(需要管理员统一配置)。默认读取当前用户目录下（~/.xconfig/config.properties）文件，其中有zk连接串，用户名信息，以及当前机器所属的环境。eg:/Users/ying/.xconfig/config.properties。
 	
 			    profile=daily
 			    zkConn=localhost:2181
@@ -105,8 +105,8 @@
 	
 			    -Dxconfig.profile=beta
 			    -Dxconfig.zkConn=localhost:2181
-			    -DuserName=xconfig
-			    -Dpassword=xconfig	
+			    -Dxconfig.userName=xconfig
+			    -Dxconfig.password=xconfig	
 	
 		* 以上参数可以单独指定，配置遵循就近覆盖原则，jvm参数将会覆盖掉公共配置。比如我启动的时候单独使用了-Dxconfig.profile=beta，那么client的其他参数扔使用公共配置，但是profile会使用beta。（userName,password只会统一取一处配置）。
 		
@@ -140,6 +140,8 @@
 6. 本地模式。为了方便本地调试和能够手动干预配置，client初始化的时候会检测对应配置目录的local.preperties文件（eg:/Users/ying/.xconfig/odps-service_daily/local.propreties）。如果此文件存在，client将启动单机模式，直接使用此配置文件启动，不再连接zk。
 
 7. 容错。client启动的时候，zk如果在一定时间连接不上，client会尝试使用current.properties，和root.propreties文件启动。
+
+8. 默认只允许实例化一个xConfig对象，仅允许引入一个project，建议程序这样设计，可以使用依赖加载其他project的配置信息。如果有非常非常特殊的情况，需要引入多个project，需要启动的时候增加`-Dxconfig.isSingleProject=false`参数。
 
 # 设计
 
