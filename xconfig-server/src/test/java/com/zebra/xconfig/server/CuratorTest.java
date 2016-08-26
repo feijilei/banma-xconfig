@@ -8,10 +8,14 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.ACLProvider;
 import org.apache.curator.framework.imps.DefaultACLProvider;
+import org.apache.curator.framework.recipes.cache.*;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.curator.retry.RetryNTimes;
+import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
+import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Id;
 import org.apache.zookeeper.data.Stat;
@@ -83,6 +87,52 @@ public class CuratorTest {
         client.checkExists().forPath("/mysql");
         client.checkExists().forPath("/mysql");
         logger.debug("-----------test end-----------------");
+    }
+
+    @Test
+    public void testPathChildCache() throws Exception{
+//        final NodeCache nodeCache = new NodeCache(client,"/test/dev");
+//        NodeCacheListener nodeCacheListener = new NodeCacheListener() {
+//            @Override
+//            public void nodeChanged() throws Exception {
+//
+//            }
+//        };
+
+        final PathChildrenCache pathChildrenCache = new PathChildrenCache(client,"/test/dev",true);
+        PathChildrenCacheListener pathChildrenCacheListener = new PathChildrenCacheListener() {
+            @Override
+            public void childEvent(CuratorFramework client, PathChildrenCacheEvent event) throws Exception {
+                logger.info("event:{}",event.getType());
+            }
+        };
+
+        pathChildrenCache.getListenable().addListener(pathChildrenCacheListener);
+        pathChildrenCache.start(PathChildrenCache.StartMode.POST_INITIALIZED_EVENT);
+
+        client.checkExists().usingWatcher(new Watcher() {
+            @Override
+            public void process(WatchedEvent event) {
+                logger.info("event:{}", event.getType());
+
+                try {
+                    if (Event.EventType.NodeDeleted == event.getType()) {
+                    } else if (Event.EventType.NodeCreated == event.getType()) {
+                        pathChildrenCache.clearAndRefresh();
+                    } else {
+
+                    }
+
+
+                    client.checkExists().usingWatcher(this).forPath("/test/dev");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).forPath("/test/dev");
+
+        System.in.read();
+
     }
 
     @Test

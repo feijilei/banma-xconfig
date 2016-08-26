@@ -113,27 +113,22 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
             throw new XConfigException("找不到目标project");
         }
 
-        if(StringUtils.isBlank(source) || "none".equals(source)){
-            this.xProjectProfileMapper.insertProfile(profilePo);
-            this.xConfigServer.createUpdateKvNode(CommonUtil.genProfilePath(profilePo.getProject(),profilePo.getProfile()),"");
-        }else{
+
+        this.xProjectProfileMapper.insertProfile(profilePo);
+        this.xConfigServer.createUpdateKvNode(CommonUtil.genProfilePath(profilePo.getProject(),profilePo.getProfile()),"");
+
+        if(StringUtils.isNotBlank(source) && !"none".equals(source)){
             String from = this.xProjectProfileMapper.loadProfile(profilePo.getProject(), source);
             if(StringUtils.isBlank(from)) {
                 throw new XConfigException("找不到复制源");
             }
 
             //操作数据库，写入profile和kv
-            this.xProjectProfileMapper.insertProfile(profilePo);
             this.xKvMapper.bathInsertKvsByProfile(profilePo.getProject(),profilePo.getProfile(),source);
 
             //写入zk
             List<KvPo> kvPos = this.xKvMapper.queryByProjectAndProfile(profilePo.getProject(),profilePo.getProfile());
             List<ZkNode> zkNodes = new ArrayList<>();
-            //先写profile
-            ZkNode profileNode = new ZkNode();
-            profileNode.setPath(CommonUtil.genProfilePath(profilePo.getProject(),profilePo.getProfile()));
-            profileNode.setValue("");
-            zkNodes.add(profileNode);
             //写kv
             for(KvPo kvPo : kvPos){
                 ZkNode zkNode = new ZkNode();

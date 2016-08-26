@@ -18,6 +18,8 @@ import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Id;
@@ -85,7 +87,7 @@ public class XConfigContext {
             }else {//zk启动
                 if(xConfig.getxZkClient().isConnected()) {
                     logger.info("zk已连接，使用zk启动");
-                    CuratorFramework client = xConfig.getxZkClient().getClient();
+                    final CuratorFramework client = xConfig.getxZkClient().getClient();
 
                     //当前项目依赖
                     //        final NodeCache projectNode = new NodeCache(client,"/"+xConfig.getProject());
@@ -114,7 +116,7 @@ public class XConfigContext {
                     //注册profile监听子节点
                     this.countDownLatch = new CountDownLatch(dependencies.size());
                     for (String tmp : dependencies) {
-                        String profilePath = CommonUtil.genProfilePath(tmp, xConfig.getProfile());
+                        final String profilePath = CommonUtil.genProfilePath(tmp, xConfig.getProfile());
 
                         if ("0".equals(tmp) || StringUtils.isBlank(tmp)) {
                             countDownLatch.countDown();
@@ -126,6 +128,25 @@ public class XConfigContext {
                         KeyCacheListener keyCacheListener = new KeyCacheListener(profilePath);
                         keyCache.getListenable().addListener(keyCacheListener);
                         keyCache.start(PathChildrenCache.StartMode.POST_INITIALIZED_EVENT);
+
+                        //监听profile路径，解决profile删除之后重建会导致监听失效的问题！(PathChildrenCache 存在这种问题）
+                        client.checkExists().usingWatcher(new Watcher() {
+                            @Override
+                            public void process(WatchedEvent event) {
+                                try {
+                                    if (Event.EventType.NodeDeleted == event.getType()) {
+                                    } else if (Event.EventType.NodeCreated == event.getType()) {
+                                        keyCache.clearAndRefresh();
+                                    } else {
+
+                                    }
+
+                                    client.checkExists().usingWatcher(this).forPath(profilePath);
+                                } catch (Exception e) {
+                                    logger.error(e.getMessage(),e);
+                                }
+                            }
+                        }).forPath(profilePath);
 
                         logger.debug("===>子节点监听设置完成");
                     }
