@@ -148,10 +148,13 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
         CommonUtil.checkProjectProfileName(project);
         CommonUtil.checkProjectProfileName(profile);
 
-        //最后一个profile不允许删除
         List<String> profiles = this.xProjectProfileMapper.queryProjectProfiles(project);
         if(profiles.size() <= 1){
             throw new XConfigException("不能删除最后一个profile");
+        }
+
+        if(this.xConfigServer.getClientsIp(project,profile).size() > 0){
+            throw new XConfigException("当前profile正在使用中，不允许删除!");
         }
 
         //删除数据库profile和kv
@@ -205,7 +208,7 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
 
     @Transactional(rollbackFor = Throwable.class)
     @Override
-    public void removePoject(String project) throws Exception {
+    public void removeProject(String project) throws Exception {
         CommonUtil.checkProjectProfileName(project);
 
         List<String> projects = this.xProjectProfileMapper.queryProjectsByDepedProject(project);

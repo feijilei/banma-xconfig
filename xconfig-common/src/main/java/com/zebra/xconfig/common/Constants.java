@@ -15,6 +15,7 @@ public class Constants {
 
     public static final String LEADER_SELECT_PATH = "/_leaderSelector";//选举路径
     public static final String PROJECT_DEPENDENCY_PATH = "/_dependencies";//项目依赖节点路径 project/_dependencies
+    public static final String CLIENT_REGIST_PATH = "/_client";//client注册路径
     public static final long SYN_PERIOD_MILLIS = 1000*60*20;//多长时间同步一次
 
     public static final String NAME_CHECK_KEY_REGEX = "^[A-Za-z][A-Za-z0-9-_.]*[A-Za-z0-9]$";//project profile key 校验

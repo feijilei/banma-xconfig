@@ -5,13 +5,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.dianping.cat.Cat;
 import com.dianping.cat.message.Message;
 import com.zebra.xconfig.common.CommonUtil;
-import com.zebra.xconfig.common.exception.XConfigException;
 import com.zebra.xconfig.server.po.KvPo;
 import com.zebra.xconfig.server.po.ProfilePo;
 import com.zebra.xconfig.server.service.WisdomService;
 import com.zebra.xconfig.server.service.XKvService;
 import com.zebra.xconfig.server.service.XProjectProfileService;
 import com.zebra.xconfig.server.util.WebAttributeConstants;
+import com.zebra.xconfig.server.util.zk.XConfigServer;
 import com.zebra.xconfig.server.vo.AjaxResponse;
 import com.zebra.xconfig.server.vo.KvVo;
 import org.apache.commons.lang3.StringUtils;
@@ -44,6 +44,8 @@ public class MainController {
     private XKvService xKvService;
     @Resource
     private WisdomService wisdomService;
+    @Resource
+    private XConfigServer xConfigServer;
 
     @RequestMapping("index")
     public ModelAndView index(){
@@ -117,6 +119,7 @@ public class MainController {
 
         List<String> dependencies = this.xProjectProfileService.queryProjectDependencies(project);
 
+        Set<String> clientIps = this.xConfigServer.getClientsIp(project,profile);
 
         mv.getModel().put("project",project);
         mv.getModel().put("profile",profile);
@@ -125,6 +128,7 @@ public class MainController {
         mv.getModel().put("kvmap", JSON.toJSONString(kvsMap));
         mv.getModel().put("allDep",allDep);
         mv.getModel().put("dependencies",dependencies);
+        mv.getModel().put("clientIps",clientIps);
         mv.setViewName("page/projectKv.ftl");
 
         return mv;
@@ -380,7 +384,7 @@ public class MainController {
         String project = HtmlUtils.htmlEscape(webRequest.getParameter("project"));
         try{
 
-            this.xProjectProfileService.removePoject(project);
+            this.xProjectProfileService.removeProject(project);
         }catch (Exception e){
             logger.error(e.getMessage(),e);
             ajaxResponse.setThrowable(e);

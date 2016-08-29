@@ -65,6 +65,7 @@
             </@dataRight>
         </div>
     </h1>
+    <h6>client列表：<#if clientIps?? && clientIps?size gt 0><#list clientIps as ip><span class="label label-info" style="display: inline-block;margin-top: 1px;">${ip?html}</span>&nbsp;</#list><#else>无</#if></h6>
     <ul class="nav nav-tabs">
         <#list profiles as pf>
             <#if pf == profile>

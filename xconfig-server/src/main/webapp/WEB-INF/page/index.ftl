@@ -49,7 +49,7 @@
                         <div class="form-group">
                             <label for="preProfiles" class="col-sm-3 control-label">预创建profiles</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" id="preProfiles" name="preProfiles" placeholder="dev,beta,pre,prd" aria-describedby="preProfilesHelpBlock">
+                                <input type="text" class="form-control" id="preProfiles" name="preProfiles" placeholder="dev,beta,pre,prd" value="dev,daily,pre,pp,prd" aria-describedby="preProfilesHelpBlock">
                                 <span id="preProfilesHelpBlock" class="help-block">请用逗号分隔，如果这里没有输入任何profile，系统将自动为您创建一个默认的profile</span>
                             </div>
                         </div>

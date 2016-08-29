@@ -6,6 +6,7 @@ import com.zebra.xconfig.common.exception.XConfigException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.imps.CuratorFrameworkState;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -40,7 +41,7 @@ public class XZkClient {
                 .connectString(zkConn)
                 .retryPolicy(retry)
                 .connectionTimeoutMs(1000 * 16)
-                .sessionTimeoutMs(1000 * 60)
+                .sessionTimeoutMs(1000 * 30)
                 .namespace(Constants.NAME_SPACE);
         if (StringUtils.isNotBlank(userName) && StringUtils.isNotBlank(password)) {
             builder.aclProvider(new MyAclProvider(userName, password));
@@ -60,6 +61,18 @@ public class XZkClient {
         } catch (InterruptedException e) {
             throw new XConfigException(e.getMessage(),e);
         }
+
+        //注册关闭钩子
+        Runtime.getRuntime().addShutdownHook(new Thread(){
+            @Override
+            public void run() {
+                logger.debug("shutdown hook");
+                if(client.getState() == CuratorFrameworkState.STARTED){
+                    logger.debug("zkClient close");
+                    client.close();
+                }
+            }
+        });
     }
 
     public static XZkClient init(String zkConn,String userName,String password) throws XConfigException{

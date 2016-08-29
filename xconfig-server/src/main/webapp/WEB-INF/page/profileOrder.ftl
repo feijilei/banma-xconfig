@@ -31,6 +31,14 @@
                 <input type="text" class="form-control" id="addProfile" placeholder="增加profile">
             </div>
             <button id="addBtn" type="submit" class="btn btn-default">增加</button>
+            <hr/>
+            <div class="text-danger">
+                <ol>
+                    <li>全局profile排序</li>
+                    <li>拖动左侧色块排序</li>
+                    <li>点击最下方应用按钮保存</li>
+                </ol>
+            </div>
         </div>
     </div>
     <hr>

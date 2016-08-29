@@ -14,6 +14,9 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.ACLProvider;
 import org.apache.curator.framework.api.transaction.CuratorTransaction;
 import org.apache.curator.framework.api.transaction.CuratorTransactionFinal;
+import org.apache.curator.framework.recipes.cache.PathChildrenCache;
+import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
+import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import org.apache.curator.framework.recipes.leader.LeaderLatch;
 import org.apache.curator.framework.recipes.leader.LeaderLatchListener;
 import org.apache.curator.framework.state.ConnectionState;
@@ -31,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.annotation.Resource;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -51,6 +55,11 @@ public class XConfigServer {
     private volatile boolean isLeader = false;
     private volatile boolean timerRunning = false;
     private volatile boolean zkConnected = false;
+
+    /**
+     * 存储client在线信息
+     */
+    private final Map<String,HashSet<String>> onlineClients = new ConcurrentHashMap<>();
 
     public void init() throws Exception{
         ExponentialBackoffRetry retry = new ExponentialBackoffRetry(1000 * 1, 5);
@@ -122,8 +131,95 @@ public class XConfigServer {
             }
         });
 
+        loadOnlineClients();
+
         logger.debug("xConfigServer init end");
 
+    }
+
+    /**
+     * 获取对应的client ip列表
+     * @param project
+     * @param profile
+     * @return
+     */
+    public Set<String> getClientsIp(String project,String profile){
+        return onlineClients.get(project+"|"+profile);
+    }
+
+    /**
+     * 客户端监控
+     */
+    private void loadOnlineClients() throws Exception{
+        //初始化
+//        List<String> projects = this.xProjectProfileMapper.queryAllProjects();
+//        for(String project : projects){
+//            List<String> profiles = this.xProjectProfileMapper.queryProjectProfiles(project);
+//            if(profiles == null){
+//                continue;
+//            }
+//
+//            for(String profile : profiles){
+//                onlineClients.put(project+"|"+profile,new HashSet<String>());
+//            }
+//        }
+
+        //监听
+        PathChildrenCache clientCache = new PathChildrenCache(client,Constants.CLIENT_REGIST_PATH,true);
+        clientCache.getListenable().addListener(new PathChildrenCacheListener() {
+            private String genNodeName(String zkPath){
+                String[] strs = zkPath.split("/");
+                return strs[strs.length-1];
+            }
+
+            @Override
+            public void childEvent(CuratorFramework client, PathChildrenCacheEvent event) throws Exception {
+                switch (event.getType()) {
+                    case INITIALIZED: {
+                        if(logger.isDebugEnabled()) {
+                            logger.debug("===>keyListener {} initialized");
+                        }
+                        break;
+                    }
+
+                    case CHILD_ADDED: {
+                        String path = event.getData().getPath();
+                        String[] strs = genNodeName(path).split(":");
+                        if(strs.length == 3){
+                            String key = strs[0];
+                            String ip = strs[1];
+                            HashSet<String> ips = onlineClients.get(key);
+                            if(ips == null){
+                                ips = new HashSet<String>();
+                                onlineClients.put(key,ips);
+                            }
+                            ips.add(ip);
+                        }
+
+                        break;
+                    }
+
+                    case CHILD_UPDATED: {
+                        break;
+                    }
+
+                    case CHILD_REMOVED: {
+                        String path = event.getData().getPath();
+                        String[] strs = genNodeName(path).split(":");
+                        if(strs.length == 3){
+                            String key = strs[0];
+                            String ip = strs[1];
+                            HashSet<String> ips = onlineClients.get(key);
+                            if(ips != null){
+                                ips.remove(ip);
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        });
+        clientCache.start(PathChildrenCache.StartMode.POST_INITIALIZED_EVENT);
     }
 
     /**

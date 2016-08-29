@@ -65,7 +65,7 @@
 2. spring中如何配置
 		  
 		  <!-- 依赖的project -->
-        <bean id="xConfig" class="com.zebra.xconfig.client.XConfig" init-method="init">
+        <bean id="xConfig" class="com.zebra.xconfig.client.XConfig" init-method="init" destroy-method="destory">
             <property name="project" value="odps-service"></property>
         </bean>
 

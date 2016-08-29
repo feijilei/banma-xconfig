@@ -18,6 +18,7 @@ import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
@@ -31,6 +32,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -122,6 +125,29 @@ public class XConfigContext {
                             countDownLatch.countDown();
                             continue;
                         }
+
+                        //写_client节点
+                        StringBuilder nodeName = new StringBuilder();
+                        nodeName.append(tmp)
+                                .append("|")
+                                .append(xConfig.getProfile())
+                                .append(":");
+                        try {
+                            InetAddress inetAddress = InetAddress.getLocalHost();
+                            nodeName.append(inetAddress.getHostAddress());
+                        } catch (UnknownHostException e) {
+                            nodeName.append("unknownHost");
+                        }
+                        nodeName.append(":").append(UUID.randomUUID().toString());
+                        try {
+                            client.create()
+                                    .creatingParentsIfNeeded()
+                                    .withMode(CreateMode.EPHEMERAL)
+                                    .forPath(Constants.CLIENT_REGIST_PATH +"/" + nodeName, "0".getBytes());
+                        } catch (Exception e) {
+                            throw new XConfigException(e.getMessage(),e);
+                        }
+
                         logger.debug("===>监听子节点{}", profilePath);
                         //监听key
                         final PathChildrenCache keyCache = new PathChildrenCache(client, profilePath, true);
