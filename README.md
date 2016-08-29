@@ -141,7 +141,9 @@
 
 7. 容错。client启动的时候，zk如果在一定时间连接不上，client会尝试使用current.properties，和root.propreties文件启动。
 
-8. 默认只允许实例化一个xConfig对象，仅允许引入一个project，建议程序这样设计，可以使用依赖加载其他project的配置信息。如果有非常非常特殊的情况，需要引入多个project，需要启动的时候增加`-Dxconfig.isSingleProject=false`参数。
+8. 默认只允许实例化一个xConfig对象，仅允许引入一个project，建议程序这样设计，可以使用依赖加载其他project的配置信息。如果有非常非常特殊的情况，需要引入多个project（初始化多个xConfig对象），需要启动的时候增加`-Dxconfig.isSingleProject=false`参数。
+
+	> 需要注意的是，xConfig对象初始化多个仅仅可以引入多个project。但是zk连接并不会初始化多个，zk连接只会初始化一次。
 
 # 设计
 
