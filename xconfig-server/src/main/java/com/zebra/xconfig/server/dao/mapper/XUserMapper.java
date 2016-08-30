@@ -22,4 +22,5 @@ public interface XUserMapper {
     public void insertUserProjectRole(UserProjectRolePo userProjectRolePo);
     public void deleteUserProjectRole(@Param("project")String project,@Param("userName")String userName);
     public void updateUser(@Param("userName")String userName,@Param("userNike")String userNike,@Param("password")String password);
+    public void deleteUserProjectRoleByProject(@Param("project")String project);
 }

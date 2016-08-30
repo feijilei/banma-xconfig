@@ -120,4 +120,9 @@
           password = #{password}
         WHERE userName = #{userName}
     </update>
+
+    <delete id="deleteUserProjectRoleByProject" parameterType="map">
+        DELETE FROM x_user_project_role
+        WHERE project = #{project}
+    </delete>
 </mapper>

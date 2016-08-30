@@ -8,6 +8,7 @@ import com.zebra.xconfig.common.exception.IllegalNameException;
 import com.zebra.xconfig.common.exception.XConfigException;
 import com.zebra.xconfig.server.dao.mapper.XKvMapper;
 import com.zebra.xconfig.server.dao.mapper.XProjectProfileMapper;
+import com.zebra.xconfig.server.dao.mapper.XUserMapper;
 import com.zebra.xconfig.server.po.KvPo;
 import com.zebra.xconfig.server.po.ProfilePo;
 import com.zebra.xconfig.server.po.ProjectDependency;
@@ -40,6 +41,8 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
     private XKvMapper xKvMapper;
     @Resource
     private XConfigServer xConfigServer;
+    @Resource
+    private XUserMapper xUserMapper;
 
     @Override
     public List<String> queryAllProjects() {
@@ -220,6 +223,7 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
         this.xProjectProfileMapper.delProject(project);
         this.xProjectProfileMapper.delProfileByProject(project);
         this.xKvMapper.delByProject(project);
+        this.xUserMapper.deleteUserProjectRoleByProject(project);
 
         this.xConfigServer.deleteNode(CommonUtil.genProjectPath(project));
     }
