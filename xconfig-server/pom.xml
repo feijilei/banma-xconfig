@@ -351,6 +351,7 @@
             <groupId>com.zebra.carcloud</groupId>
             <artifactId>dubbo_ext</artifactId>
             <version>1.0.0-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
