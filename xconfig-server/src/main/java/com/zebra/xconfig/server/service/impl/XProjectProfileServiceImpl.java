@@ -216,6 +216,7 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
             throw  new XConfigException("当前项目被其他项目依赖，不允许删除。"+ JSON.toJSONString(projects));
         }
 
+        this.xProjectProfileMapper.delDependencies(project);
         this.xProjectProfileMapper.delProject(project);
         this.xProjectProfileMapper.delProfileByProject(project);
         this.xKvMapper.delByProject(project);
