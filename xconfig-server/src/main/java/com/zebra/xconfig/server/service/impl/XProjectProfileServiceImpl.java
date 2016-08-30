@@ -156,7 +156,7 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
             throw new XConfigException("不能删除最后一个profile");
         }
 
-        if(this.xConfigServer.getClientsIp(project,profile).size() > 0){
+        if(this.xConfigServer.getClientsIp(project,profile) != null && this.xConfigServer.getClientsIp(project,profile).size() > 0){
             throw new XConfigException("当前profile正在使用中，不允许删除!");
         }
 

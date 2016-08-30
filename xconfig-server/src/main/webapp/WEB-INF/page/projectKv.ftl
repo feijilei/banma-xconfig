@@ -102,8 +102,8 @@
             <tbody>
                 <#list kvVos as kvVo>
                 <tr data-key=${kvVo.key} >
-                    <td>${kvVo.key}</td>
-                    <td>${kvVo.value}</td>
+                    <td style="word-break: break-all">${kvVo.key}</td>
+                    <td style="word-break: break-all">${kvVo.value}</td>
                     <td>
                         <a style="display: block;text-decoration:none;width: 20em;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;" data-toggle="tooltip" title="${kvVo.description}">
                             ${kvVo.description}
