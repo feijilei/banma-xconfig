@@ -5,7 +5,6 @@ import com.zebra.xconfig.common.Constants;
 import com.zebra.xconfig.common.exception.XConfigException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.imps.CuratorFrameworkState;
-import org.apache.zookeeper.CreateMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,12 +12,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.UUID;
 
 /**
  * Created by ying on 16/7/15.
@@ -46,23 +42,28 @@ public class XConfig {
     private String localConfigDir;//当前配置目录
 
     private XZkClient xZkClient;
+
     /**
      * 主要提供spring使用
      * @throws XConfigException
      */
     public void init() throws XConfigException{
-        this.xconfigDir = System.getProperty("user.home")
-                + File.separator + Constants.LOCAL_FILE_DIR_NAME;
-
-        String singleProject = System.getProperty("xconfig.isSingleProject");
-        if(StringUtils.isNotBlank(singleProject)){
-            isSingleProject = Boolean.valueOf(singleProject);
-        }
-
         synchronized (XConfig.class){
+            this.xconfigDir = System.getProperty("user.home")
+                    + File.separator + Constants.LOCAL_FILE_DIR_NAME;
+
+            String singleProject = System.getProperty("xconfig.isSingleProject");
+            if(StringUtils.isNotBlank(singleProject)){
+                isSingleProject = Boolean.valueOf(singleProject);
+            }
+
             if (isSingleProject){
                 if(isInit){
-                    throw new XConfigException("XConfig只允许实例化一次");
+                    if(xconfigs.get(this.getProject()) != null){
+                        return;
+                    }else {
+                        throw new XConfigException("XConfig只允许初始化一次");
+                    }
                 }
             }
 

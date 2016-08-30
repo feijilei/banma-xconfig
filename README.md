@@ -33,7 +33,7 @@
 	1. 下载源代码。执行doc/xconfig.sql中的脚本建立数据库。
 	2. install到maven仓库。在xconfig目录下，执行：mvn install -DskipTests=true。
 	3. 修改xconfig-server配置。修改xconfig/xconfig-server/config/xconfig.properties文件，将其中配置信息修改为自己的。其中如果不需要对zk节点使用acl权限，zkUserName,zkPassword可以设置为空。
-	4. 生成war包。在xconfig-server目录下，执行：mvn clean compile package -Pprd，会在xconfig-server/target目录下生成war包。
+	4. 生成war包。在xconfig-server目录下，执行：mvn clean compile package -Pprd -DskipTests=true，会在xconfig-server/target目录下生成war包。
 	5. 将war部署到web容器，请将web部署到容器根目录。（其中一种部署方式，tomcat的server.xml中增加context：`<Context path="" docBase="../war/xconfig-server.war" debug="0" reloadable="true"/>`）。
 	6. xconfig-server可以部署多台，多台部署的时候前面需要ngnix之类的反向代理工具，这里就不再赘述。
 	7. 部署成功之后页面，localhost:8080，使用默认用户名密码登录：admin@xconfig.com/admin。
