@@ -183,3 +183,10 @@
 	    zkConn=10.125.14.91:2181,10.125.0.106:2181,10.125.14.198:2181
 	    userName=xconfig
 	    password=xconfig
+	    
+* 生产环境
+	
+	    profile=daily
+	    zkConn=10.46.19.102:2181,10.24.150.32:2181,10.46.18.17:2181
+	    userName=zcc_xconfig
+	    password=M1A@P32016!@#
