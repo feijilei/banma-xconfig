@@ -10,7 +10,7 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
     http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
-    <bean id="xConfig" class="com.zebra.xconfig.client.XConfig" factory-method="instance">
+    <bean id="xConfig" class="com.zebra.xconfig.client.XConfig" init-method="init" destroy-method="destory">
         <property name="project" value="demo"></property>
     </bean>
 
