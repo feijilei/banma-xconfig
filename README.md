@@ -64,7 +64,7 @@
 
 2. spring式初始化
 
-	* 最小配置
+	1. 最小配置
 		    
 			    <!--使用静态工厂初始化-->
 			    <bean id="xConfig" class="com.zebra.xconfig.client.XConfigFactory" factory-method="instance">
@@ -80,10 +80,8 @@
     			 <bean id="mysqlConf" class="com.zebra.xconfig.client.MysqlConf">
     			 	<property name="password" value="${demo.configKey}"></property>
     			 </bean>
-    	
-    	
-	* 增加初始化完成回调
-
+		
+	2. 增加初始化完成回调
 
 			    <!-- 需要实现com.zebra.xconfig.client.XConfigInitListener 接口 -->
 			    <bean id="myXconfigListener" class="com.zebra.xconfig.client.MyXConfigInitListener">
@@ -95,16 +93,13 @@
         	        <constructor-arg ref="myXconfigListener"/>
             	 </bean>
 
-
 3. 编程式初始化
 
-	* simple
-	
+	1. simple
 	
 			    XConfig xConfig = XConfigFactory.instance("demo");
 	
-	
-	* 带初始化完成回调
+	2. 带初始化完成回调
 	
 	
 			    XConfigFactory.instance("demo", new XConfigInitListener() {
