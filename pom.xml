@@ -5,7 +5,7 @@
     <groupId>com.zebra.carcloud</groupId>
     <artifactId>xconfig</artifactId>
     <packaging>pom</packaging>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.2-SNAPSHOT</version>
     <modules>
         <module>xconfig-common</module>
         <module>xconfig-client</module>

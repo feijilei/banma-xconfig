@@ -10,16 +10,24 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
     http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
-    <bean id="xConfig" class="com.zebra.xconfig.client.XConfig" init-method="init" destroy-method="destory">
-        <property name="project" value="demo"></property>
+    <!-- 需要实现com.zebra.xconfig.client.XConfigInitListener 接口 -->
+    <bean id="myXconfigListener" class="com.zebra.xconfig.client.MyXConfigInitListener">
     </bean>
 
+    <!--使用静态工厂初始化-->
+    <bean id="xConfig" class="com.zebra.xconfig.client.XConfigFactory" factory-method="instance">
+        <constructor-arg value="demo"/>
+        <constructor-arg ref="myXconfigListener"/>
+    </bean>
+
+    <!-- 与spring结合的工具类，支持${}获取属性值 -->
     <bean class="com.zebra.xconfig.client.XConfigPropertyPlaceholderConfigurer">
         <property name="XConfig" ref="xConfig"/>
     </bean>
 
+    <!--例子：注入属性-->
     <bean id="mysqlConf" class="com.zebra.xconfig.client.MysqlConf">
-        <property name="password" value="${mysql.jdbc.password}"></property>
+        <property name="password" value="${demo.configKey}"></property>
     </bean>
 
     <!--    数据源配置 -->

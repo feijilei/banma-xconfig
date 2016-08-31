@@ -10,9 +10,8 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
     http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
-    <bean id="xConfig" class="com.zebra.xconfig.client.XConfig" init-method="init">
-        <property name="project" value="mysql"></property>
-        <!--<property name="zkConn" value="localhost:2181"></property>-->
+    <bean id="xConfig" class="com.zebra.xconfig.client.XConfigFactory" factory-method="instance">
+        <constructor-arg value="mysql"/>
     </bean>
 
     <bean class="com.zebra.xconfig.client.XConfigPropertyPlaceholderConfigurer">

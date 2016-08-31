@@ -62,6 +62,10 @@ public class XConfigContext {
 
     private XKeyObservable xKeyObservable;
 
+    //生成备份文件的时候多写入的两个备份字段
+    private final String _MY_CREATE_TIME = "createTime";
+    private final String _MY_PROFILE = "profile";
+
     XConfigContext(final XConfig xConfig,XKeyObservable xKeyObservable) throws XConfigException{
         this.xKeyObservable = xKeyObservable;
         this.xConfig = xConfig;
@@ -88,9 +92,10 @@ public class XConfigContext {
 
                 initOk = true;
             }else {//zk启动
-                if(xConfig.getxZkClient().isConnected()) {
+                XZkClient zkClient = XZkClient.getxZkClient();
+                if(zkClient.isConnected()) {
                     logger.info("zk已连接，使用zk启动");
-                    final CuratorFramework client = xConfig.getxZkClient().getClient();
+                    final CuratorFramework client = zkClient.getClient();
 
                     //当前项目依赖
                     //        final NodeCache projectNode = new NodeCache(client,"/"+xConfig.getProject());
@@ -119,7 +124,7 @@ public class XConfigContext {
                     //注册profile监听子节点
                     this.countDownLatch = new CountDownLatch(dependencies.size());
                     for (String tmp : dependencies) {
-                        final String profilePath = CommonUtil.genProfilePath(tmp, xConfig.getProfile());
+                        final String profilePath = CommonUtil.genProfilePath(tmp, XConfigFactory.getProfile());
 
                         if ("0".equals(tmp) || StringUtils.isBlank(tmp)) {
                             countDownLatch.countDown();
@@ -130,7 +135,7 @@ public class XConfigContext {
                         StringBuilder nodeName = new StringBuilder();
                         nodeName.append(tmp)
                                 .append("|")
-                                .append(xConfig.getProfile())
+                                .append(XConfigFactory.getProfile())
                                 .append(":");
                         try {
                             InetAddress inetAddress = InetAddress.getLocalHost();
@@ -203,6 +208,10 @@ public class XConfigContext {
 
                     for(String key : properties.stringPropertyNames()){
                         this.cacheKv.put(key,properties.getProperty(key));
+                        if( !_MY_CREATE_TIME.equals(key) && !_MY_PROFILE.equals(key)){
+                            logger.debug("==========>key:{}",key);
+                            this.cacheDepProject.put(CommonUtil.genProjectByMkey(key), "");
+                        }
                     }
 
                     initOk = true;
@@ -259,7 +268,7 @@ public class XConfigContext {
             Properties properties = this.getProperties();
             fileOutputStream = new FileOutputStream(this.xConfig.getLocalConfigDir() + File.separator + fileName);
             properties.setProperty("createTime",new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
-            properties.setProperty("profile",xConfig.getProfile());
+            properties.setProperty("profile",XConfigFactory.getProfile());
             properties.store(fileOutputStream,"generate by xConfig");
 
             if(logger.isDebugEnabled()){
@@ -294,7 +303,7 @@ public class XConfigContext {
             Properties properties = this.getProperties();
             fileOutputStream = new FileOutputStream(bootHisDir + File.separator + Constants.BOOT_FILE + "." +currentTimeStr);
             properties.setProperty("createTime",new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(now));
-            properties.setProperty("profile",xConfig.getProfile());
+            properties.setProperty("profile",XConfigFactory.getProfile());
             properties.store(fileOutputStream,"generate by xConfig");
 
         }catch (IOException e){

@@ -62,32 +62,54 @@
 	    <artifactId>xconfig-client</artifactId>
 	    <version>0.0.1-SNAPSHOT</version>
 
-2. spring中如何配置
+2. spring式初始化
+
+	* 最小配置
 		  
-		  <!-- 依赖的project -->
-        <bean id="xConfig" class="com.zebra.xconfig.client.XConfig" init-method="init" destroy-method="destory">
-            <property name="project" value="odps-service"></property>
-        </bean>
+		    <!--使用静态工厂初始化-->
+		    <bean id="xConfig" class="com.zebra.xconfig.client.XConfigFactory" factory-method="instance">
+        		<constructor-arg value="demo"/>
+        	</bean>
 
-	    <!-- 与spring结合的工具类，支持${}获取属性值 -->
-        <bean class="com.zebra.xconfig.client.XConfigPropertyPlaceholderConfigurer">
-            <property name="XConfig" ref="xConfig"/>
-        </bean>
-        
-	    <!-- eg:注入自定义的bean -->
-        <bean id="mysqlConf" class="com.zebra.xconfig.client.MysqlConf">
-            <property name="password" value="${mysql.jdbc.password}"></property>
-        </bean>
+    		<!-- 与spring结合的工具类，支持${}获取属性值 -->
+    		<bean class="com.zebra.xconfig.client.XConfigPropertyPlaceholderConfigurer">
+    			<property name="XConfig" ref="xConfig"/>
+    		</bean>
 
-        <!-- eg:数据源配置 -->
-        <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-            <property name="driverClassName" value="${mysql.jdbc.driver}"></property>
-            <property name="url" value="${mysql.jdbc.url}"></property>
-            <property name="username" value="${mysql.jdbc.username}"></property>
-            <property name="password" value="${mysql.jdbc.password}"></property>
-        </bean>
+    		<!--例子：注入属性-->
+    		<bean id="mysqlConf" class="com.zebra.xconfig.client.MysqlConf">
+    			<property name="password" value="${demo.configKey}"></property>
+    		</bean>
+    	
+	* 增加初始化完成回调
 
-3. 指定profile等配置信息，有两种配置方式。
+		    <!-- 需要实现com.zebra.xconfig.client.XConfigInitListener 接口 -->
+	        <bean id="myXconfigListener" class="com.zebra.xconfig.client.MyXConfigInitListener">
+            </bean>
+
+            <!--使用静态工厂初始化-->
+            <bean id="xConfig" class="com.zebra.xconfig.client.XConfigFactory" factory-method="instance">
+        	    <constructor-arg value="demo"/>
+        	    <constructor-arg ref="myXconfigListener"/>
+            </bean>
+
+3. 编程式初始化
+
+	* simpile
+	
+		    XConfig xConfig = XConfigFactory.instance("demo");
+	
+	* 带初始化完成回调
+	
+		    XConfigFactory.instance("demo", new XConfigInitListener() {
+		    	@Override
+		    	public void complete(XConfig xConfig) {
+             	    System.out.println("====================xconfig is ok============");
+            	}
+        	});
+
+
+4. 指定profile等配置信息，有两种配置方式。
 
 	1. 公共配置(需要管理员统一配置)。默认读取当前用户目录下（~/.xconfig/config.properties）文件，其中有zk连接串，用户名信息，以及当前机器所属的环境。eg:/Users/ying/.xconfig/config.properties。
 	
@@ -112,7 +134,7 @@
 		
 		> 此种方式比较适合本地测试，单独指定配置文件。
 		
-4. 编程式获取配置信息。配置信息将会在client中缓存一份，并且会实时更新，可以通过下面这种方式编程式获取配置信息。
+5. 编程式获取配置信息。配置信息将会在client中缓存一份，并且会实时更新，可以通过下面这种方式编程式获取配置信息。
 
 	    XConfig.getValue("mysql.jdbc.password");
 	    XConfig.getValue("mysql.jdbc.password","defaultValue");
@@ -120,7 +142,7 @@
 	* 最佳实践，强烈建议使用这种方式获取配置值，不建议自己缓存一份value使用，使用此方法总是能够获取到最新的配置。
 	* 不可避免的我们有时候需要知道配置发生变化，xconfig也提供了监听器来感知这种变化。
 	
-5. 注册key监听，感知配置变化。
+6. 注册key监听，感知配置变化。
 
 	    XConfig.addObserver(new XKeyObserver() {
             @Override
@@ -137,11 +159,11 @@
 	* 在频繁更新某个value的情况下，zk会保证client得到的value的最终一致性，此监听器中的回调方法也一样。当你需要在新线程中处理value变化的时候，需要你自己来保证一致性。
 	* 建议回调方法中不要做耗时操作。
     
-6. 本地模式。为了方便本地调试和能够手动干预配置，client初始化的时候会检测对应配置目录的local.preperties文件（eg:/Users/ying/.xconfig/odps-service_daily/local.propreties）。如果此文件存在，client将启动单机模式，直接使用此配置文件启动，不再连接zk。
+7. 本地模式。为了方便本地调试和能够手动干预配置，client初始化的时候会检测对应配置目录的local.preperties文件（eg:/Users/ying/.xconfig/odps-service_daily/local.propreties）。如果此文件存在，client将启动单机模式，直接使用此配置文件启动，不再连接zk。
 
-7. 容错。client启动的时候，zk如果在一定时间连接不上，client会尝试使用current.properties，和root.propreties文件启动。
+8. 容错。client启动的时候，zk如果在一定时间连接不上，client会尝试使用current.properties，和root.propreties文件启动。
 
-8. 默认只允许实例化一个xConfig对象，仅允许引入一个project，建议程序这样设计，可以使用依赖加载其他project的配置信息。如果有非常非常特殊的情况，需要引入多个project（初始化多个xConfig对象），需要启动的时候增加`-Dxconfig.isSingleProject=false`参数。
+9. 默认只允许实例化一个xConfig对象，仅允许引入一个project，建议程序这样设计，可以使用依赖加载其他project的配置信息。如果有非常非常特殊的情况，需要引入多个project（初始化多个xConfig对象），需要启动的时候增加`-Dxconfig.isSingleProject=false`参数。
 
 	> 需要注意的是，xConfig对象初始化多个仅仅可以引入多个project。但是zk连接并不会初始化多个，zk连接只会初始化一次。
 
@@ -190,3 +212,14 @@
 	    zkConn=139.224.19.158:2181,139.224.18.36:2181,139.224.80.128:2181
 	    userName=zcc_xconfig
 	    password=M1A@P32016!@#
+	    
+* 统一的日志配置，此日志配置仅仅会为log4j增加一个新的DailyRollingFileAppender，依赖Xconfig的功能，还能够动态切换Root的日志级别。
+
+	* 依赖最新的dubbo_ext包（版本没升级，更新到最新的快照即可）。
+	* 使用此静态方法：`ZebraLog4j.init("odps-service.log4j.logLevel","odps-service.log4j.logFile");`。
+	* 第一个参数是日志等级key，第二个参数是日志文件路径key。
+	* 此静态方法调用之后会启动线程每10秒钟检查对应的value是否存在，如果存在则启动相关功能并退出线程，主要是为了防止xconfig延迟初始化导致的问题。此方法仅第一次调用时候有效。
+	* 以上key我已在生产上配置。请参考。
+	
+	> 注意：你的项目中还需要log4j.xml配置，只是使用此功能后，您可以删除掉自己写的DailyRollingFileAppender（否则就重复了），root的日志级别会在xconfig初始化之后自动修改为xconfig上配置的级别。保留log4j.xml主要是为了方便本地调试。
+	

@@ -91,6 +91,14 @@ public class XZkClient {
         return xZkClient;
     }
 
+    public static XZkClient getxZkClient() throws XConfigException{
+        if(xZkClient == null){
+            throw new XConfigException("XZkClient尚未初始化！");
+        }else{
+            return xZkClient;
+        }
+    }
+
     public CuratorFramework getClient(){
         return client;
     }
