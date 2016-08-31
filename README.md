@@ -65,36 +65,35 @@
 2. spring式初始化
 
 	* 最小配置
-		  
-		  
-		    <!--使用静态工厂初始化-->
-	        <bean id="xConfig" class="com.zebra.xconfig.client.XConfigFactory" factory-method="instance">
-        		<constructor-arg value="demo"/>
-        	</bean>
+		    
+			    <!--使用静态工厂初始化-->
+			    <bean id="xConfig" class="com.zebra.xconfig.client.XConfigFactory" factory-method="instance">
+			    	<constructor-arg value="demo"/>
+        		 </bean>
 
-    		<!-- 与spring结合的工具类，支持${}获取属性值 -->
-    		<bean class="com.zebra.xconfig.client.XConfigPropertyPlaceholderConfigurer">
-    			<property name="XConfig" ref="xConfig"/>
-    		</bean>
+    			 <!-- 与spring结合的工具类，支持${}获取属性值 -->
+    			 <bean class="com.zebra.xconfig.client.XConfigPropertyPlaceholderConfigurer">
+    			 	<property name="XConfig" ref="xConfig"/>
+    			 </bean>
 
-    		<!--例子：注入属性-->
-    		<bean id="mysqlConf" class="com.zebra.xconfig.client.MysqlConf">
-    			<property name="password" value="${demo.configKey}"></property>
-    		</bean>
+    			 <!--例子：注入属性-->
+    			 <bean id="mysqlConf" class="com.zebra.xconfig.client.MysqlConf">
+    			 	<property name="password" value="${demo.configKey}"></property>
+    			 </bean>
     	
     	
 	* 增加初始化完成回调
 
 
-		    <!-- 需要实现com.zebra.xconfig.client.XConfigInitListener 接口 -->
-	        <bean id="myXconfigListener" class="com.zebra.xconfig.client.MyXConfigInitListener">
-            </bean>
+			    <!-- 需要实现com.zebra.xconfig.client.XConfigInitListener 接口 -->
+			    <bean id="myXconfigListener" class="com.zebra.xconfig.client.MyXConfigInitListener">
+              </bean>
 
-            <!--使用静态工厂初始化-->
-            <bean id="xConfig" class="com.zebra.xconfig.client.XConfigFactory" factory-method="instance">
-        	    <constructor-arg value="demo"/>
-        	    <constructor-arg ref="myXconfigListener"/>
-            </bean>
+              <!--使用静态工厂初始化-->
+              <bean id="xConfig" class="com.zebra.xconfig.client.XConfigFactory" factory-method="instance">
+        	        <constructor-arg value="demo"/>
+        	        <constructor-arg ref="myXconfigListener"/>
+            	 </bean>
 
 
 3. 编程式初始化
@@ -102,18 +101,18 @@
 	* simple
 	
 	
-		    XConfig xConfig = XConfigFactory.instance("demo");
+			    XConfig xConfig = XConfigFactory.instance("demo");
 	
 	
 	* 带初始化完成回调
 	
 	
-		    XConfigFactory.instance("demo", new XConfigInitListener() {
-		    	@Override
-		    	public void complete(XConfig xConfig) {
-             	    System.out.println("====================xconfig is ok============");
-            	}
-        	});
+			    XConfigFactory.instance("demo", new XConfigInitListener() {
+			        @Override
+		    	     public void complete(XConfig xConfig) {
+             	         System.out.println("====================xconfig is ok============");
+             	     }
+        		 });
 
 
 4. 指定profile等配置信息，有两种配置方式。
