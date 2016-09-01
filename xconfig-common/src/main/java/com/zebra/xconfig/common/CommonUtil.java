@@ -115,12 +115,11 @@ public class CommonUtil {
     }
 
     public static String genProjectByMkey(String mkey){
+        if(mkey.indexOf('.') == -1){
+            throw new IllegalArgumentException("不符合规则的key："+mkey);
+        }
 
         return mkey.substring(0,mkey.indexOf("."));
-    }
-
-    public static String genProjectByKey(String key){
-        return key.substring(0,key.indexOf("."));
     }
 
     public static String genProfileByMkey(String mkey){

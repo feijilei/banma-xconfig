@@ -36,4 +36,6 @@ public interface XProjectProfileService {
     public List<String> queryProfilesOrder();
 
     public void saveProfilesOrder(List<String> profiles) throws Exception;
+
+    public List<String> queryProjectsByDepedProject(String depedProject);
 }

@@ -244,4 +244,9 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
         this.xProjectProfileMapper.delProfilesOrder();
         this.xProjectProfileMapper.insertProfilesOrder(profiles);
     }
+
+    @Override
+    public List<String> queryProjectsByDepedProject(String depedProject) {
+        return this.xProjectProfileMapper.queryProjectsByDepedProject(depedProject);
+    }
 }

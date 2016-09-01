@@ -244,7 +244,7 @@ public class MainController {
             jsonObject.put("operator",webRequest.getAttribute(WebAttributeConstants.USER_NIKE));
             jsonObject.put("profile",profile);
             jsonObject.put("key", key);
-            Cat.logEvent(CommonUtil.genProjectByKey(key),"editKv",ajaxResponse.getCode() == 0 ? Message.SUCCESS : ajaxResponse.getMsg(),jsonObject.toJSONString());
+            Cat.logEvent(CommonUtil.genProjectByMkey(key),"editKv",ajaxResponse.getCode() == 0 ? Message.SUCCESS : ajaxResponse.getMsg(),jsonObject.toJSONString());
         }
 
         return ajaxResponse;

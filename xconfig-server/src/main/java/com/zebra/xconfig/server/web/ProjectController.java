@@ -43,6 +43,9 @@ public class ProjectController {
 
         List<XUserVo> xUserVos = this.xUserService.queryProjectOwner(project);
 
+        List<String> dProjects = this.xProjectProfileService.queryProjectsByDepedProject(project);
+
+        mv.getModel().put("dProjects",dProjects);
         mv.getModel().put("project",project);
         mv.getModel().put("xUserVos",xUserVos);
         mv.setViewName("page/projectSetting.ftl");
