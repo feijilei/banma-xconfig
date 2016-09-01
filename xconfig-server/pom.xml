@@ -106,8 +106,8 @@
             <build>
                 <resources>
                     <resource>
-                        <directory>/data/appdatas/xconfig</directory>
-                        <!--<directory>/alidata1/xconfig_server_config</directory>-->
+                        <!--<directory>/data/appdatas/xconfig</directory>-->
+                        <directory>/alidata1/xconfig_server_config</directory>
                     </resource>
                 </resources>
                 <plugins>
