@@ -60,7 +60,7 @@
 
 	    <groupId>com.zebra.carcloud</groupId>
 	    <artifactId>xconfig-client</artifactId>
-	    <version>0.0.1-SNAPSHOT</version>
+	    <version>0.0.2-SNAPSHOT</version>
 
 2. spring式初始化
 
