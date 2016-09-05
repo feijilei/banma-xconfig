@@ -15,14 +15,16 @@
     <h1 class="row">
         <div class="col-sm-11">
             ${project?html}
+            <@dataRight role=role url="/main/removeProject">
             <span style="font-size: medium">
                 <a href="javascript:void(0)" style="color: red"><span class="glyphicon glyphicon-remove-sign" aria-hidden="true" data-toggle="modal" data-target="#removeProjectModal"></span></a>
             </span>
+            </@dataRight>
         </div>
     </h1>
-<h6>被依赖项目列表：<#if dProjects?? && dProjects?size gt 0><#list dProjects as dProject><span class="label label-info" style="display: inline-block;margin-top: 1px;">${dProject?html}</span>&nbsp;</#list><#else>无</#if></h6>
+    <h6>被依赖项目列表：<#if dProjects?? && dProjects?size gt 0><#list dProjects as dProject><span class="label label-info" style="display: inline-block;margin-top: 1px;">${dProject?html}</span>&nbsp;</#list><#else>无</#if></h6>
     <hr/>
-    <h4>项目owner列表: <a href="javascript:void(0)"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true" data-toggle="modal" data-target="#addOwnerModal"></span></a></h4>
+    <h4>项目owner列表: <@dataRight role=role url="/project/addOwner"><a href="javascript:void(0)"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true" data-toggle="modal" data-target="#addOwnerModal"></span></a></@dataRight></h4>
     <div>
         <table id="kvTable" class="table table-condensed table-hover" cellspacing="0" width="100%">
             <thead>
@@ -41,7 +43,9 @@
                     <td>${user.userNike?html}</td>
                     <td>${user.createTime?html}</td>
                     <td>
+                        <@dataRight role=role url="/project/removeOwner">
                         <a href="javascript:void(0)"><span class="glyphicon glyphicon-remove" aria-hidden="true" data-toggle="modal" data-target="#removeOwnerModal"></span></a>
+                        </@dataRight>
                     </td>
                 </tr>
                 </#list>
