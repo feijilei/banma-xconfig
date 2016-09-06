@@ -1,6 +1,7 @@
 package com.zebra.xconfig.server.service;
 
 import com.zebra.xconfig.server.po.ProfilePo;
+import com.zebra.xconfig.server.po.ProjectPo;
 
 import java.awt.color.ProfileDataException;
 import java.util.List;
@@ -11,6 +12,8 @@ import java.util.Set;
  */
 public interface XProjectProfileService {
     public List<String> queryAllProjects();
+
+    public List<ProjectPo> queryAllProjectsPo();
 
     public List<String> queryProjectsByPrefix(String projectPre);
 
@@ -29,7 +32,7 @@ public interface XProjectProfileService {
 
     public void removeProfile(String project,String profile) throws Exception;
 
-    public void addProject(String project,String[] profiles) throws Exception;
+    public void addProject(String project,String description,String[] profiles) throws Exception;
 
     public void removeProject(String project) throws Exception;
 

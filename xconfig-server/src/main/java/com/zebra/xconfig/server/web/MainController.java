@@ -7,6 +7,7 @@ import com.dianping.cat.message.Message;
 import com.zebra.xconfig.common.CommonUtil;
 import com.zebra.xconfig.server.po.KvPo;
 import com.zebra.xconfig.server.po.ProfilePo;
+import com.zebra.xconfig.server.po.ProjectPo;
 import com.zebra.xconfig.server.service.WisdomService;
 import com.zebra.xconfig.server.service.XKvService;
 import com.zebra.xconfig.server.service.XProjectProfileService;
@@ -47,14 +48,36 @@ public class MainController {
     @Resource
     private XConfigServer xConfigServer;
 
-    @RequestMapping("index")
-    public ModelAndView index(){
+    /**
+     * 此首页已废弃，采用新的样式
+     * @return
+     */
+    @Deprecated
+    @RequestMapping("index2")
+    public ModelAndView index2(){
         ModelAndView mv = new ModelAndView();
 
         List<String> projects = xProjectProfileService.queryAllProjects();
 
         mv.getModel().put("projects",projects);
         mv.getModel().put("projectsJson",JSON.toJSONString(projects));
+        mv.getModel().put("wisdom",wisdomService.getOne());
+        mv.setViewName("page/index2.ftl");
+        return mv;
+    }
+
+    @RequestMapping("index")
+    public ModelAndView index(){
+        ModelAndView mv = new ModelAndView();
+
+        List<ProjectPo> projectsPo = xProjectProfileService.queryAllProjectsPo();
+        List<String> projectNames = new ArrayList<>();
+        for(ProjectPo project : projectsPo){
+            projectNames.add(project.getProject());
+        }
+
+        mv.getModel().put("projectsPo",projectsPo);
+        mv.getModel().put("projectsJson",JSON.toJSONString(projectNames));
         mv.getModel().put("wisdom",wisdomService.getOne());
         mv.setViewName("page/index.ftl");
         return mv;
@@ -361,10 +384,11 @@ public class MainController {
         AjaxResponse ajaxResponse = new AjaxResponse();
         String project = HtmlUtils.htmlEscape(webRequest.getParameter("addProjectName"));
         String profileStr = HtmlUtils.htmlEscape(webRequest.getParameter("preProfiles"));
+        String description = HtmlUtils.htmlEscape(webRequest.getParameter("description"));
         try{
 
             String[] profiles = StringUtils.isBlank(profileStr) ? null : profileStr.split(",");
-            this.xProjectProfileService.addProject(project,profiles);
+            this.xProjectProfileService.addProject(project,description,profiles);
         }catch (Exception e){
             logger.error(e.getMessage(),e);
             ajaxResponse.setThrowable(e);

@@ -7,6 +7,17 @@
         SELECT
           project
         FROM x_project
+        ORDER BY project
+    </select>
+
+    <select id="queryAllProjectsPo" resultType="com.zebra.xconfig.server.po.ProjectPo">
+        SELECT
+          id,
+          project,
+          description,
+          createTime
+        FROM x_project
+        ORDER BY project
     </select>
 
     <select id="queryProjectDependencies" resultType="string" parameterType="map">
@@ -74,7 +85,7 @@
     </delete>
 
     <insert id="insertProject" parameterType="map">
-        INSERT INTO x_project(project) VALUE (#{project})
+        INSERT INTO x_project(project,description) VALUE (#{project},#{description})
     </insert>
 
     <delete id="delProject" parameterType="map">

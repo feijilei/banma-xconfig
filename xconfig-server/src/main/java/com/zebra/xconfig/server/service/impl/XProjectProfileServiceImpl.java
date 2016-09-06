@@ -9,10 +9,7 @@ import com.zebra.xconfig.common.exception.XConfigException;
 import com.zebra.xconfig.server.dao.mapper.XKvMapper;
 import com.zebra.xconfig.server.dao.mapper.XProjectProfileMapper;
 import com.zebra.xconfig.server.dao.mapper.XUserMapper;
-import com.zebra.xconfig.server.po.KvPo;
-import com.zebra.xconfig.server.po.ProfilePo;
-import com.zebra.xconfig.server.po.ProjectDependency;
-import com.zebra.xconfig.server.po.ZkNode;
+import com.zebra.xconfig.server.po.*;
 import com.zebra.xconfig.server.service.XProjectProfileService;
 import com.zebra.xconfig.server.util.zk.XConfigServer;
 import org.apache.commons.collections.CollectionUtils;
@@ -47,6 +44,11 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
     @Override
     public List<String> queryAllProjects() {
         return this.xProjectProfileMapper.queryAllProjects();
+    }
+
+    @Override
+    public List<ProjectPo> queryAllProjectsPo() {
+        return this.xProjectProfileMapper.queryAllProjectsPo();
     }
 
     @Override
@@ -169,10 +171,14 @@ public class XProjectProfileServiceImpl implements XProjectProfileService {
 
     @Transactional(rollbackFor = Throwable.class)
     @Override
-    public void addProject(String project,String[] profiles) throws Exception {
+    public void addProject(String project,String description,String[] profiles) throws Exception {
         CommonUtil.checkProjectProfileName(project);
 
-        this.xProjectProfileMapper.insertProject(project);
+        if(StringUtils.isBlank(description) || description.length() > 100){
+            throw new XConfigException("project描述信息不能超过100个字，且不能为空");
+        }
+
+        this.xProjectProfileMapper.insertProject(project,description);
         if(profiles == null || profiles.length == 0){
             ProfilePo profilePo = new ProfilePo();
             profilePo.setProject(project);

@@ -101,6 +101,7 @@
         <property name="resources">
             <map>
                 <entry key="/main/index" value="10"></entry>
+                <entry key="/main/index2" value="10"></entry>
                 <entry key="/main/project" value="10"></entry>
                 <entry key="/main/addKvs" value="20"></entry>
                 <entry key="/main/editKv" value="20"></entry>
