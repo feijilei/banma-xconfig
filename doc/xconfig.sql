@@ -35,9 +35,11 @@ CREATE TABLE `x_profile` (
 CREATE TABLE `x_project` (
   `id` bigint(11) unsigned NOT NULL AUTO_INCREMENT,
   `project` varchar(50) NOT NULL DEFAULT '',
+  `description` varchar(100) NOT NULL DEFAULT '' COMMENT '项目说明信息',
+  `createTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `udx_project` (`project`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Create syntax for TABLE 'x_project_dependency'
 CREATE TABLE `x_project_dependency` (
