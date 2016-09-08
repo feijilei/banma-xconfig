@@ -28,10 +28,7 @@ import org.apache.zookeeper.server.auth.DigestAuthenticationProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
@@ -298,13 +295,49 @@ public class XConfigContext {
             String bootHisDir = this.xConfig.getLocalConfigDir() + File.separator + Constants.LOCAL_BOOT_HIS_DIR;
 
             Date now = new Date();
-            String currentTimeStr = new SimpleDateFormat("yyyyMMddhhmmss").format(now);
+            String currentTimeStr = new SimpleDateFormat("yyyyMMddHHmmss").format(now);
 
             Properties properties = this.getProperties();
             fileOutputStream = new FileOutputStream(bootHisDir + File.separator + Constants.BOOT_FILE + "." +currentTimeStr);
-            properties.setProperty("createTime",new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(now));
+            properties.setProperty("createTime",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(now));
             properties.setProperty("profile",XConfigFactory.getProfile());
             properties.store(fileOutputStream,"generate by xConfig");
+
+
+            //最多保留Constants.BOOT_HIS_MAX_COUNT条快照记录
+            File bootHisFileDir = new File(bootHisDir);
+            String[] bootHisFiles = bootHisFileDir.list(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    if(name.startsWith(Constants.BOOT_FILE)){
+                        return true;
+                    }else {
+                        return false;
+                    }
+                }
+            });
+            List<Long> fileSuffixs = new ArrayList<>();
+            for (String bootHisFile : bootHisFiles) {
+                String[] datas = bootHisFile.split("\\.");
+                if (datas.length != 3) {
+                    continue;
+                }
+                fileSuffixs.add(Long.valueOf(datas[2]));
+            }
+            Collections.sort(fileSuffixs, new Comparator<Long>() {
+                @Override
+                public int compare(Long o1, Long o2) {
+                    return o1 - o2 > 0 ? -1 : 1;
+                }
+            });
+            if(fileSuffixs.size() > Constants.BOOT_HIS_MAX_COUNT){
+                for(int i = Constants.BOOT_HIS_MAX_COUNT ; i < fileSuffixs.size() ; i++){
+                    File file = new File(bootHisDir + File.separator + Constants.BOOT_FILE + "." +fileSuffixs.get(i));
+                    file.delete();
+                }
+            }
+
+
 
         }catch (IOException e){
             logger.error(e.getMessage(),e);
