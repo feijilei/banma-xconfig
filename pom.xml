@@ -2,10 +2,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>com.zebra.carcloud</groupId>
+        <artifactId>zzc-common</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
     <groupId>com.zebra.carcloud</groupId>
     <artifactId>xconfig</artifactId>
     <packaging>pom</packaging>
     <version>0.0.2-SNAPSHOT</version>
+
     <modules>
         <module>xconfig-common</module>
         <module>xconfig-client</module>
@@ -78,16 +85,4 @@
         </dependency>
     </dependencies>
 
-    <distributionManagement>
-        <repository>
-            <id>zebra-releases</id>
-            <name>ali-releases</name>
-            <url>http://139.196.16.147:8789/nexus/content/repositories/releases/</url>
-        </repository>
-        <snapshotRepository>
-            <id>zebra-snapshots</id>
-            <name>ali-snapshots</name>
-            <url>http://139.196.16.147:8789/nexus/content/repositories/snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
 </project>
