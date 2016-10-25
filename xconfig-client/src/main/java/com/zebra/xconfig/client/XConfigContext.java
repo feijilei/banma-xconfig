@@ -15,6 +15,7 @@ import org.apache.curator.framework.api.ACLProvider;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
+import org.apache.curator.framework.recipes.nodes.PersistentEphemeralNode;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -87,6 +88,8 @@ public class XConfigContext {
                     this.cacheKv.put(key,properties.getProperty(key));
                 }
 
+                cacheDepProject.put(xConfig.getProject(),"");
+
                 initOk = true;
             }else {//zk启动
                 XZkClient zkClient = XZkClient.getxZkClient();
@@ -141,6 +144,7 @@ public class XConfigContext {
                             nodeName.append("unknownHost");
                         }
                         nodeName.append(":").append(UUID.randomUUID().toString());
+                        /* 此种方式创建session失效之后临时节点就消失了，需要监听zk状态重新创建临时节点。后面采用curator提供的方法
                         try {
                             client.create()
                                     .creatingParentsIfNeeded()
@@ -148,10 +152,12 @@ public class XConfigContext {
                                     .forPath(Constants.CLIENT_REGIST_PATH +"/" + nodeName, "0".getBytes());
                         } catch (Exception e) {
                             throw new XConfigException(e.getMessage(),e);
-                        }
+                        }*/
+                        PersistentEphemeralNode clientEphNode = new PersistentEphemeralNode(client, PersistentEphemeralNode.Mode.EPHEMERAL,Constants.CLIENT_REGIST_PATH+"/"+nodeName,"0".getBytes());
+                        clientEphNode.start();
 
-                        logger.debug("===>监听子节点{}", profilePath);
                         //监听key
+                        logger.debug("===>监听子节点{}", profilePath);
                         final PathChildrenCache keyCache = new PathChildrenCache(client, profilePath, true);
                         KeyCacheListener keyCacheListener = new KeyCacheListener(profilePath);
                         keyCache.getListenable().addListener(keyCacheListener);

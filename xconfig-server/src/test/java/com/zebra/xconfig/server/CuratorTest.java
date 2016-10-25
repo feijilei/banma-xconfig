@@ -140,7 +140,7 @@ public class CuratorTest {
             String ip = InetAddress.getLocalHost().getHostAddress();
             logger.info("======>ip:{}",ip);
 
-            client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath("/_client/project/profile/"+ip,"1".getBytes());
+            client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath("/_client/test233","1".getBytes());
 
             System.in.read();
         }catch (Exception e){
