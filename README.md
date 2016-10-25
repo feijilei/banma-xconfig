@@ -200,20 +200,6 @@
 
 * `com.google.collections:google-collections:1.0` 和 `com.google.guava:guava:18.0`这两个jar存在类冲突，请屏蔽掉第一个jar包，使用第二个jar即可。否则启动时候可能会提示找不到某些方法。
 * 使用的`org.apache.zookeeper:zookeeper:3.4.6`版本过低可能会导致启动时候找不到方法，使用以上版本不存在这种问题。
-* beta环境config.properties配置	
-
-	    profile=daily
-	    zkConn=10.125.14.91:2181,10.125.0.106:2181,10.125.14.198:2181
-	    userName=xconfig
-	    password=xconfig
-	    
-* 生产环境
-	
-	    profile=daily
-	    zkConn=139.224.19.158:2181,139.224.18.36:2181,139.224.80.128:2181
-	    userName=zcc_xconfig
-	    password=M1A@P32016!@#
-	    
 * 统一的日志配置，此日志配置仅仅会为log4j增加一个新的DailyRollingFileAppender，依赖Xconfig的功能，还能够动态切换Root的日志级别。
 
 	* 依赖最新的dubbo_ext包（版本没升级，更新到最新的快照即可）。
