@@ -45,4 +45,6 @@ public interface XKvMapper {
     );
 
     public void delByProject(@Param("project")String project);
+
+    public List<String> filterLostKey(@Param("project")String project,@Param("profile")String profile);
 }

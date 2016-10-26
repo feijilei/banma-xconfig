@@ -24,4 +24,6 @@ public interface XKvService {
 
     public List<KvPo> queryByProjectAndProfileWithDeps(String project,String profile);
 
+    public List<String> filterLostKeys(String project,String profile);
+
 }

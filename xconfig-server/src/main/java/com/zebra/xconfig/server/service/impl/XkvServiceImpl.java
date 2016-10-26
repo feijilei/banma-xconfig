@@ -164,4 +164,9 @@ public class XkvServiceImpl implements XKvService {
             throw new XConfigException("profile不存在："+profile);
         }
     }
+
+    @Override
+    public List<String> filterLostKeys(String project, String profile) {
+        return this.xKvMapper.filterLostKey(project,profile);
+    }
 }

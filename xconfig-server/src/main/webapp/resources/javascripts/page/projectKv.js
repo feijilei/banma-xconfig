@@ -221,5 +221,15 @@ jQuery(document).ready(function ($) {
         removeProfileForm.submit();
     });
 
+    //为警告按钮增加弹出框
+    $("#lostKeyCheck").popover({
+        trigger:"hover",
+        title:"缺失配置列表",
+        content:$("#lostKeysContent").html(),
+        placement:"bottom",
+        html:true,
+        container:'body'
+    })
+
     $("input[type='search']").focus();
 })

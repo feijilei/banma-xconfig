@@ -133,4 +133,12 @@
         DELETE FROM x_kv
         WHERE project = #{project}
     </delete>
+    
+    <select id="filterLostKey" parameterType="map" resultType="string">
+        SELECT c.xkey FROM
+	      (SELECT b.xKey,COUNT(DISTINCT b.xKey) FROM x_kv b WHERE b.project = #{project} GROUP BY b.xKey) c
+        WHERE c.xKey NOT IN (
+            SELECT a.xkey FROM x_kv a WHERE a.project = #{project} AND a.profile = #{profile}
+        )
+    </select>
 </mapper>

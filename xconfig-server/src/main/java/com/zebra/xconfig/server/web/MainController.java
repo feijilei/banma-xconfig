@@ -15,6 +15,7 @@ import com.zebra.xconfig.server.util.WebAttributeConstants;
 import com.zebra.xconfig.server.util.zk.XConfigServer;
 import com.zebra.xconfig.server.vo.AjaxResponse;
 import com.zebra.xconfig.server.vo.KvVo;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -144,6 +145,13 @@ public class MainController {
 
         Set<String> clientIps = this.xConfigServer.getClientsIp(project,profile);
 
+        //缺失key列表
+        List<String> lostKeys = this.xKvService.filterLostKeys(project,profile);
+        List<String> lostKeyStr = new ArrayList<>();
+        for(String tmp : lostKeys){
+            lostKeyStr.add(HtmlUtils.htmlEscape(tmp));
+        }
+
         mv.getModel().put("project",project);
         mv.getModel().put("profile",profile);
         mv.getModel().put("profiles",profiles);
@@ -152,6 +160,7 @@ public class MainController {
         mv.getModel().put("allDep",allDep);
         mv.getModel().put("dependencies",dependencies);
         mv.getModel().put("clientIps",clientIps);
+        mv.getModel().put("lostKeyStr",lostKeyStr);
         mv.setViewName("page/projectKv.ftl");
 
         return mv;

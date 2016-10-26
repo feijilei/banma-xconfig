@@ -17,12 +17,18 @@
         .dataTables_wrapper .dataTables_filter{
             float: left;
         }
+
+        /*能够解决bootstrap弹出框太窄的问题*/
+        .popover {
+            max-width: 700px;
+        }
     </style>
 
     <script type="application/javascript">
         var project = "${project?html}";
         var profile = "${profile?html}";
         var kvs = ${kvmap};
+        <#--var lostKeyStr = "${lostKeyStr}";-->
     </script>
 
     <#--<div class="page-header">-->
@@ -30,7 +36,7 @@
     <#--</div>-->
 
     <h1 class="row">
-        <div class="col-sm-11">
+        <div class="col-sm-10">
             ${project?html}
             <span style="font-size: x-small">依赖项目：
                 <span>
@@ -57,12 +63,15 @@
                 </span>
             </span>
         </div>
-        <div class="col-sm-1">
-            <@dataRight role=role url="/project/setting">
-                <div class="pull-right">
+        <div class="col-sm-2">
+            <div class="pull-right">
+                <#if lostKeyStr?size &gt; 0>
+                    <a href="javascript:void(0)" style="color: red" id="lostKeyCheck"><span class="glyphicon glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span></a>
+                </#if>
+                <@dataRight role=role url="/project/setting">
                     <a href="${basepath}/project/setting?project=${project?html}"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></a>
-                </div>
-            </@dataRight>
+                </@dataRight>
+            </div>
         </div>
     </h1>
     <h6>client列表：<#if clientIps?? && clientIps?size gt 0><#list clientIps as ip><span class="label label-info" style="display: inline-block;margin-top: 1px;">${ip?html}</span>&nbsp;</#list><#else>无</#if></h6>
@@ -464,5 +473,12 @@
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 
-    <#--todo 应该增加个profile排序功能 -->
+    <script id="lostKeysContent" type="text/html" >
+        <ul class="list-unstyled">
+            <#list lostKeyStr as key>
+                <li>${key?html}</li>
+            </#list>
+        </ul>
+        <small style="color:red">缺失配置可能会导致项目错误。</small>
+    </script>
 </@baseHtml>

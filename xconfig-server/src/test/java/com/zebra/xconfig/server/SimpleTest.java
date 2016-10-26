@@ -3,6 +3,7 @@ package com.zebra.xconfig.server;
 import com.zebra.xconfig.common.CommonUtil;
 import com.zebra.xconfig.common.exception.XConfigException;
 import com.zebra.xconfig.server.util.UserUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Test;
 import org.springframework.web.util.HtmlUtils;
