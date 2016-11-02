@@ -63,16 +63,16 @@ public class XZkClient {
         }
 
         //注册关闭钩子
-        Runtime.getRuntime().addShutdownHook(new Thread(){
-            @Override
-            public void run() {
-                logger.debug("shutdown hook");
-                if(client.getState() == CuratorFrameworkState.STARTED){
-                    logger.debug("zkClient close");
-                    client.close();
-                }
-            }
-        });
+//        Runtime.getRuntime().addShutdownHook(new Thread(){
+//            @Override
+//            public void run() {
+//                logger.info("xconfig shutdown hook");
+//                if(client.getState() == CuratorFrameworkState.STARTED){
+//                    logger.info("xconfig zkClient close");
+//                    client.close();
+//                }
+//            }
+//        });
     }
 
     public static XZkClient init(String zkConn,String userName,String password) throws XConfigException{
