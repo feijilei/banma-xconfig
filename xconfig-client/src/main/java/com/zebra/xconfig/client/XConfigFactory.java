@@ -23,6 +23,8 @@ public class XConfigFactory {
     private static Map<String,XConfig> xconfigs = new HashMap<>();
 
     private static String xconfigDir;//xconfig的默认目录
+
+    private static String xconfigDirBak = "/var/local/xconfig/";//xconfig备用目录，也可以将目录设置在这里此种方式仅适合linux
     /**
      * 是否只支持一个project，默认我们只允许一个project，推荐这种用法，当此处为true的时候，只允许加载一个project（实例化多个Xconfig），否则会报错
      * 可以通过设置jvm参数 -Dxconfig.isSingleProject=false 支持多个project，可以实例化多个xonfig
@@ -50,15 +52,19 @@ public class XConfigFactory {
             password = System.getProperty("xconfig.password");
             //配置文件
             File cfFile = new File(xconfigDir + File.separator + Constants.CONFIG_FILE);
+            //检测文件是否存在
+            if(!cfFile.exists()){
+                cfFile = new File(xconfigDirBak + "/" + Constants.CONFIG_FILE);
+            }
             Properties xconfigProp = new Properties();
             try {
                 xconfigProp.load(new FileInputStream(cfFile));
             } catch (FileNotFoundException e) {
                 logger.error(e.getMessage(), e);
-                throw new XConfigException("无法获取到配置文件，请确认是否存在：" + cfFile);
+                throw new XConfigException("无法获取到配置文件，请确认是否存在：" + cfFile.getAbsolutePath());
             } catch (IOException e) {
                 logger.error(e.getMessage(), e);
-                throw new XConfigException("读取配置文件失败：" + cfFile);
+                throw new XConfigException("读取配置文件失败：" + cfFile.getAbsolutePath());
             }
             if (StringUtils.isBlank(profile)) {
                 profile = xconfigProp.getProperty("profile");
