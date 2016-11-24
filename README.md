@@ -32,7 +32,7 @@
 * 部署步骤（目前我只在linux上面部署，如果是window可能需要作出相应调整）
 	1. 下载源代码。执行doc/xconfig.sql中的脚本建立数据库。
 	2. install到maven仓库。在xconfig目录下，执行：mvn install -DskipTests=true。
-	3. 修改xconfig-server配置。修改xconfig/xconfig-server/config/xconfig.properties文件，将其中配置信息修改为自己的。其中如果不需要对zk节点使用acl权限，zkUserName,zkPassword可以设置为空。
+	3. 修改xconfig-server配置。修改**xconfig/xconfig-server/config/xconfig.properties**文件，将其中配置信息修改为自己的。其中如果不需要对zk节点使用acl权限，zkUserName,zkPassword可以设置为空。
 	4. 生成war包。在xconfig-server目录下，执行：mvn clean compile package -Pprd -DskipTests=true，会在xconfig-server/target目录下生成war包。
 	5. 将war部署到web容器，请将web部署到容器根目录。（其中一种部署方式，tomcat的server.xml中增加context：`<Context path="" docBase="../war/xconfig-server.war" debug="0" reloadable="true"/>`）。
 	6. xconfig-server可以部署多台，多台部署的时候前面需要ngnix之类的反向代理工具，这里就不再赘述。
@@ -112,7 +112,7 @@
 
 4. 指定profile等配置信息，有两种配置方式。
 
-	1. 公共配置(需要管理员统一配置)。默认读取当前用户目录下（~/.xconfig/config.properties）文件，其中有zk连接串，用户名信息，以及当前机器所属的环境。eg:/Users/ying/.xconfig/config.properties。
+	1. 公共配置(需要管理员统一配置)。默认读取**当前用户目录下（~/.xconfig/config.properties）**文件，其中有zk连接串，用户名信息，以及当前机器所属的环境。eg:/Users/ying/.xconfig/config.properties。
 	
 			    profile=daily
 			    zkConn=localhost:2181
@@ -120,7 +120,7 @@
 			    password=xconfig
 				
 		* userName,password需要与xconfig-web部署的时候指定的一致，这个是zk节点的访问权限信息，如果xconfig-server没有指定，这里也可以不设置。
-		* 当前机器上使用xconfig的项目都会读取这个配置文件。
+		* 考虑到有些部署方式可能不是使用同一个用户启动，可能会导致config.properties的目录不一样。如果在用户目录找不到这个配置文件，则去**/var/local/xconfig/config.properties**路径读取。此种方式仅适合linux。
 	
 		>  这种配置方式，符合大部分项目部署的情况，一般不存在一个机器同时部署两个环境等情况。统一部署的时候推荐使用这种方式。
 		
