@@ -4,12 +4,14 @@ import com.zebra.xconfig.client.XConfig;
 import com.zebra.xconfig.client.XConfigFactory;
 import com.zebra.xconfig.common.exception.XConfigException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.EnvironmentAware;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.core.env.Environment;
+import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.PropertySource;
 
 /**
  * Created by huachao on 18/01/2017.
@@ -18,13 +20,14 @@ import org.springframework.core.env.Environment;
 @Configuration
 @ConditionalOnClass({XConfig.class})
 @EnableConfigurationProperties(XConfigProperties.class)
-public class XConfigAutoConfiguration  implements EnvironmentAware {
+public class XConfigAutoConfiguration  implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
 
-    private String project;
+
+    private static String project;
 
 
     @Bean
-    PropertySourcesPlaceholderConfigurer xConfigPropertySourcesPlaceholderConfigurer() throws XConfigException {
+    static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() throws XConfigException {
         XConfig xConfig = XConfigFactory.instance(project);
         PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer = new PropertySourcesPlaceholderConfigurer();
         propertySourcesPlaceholderConfigurer.setProperties(xConfig.getProperties());
@@ -33,12 +36,23 @@ public class XConfigAutoConfiguration  implements EnvironmentAware {
 
 
     /**
-     * Set the {@code Environment} that this object runs in.
+     * Handle an application event.
      *
-     * @param environment
+     * @param event the event to respond to
      */
     @Override
-    public void setEnvironment(Environment environment) {
-        project = environment.getProperty("xconfig.project");
+    public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
+        for(PropertySource<?> source :  event.getEnvironment().getPropertySources()){
+            if(source.getName().equals("applicationConfigurationProperties")){
+                if (source instanceof EnumerablePropertySource) {
+                    for(String name : ((EnumerablePropertySource) source).getPropertyNames()){
+                        if (name.equals("xconfig.project")) {
+                            project = ((EnumerablePropertySource) source).getProperty(name).toString();
+                        }
+                    }
+                }
+            }
+        }
     }
+
 }
