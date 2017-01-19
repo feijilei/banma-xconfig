@@ -37,5 +37,16 @@
 
     </dependencies>
 
+    <distributionManagement>
+        <repository>
+            <id>zebra</id>
+            <url>http://139.196.16.147:8789/nexus/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>zebra</id>
+            <url>http://139.196.16.147:8789/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
 
 </project>
