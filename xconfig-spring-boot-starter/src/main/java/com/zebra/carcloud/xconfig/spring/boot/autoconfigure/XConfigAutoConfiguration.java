@@ -4,6 +4,7 @@ import com.zebra.xconfig.client.XConfig;
 import com.zebra.xconfig.client.XConfigFactory;
 import com.zebra.xconfig.common.exception.XConfigException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationListener;
@@ -22,11 +23,10 @@ import org.springframework.core.env.PropertySource;
 @EnableConfigurationProperties(XConfigProperties.class)
 public class XConfigAutoConfiguration  implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
 
-
     private static String project;
 
-
     @Bean
+    @ConditionalOnProperty(prefix = "xconfig", name = "project")
     static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() throws XConfigException {
         XConfig xConfig = XConfigFactory.instance(project);
         PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer = new PropertySourcesPlaceholderConfigurer();
