@@ -18,7 +18,6 @@
         <module>xconfig-client</module>
         <module>xconfig-server</module>
         <module>xconfig-spring-boot-starter</module>
-        <module>xconfig-spring-boot-autoconfigure</module>
     </modules>
 
     <name>xconfig</name>
